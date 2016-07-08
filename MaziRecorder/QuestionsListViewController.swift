@@ -28,6 +28,10 @@ class QuestionsListViewController: UIViewController, UITableViewDelegate, UITabl
         tableView.snp_makeConstraints { (make) in
             make.edges.equalTo(self.view)
         }
+        
+        //nav bar button
+        let acceptButton = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: #selector(QuestionsListViewController.onAcceptButtonClick))
+        self.navigationItem.rightBarButtonItem = acceptButton
     }
 
     override func didReceiveMemoryWarning() {
@@ -52,7 +56,14 @@ class QuestionsListViewController: UIViewController, UITableViewDelegate, UITabl
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let recorderVC = RecorderViewController(question : questions[indexPath.row])
+        self.navigationController?.pushViewController(recorderVC, animated: true)
+        
         print("Selected \(questions[indexPath.row])")
+    }
+    
+    func onAcceptButtonClick() {
+        print("Click")
     }
     
 }

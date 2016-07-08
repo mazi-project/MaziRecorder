@@ -110,7 +110,6 @@ class ViewController: UIViewController {
         }
         
         startButton.rac_signalForControlEvents(.TouchUpInside).subscribeNext { _ in
-            print("Hello")
             
             let questionsListVC = QuestionsListViewController()
             self.navigationController?.pushViewController(questionsListVC, animated: true)
