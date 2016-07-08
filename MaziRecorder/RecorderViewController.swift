@@ -9,6 +9,7 @@
 import UIKit
 import SnapKit
 import AVFoundation
+import ReactiveCocoa
 
 class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDelegate {
     
@@ -25,6 +26,8 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
     var audioRecorder: AVAudioRecorder?
     
     var recording = false
+    
+    var timeTextLabel = UILabel()
     
     init(question : String) {
         self.question = question
@@ -68,11 +71,18 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         startButton.snp_makeConstraints { (make) in
             make.top.equalTo(introTextLabel.snp_bottom).offset(largeSpacing)
             make.centerX.equalTo(containerView)
-            make.bottom.equalTo(containerView).inset(outerInset)
         }
-        
         startButton.rac_signalForControlEvents(.TouchUpInside).subscribeNext { _ in
             self.onRecordButtonClick()
+        }
+        
+        timeTextLabel.text = "00:00"
+        timeTextLabel.numberOfLines = 0
+        containerView.addSubview(timeTextLabel)
+        timeTextLabel.textAlignment = .Center
+        timeTextLabel.snp_makeConstraints { (make) in
+            make.top.equalTo(startButton.snp_bottom).offset(largeSpacing)
+            make.centerX.bottom.equalTo(containerView).inset(outerInset)
         }
         
         // audio recorder
@@ -110,17 +120,22 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
                 do {
                     try audioSession.setActive(true)
                     a.record()
+                    RACSignal.interval(0.05, onScheduler:RACScheduler.mainThreadScheduler()).subscribeNext { _ in
+                        let seconds = Int(a.currentTime) % 60
+                        let minutes = Int(a.currentTime) / 60
+                        let timeString =  NSString(format: "%0.2d:%0.2d",minutes,seconds)
+                        self.timeTextLabel.text = "\(timeString)"
+                    }
                 } catch {
                 }
             }
         }
-        //var audioSession = AVAudioSession.sharedInstance()
-        //audioSession.setActive(false, error: nil)
     }
     
     func audioRecorderDidFinishRecording(recorder: AVAudioRecorder, successfully flag: Bool) {
         print("Recording finished \(recorder.url)")
     }
+    
     
     func directoryURL() -> NSURL? {
         let fileManager = NSFileManager.defaultManager()
