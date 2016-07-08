@@ -7,14 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EC3A9C5E8F610FAE805292DB /* Pods_MaziRecorder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8149A2B55EFD3E58ED95E4D3 /* Pods_MaziRecorder.framework */; };
 		FCCDE1B31D30285600E156A5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCDE1B21D30285600E156A5 /* AppDelegate.swift */; };
 		FCCDE1B51D30285600E156A5 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCDE1B41D30285600E156A5 /* ViewController.swift */; };
 		FCCDE1B81D30285600E156A5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FCCDE1B61D30285600E156A5 /* Main.storyboard */; };
 		FCCDE1BA1D30285600E156A5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FCCDE1B91D30285600E156A5 /* Assets.xcassets */; };
 		FCCDE1BD1D30285600E156A5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FCCDE1BB1D30285600E156A5 /* LaunchScreen.storyboard */; };
+		FCCDE1C51D3034B700E156A5 /* QuestionsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCDE1C41D3034B700E156A5 /* QuestionsListViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7D9854E607C33CA6B09B37EE /* Pods-MaziRecorder.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MaziRecorder.release.xcconfig"; path = "Pods/Target Support Files/Pods-MaziRecorder/Pods-MaziRecorder.release.xcconfig"; sourceTree = "<group>"; };
+		8149A2B55EFD3E58ED95E4D3 /* Pods_MaziRecorder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MaziRecorder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8B143F8B87290129FB0514AE /* Pods-MaziRecorder.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MaziRecorder.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MaziRecorder/Pods-MaziRecorder.debug.xcconfig"; sourceTree = "<group>"; };
 		FCCDE1AF1D30285600E156A5 /* MaziRecorder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MaziRecorder.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FCCDE1B21D30285600E156A5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		FCCDE1B41D30285600E156A5 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -22,6 +27,7 @@
 		FCCDE1B91D30285600E156A5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FCCDE1BC1D30285600E156A5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		FCCDE1BE1D30285600E156A5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FCCDE1C41D3034B700E156A5 /* QuestionsListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuestionsListViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -29,17 +35,37 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EC3A9C5E8F610FAE805292DB /* Pods_MaziRecorder.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9B3D55EC77A992D2DED2E3C4 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				8B143F8B87290129FB0514AE /* Pods-MaziRecorder.debug.xcconfig */,
+				7D9854E607C33CA6B09B37EE /* Pods-MaziRecorder.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		DC9CCB0F3C6984A471232B37 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				8149A2B55EFD3E58ED95E4D3 /* Pods_MaziRecorder.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		FCCDE1A61D30285600E156A5 = {
 			isa = PBXGroup;
 			children = (
 				FCCDE1B11D30285600E156A5 /* MaziRecorder */,
 				FCCDE1B01D30285600E156A5 /* Products */,
+				9B3D55EC77A992D2DED2E3C4 /* Pods */,
+				DC9CCB0F3C6984A471232B37 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -56,6 +82,7 @@
 			children = (
 				FCCDE1B21D30285600E156A5 /* AppDelegate.swift */,
 				FCCDE1B41D30285600E156A5 /* ViewController.swift */,
+				FCCDE1C41D3034B700E156A5 /* QuestionsListViewController.swift */,
 				FCCDE1B61D30285600E156A5 /* Main.storyboard */,
 				FCCDE1B91D30285600E156A5 /* Assets.xcassets */,
 				FCCDE1BB1D30285600E156A5 /* LaunchScreen.storyboard */,
@@ -71,9 +98,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = FCCDE1C11D30285600E156A5 /* Build configuration list for PBXNativeTarget "MaziRecorder" */;
 			buildPhases = (
+				4F8243D7EF26CA27ABE3098D /* [CP] Check Pods Manifest.lock */,
 				FCCDE1AB1D30285600E156A5 /* Sources */,
 				FCCDE1AC1D30285600E156A5 /* Frameworks */,
 				FCCDE1AD1D30285600E156A5 /* Resources */,
+				2271DB530B662B7BA2B46778 /* [CP] Embed Pods Frameworks */,
+				3D059CBBFFAA39A0861F8BCA /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -130,11 +160,60 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		2271DB530B662B7BA2B46778 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MaziRecorder/Pods-MaziRecorder-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		3D059CBBFFAA39A0861F8BCA /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MaziRecorder/Pods-MaziRecorder-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		4F8243D7EF26CA27ABE3098D /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		FCCDE1AB1D30285600E156A5 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FCCDE1C51D3034B700E156A5 /* QuestionsListViewController.swift in Sources */,
 				FCCDE1B51D30285600E156A5 /* ViewController.swift in Sources */,
 				FCCDE1B31D30285600E156A5 /* AppDelegate.swift in Sources */,
 			);
@@ -249,9 +328,11 @@
 		};
 		FCCDE1C21D30285600E156A5 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8B143F8B87290129FB0514AE /* Pods-MaziRecorder.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = MaziRecorder/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kelbraer.MaziRecorder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -260,9 +341,11 @@
 		};
 		FCCDE1C31D30285600E156A5 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7D9854E607C33CA6B09B37EE /* Pods-MaziRecorder.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = MaziRecorder/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kelbraer.MaziRecorder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -288,6 +371,7 @@
 				FCCDE1C31D30285600E156A5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
