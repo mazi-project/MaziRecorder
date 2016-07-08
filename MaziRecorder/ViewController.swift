@@ -81,8 +81,27 @@ class ViewController: UIViewController {
             make.bottom.equalTo(containerView).inset(outerInset)
         }
         
+        // Make sure text fields don't surpass a certain number of characters.
+        let maxLength = 60
         nameField.rac_textSignal()
-            .combineLatestWith(roleField.rac_textSignal())
+            .subscribeNext { (next : AnyObject!) in
+                if let name = next as? NSString {
+                    if name.length > maxLength {
+                        nameField.text = name.substringToIndex(maxLength)
+                    }
+                }
+        }
+        roleField.rac_textSignal()
+            .subscribeNext { (next : AnyObject!) in
+                if let role = next as? NSString {
+                    if role.length > maxLength {
+                        roleField.text = role.substringToIndex(maxLength)
+                    }
+                }
+        }
+        
+        // Disable start button when either text field is empty.
+        RACSignal.combineLatest([nameField.rac_textSignal(), roleField.rac_textSignal()])
             .subscribeNext {
                 let name : String = ($0 as! RACTuple).first as! String
                 let role : String = ($0 as! RACTuple).second as! String
