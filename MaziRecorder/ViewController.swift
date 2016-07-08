@@ -11,6 +11,8 @@ import SnapKit
 import ReactiveCocoa
 
 class ViewController: UIViewController {
+    
+    let interview = Interview(name: "", role: "", text: "", attachments: [], imageUrl: "")
 
     override func viewDidLoad() {
         super.viewDidLoad()
