@@ -15,6 +15,9 @@
 		FCCDE1BA1D30285600E156A5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FCCDE1B91D30285600E156A5 /* Assets.xcassets */; };
 		FCCDE1BD1D30285600E156A5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FCCDE1BB1D30285600E156A5 /* LaunchScreen.storyboard */; };
 		FCCDE1C51D3034B700E156A5 /* QuestionsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCDE1C41D3034B700E156A5 /* QuestionsListViewController.swift */; };
+		FCCDE1C81D30459300E156A5 /* Interview.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCDE1C71D30459300E156A5 /* Interview.swift */; };
+		FCCDE1CA1D30475200E156A5 /* Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCDE1C91D30475200E156A5 /* Attachment.swift */; };
+		FCCDE1CC1D30484A00E156A5 /* InterviewStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCDE1CB1D30484A00E156A5 /* InterviewStore.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +33,9 @@
 		FCCDE1BC1D30285600E156A5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		FCCDE1BE1D30285600E156A5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FCCDE1C41D3034B700E156A5 /* QuestionsListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuestionsListViewController.swift; sourceTree = "<group>"; };
+		FCCDE1C71D30459300E156A5 /* Interview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Interview.swift; sourceTree = "<group>"; };
+		FCCDE1C91D30475200E156A5 /* Attachment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Attachment.swift; sourceTree = "<group>"; };
+		FCCDE1CB1D30484A00E156A5 /* InterviewStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InterviewStore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +88,7 @@
 		FCCDE1B11D30285600E156A5 /* MaziRecorder */ = {
 			isa = PBXGroup;
 			children = (
+				FCCDE1C61D30458700E156A5 /* Model */,
 				FCCDE1B21D30285600E156A5 /* AppDelegate.swift */,
 				FCCDE1B91D30285600E156A5 /* Assets.xcassets */,
 				FCCDE1BE1D30285600E156A5 /* Info.plist */,
@@ -92,6 +99,16 @@
 				FCCDE1B41D30285600E156A5 /* ViewController.swift */,
 			);
 			path = MaziRecorder;
+			sourceTree = "<group>";
+		};
+		FCCDE1C61D30458700E156A5 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				FCCDE1C91D30475200E156A5 /* Attachment.swift */,
+				FCCDE1C71D30459300E156A5 /* Interview.swift */,
+				FCCDE1CB1D30484A00E156A5 /* InterviewStore.swift */,
+			);
+			name = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -221,6 +238,9 @@
 				FCCDE1C51D3034B700E156A5 /* QuestionsListViewController.swift in Sources */,
 				FCCDE1B51D30285600E156A5 /* ViewController.swift in Sources */,
 				FCCDE1B31D30285600E156A5 /* AppDelegate.swift in Sources */,
+				FCCDE1CC1D30484A00E156A5 /* InterviewStore.swift in Sources */,
+				FCCDE1C81D30459300E156A5 /* Interview.swift in Sources */,
+				FCCDE1CA1D30475200E156A5 /* Attachment.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
