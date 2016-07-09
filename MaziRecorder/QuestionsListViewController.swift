@@ -12,14 +12,18 @@ import SnapKit
 
 class QuestionsListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
-    let interview : Interview
+    let interview : MutableProperty<Interview>
     let questions = ["First question", "Second question", "Third question"]
     
     let cellIdentifier = "cellIdentifier"
     
     init(interview: Interview) {
-        self.interview = interview
+        self.interview = MutableProperty<Interview>(interview)
+        
         super.init(nibName : nil, bundle : nil)
+        
+        // Sync the view's interview with the model.
+        self.interview <~ InterviewStore.sharedInstance.interviewSignal(interview.identifier).ignoreNil()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -54,13 +58,18 @@ class QuestionsListViewController: UIViewController, UITableViewDelegate, UITabl
         
         // Handle Done button presses.
         self.rac_signalForSelector(#selector(QuestionsListViewController.onDoneButtonClick))
-            .subscribeNext { (next : AnyObject!) in
-                print("Click")
+            .toSignalProducer()
+            .observeOn(UIScheduler())
+            .startWithNext { (next : AnyObject?) in
+                let synospisVC = SynopsisViewController(interview: self.interview.value)
+                self.navigationController?.pushViewController(synospisVC, animated: true)
         }
         
         // Handle table view selections.
         self.rac_signalForSelector(#selector(QuestionsListViewController.tableView(_:didSelectRowAtIndexPath:)))
-            .subscribeNext { (next : AnyObject!) in
+            .toSignalProducer()
+            .observeOn(UIScheduler())
+            .startWithNext { (next : AnyObject?) in
             if let tuple = next as? RACTuple,
                 tableView = tuple.first as? UITableView,
                 indexPath = tuple.second as? NSIndexPath {
@@ -68,7 +77,7 @@ class QuestionsListViewController: UIViewController, UITableViewDelegate, UITabl
                 tableView.deselectRowAtIndexPath(indexPath, animated: true)
                 
                 // Create the new view controller and present it to the user.
-                let recorderVC = RecorderViewController(interview: self.interview, question : self.questions[indexPath.row])
+                let recorderVC = RecorderViewController(interview: self.interview.value, question : self.questions[indexPath.row])
                 self.navigationController?.pushViewController(recorderVC, animated: true)
             }
         }
@@ -97,9 +106,6 @@ class QuestionsListViewController: UIViewController, UITableViewDelegate, UITabl
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {}
     
-    func onDoneButtonClick() {
-        let synospisVC = SynopsisViewController(interview: self.interview)
-        self.navigationController?.pushViewController(synospisVC, animated: true)
-    }
+    func onDoneButtonClick() {}
     
 }
