@@ -121,7 +121,8 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
         
         let maxLength = 1000
         synopsisField.rac_textSignal()
-            .subscribeNext { (next : AnyObject!) in
+            .toSignalProducer()
+            .startWithNext { next in
                 if let text = next as? NSString {
                     // Make sure text field doesn't surpass a certain number of characters.
                     if text.length > maxLength {
@@ -135,8 +136,10 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
         }
         
         // Take picture.
-        pictureButton.rac_signalForControlEvents(.TouchUpInside).subscribeNext { _ in
-            self.takePicture()
+        pictureButton.rac_signalForControlEvents(.TouchUpInside)
+            .toSignalProducer()
+            .startWithNext { _ in
+                self.takePicture()
         }
         
         // Handle upload.
