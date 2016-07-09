@@ -146,11 +146,32 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
         self.rac_signalForSelector(#selector(SynopsisViewController.onUploadButtonClick))
             .toSignalProducer()
             .observeOn(UIScheduler())
-            .startWithNext { (next : AnyObject?) in
+            .startWithNext { _ in
                 let networkManager = NetworkManager()
                 networkManager.sendInterviewToServer(self.interview.value)
-                    .startWithNext({ id in
-                        print("Next with id: \(id)")
+                    .on(started: {
+                        // Show spinner.
+                    })
+                    .on(failed: { error in
+                        // Hide spinner.
+                    })
+                    .on(completed: {
+                        // Hide spinner.
+                    })
+                    .startWithNext({ interviewId in
+                        // Store the new interview id in the model.
+                        let update = InterviewUpdate(identifierOnServer: interviewId)
+                        InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview.value, interviewUpdate: update)
+                        
+                        // Show a popup saying the upload was successful.
+                        let alertView = UIAlertView(title: "Success", message: "The interview was uploaded to the server.", delegate: nil, cancelButtonTitle: "Ok")
+                        alertView.show()
+                        
+                        // Create a new interview for the starting view, and navigate back to it.
+                        if let rootViewController = self.navigationController?.viewControllers.first as? ViewController {
+                            rootViewController.interview.value = InterviewStore.sharedInstance.createInterview()
+                            self.navigationController?.popToRootViewControllerAnimated(true)
+                        }
                     })
         }
     }
