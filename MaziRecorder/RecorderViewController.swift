@@ -20,12 +20,14 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         AVEncoderAudioQualityKey : NSNumber(int: Int32(AVAudioQuality.Medium.rawValue))
     ]
     
+    let interview : Interview
     let question : String
     
     var audioPlayer: AVAudioPlayer?
     var audioRecorder: AVAudioRecorder?
     
-    init(question : String) {
+    init(interview: Interview, question : String) {
+        self.interview = interview
         self.question = question
         super.init(nibName : nil, bundle : nil)
     }
@@ -75,6 +77,10 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         timeTextLabel.numberOfLines = 0
         containerView.addSubview(timeTextLabel)
         timeTextLabel.textAlignment = .Center
+        
+        // Navigation bar Save button.
+        let saveButton = UIBarButtonItem(barButtonSystemItem: .Save, target: self, action: #selector(RecorderViewController.onSaveButtonClick))
+        self.navigationItem.rightBarButtonItem = saveButton
         
         // Create view constraints.
         
@@ -129,6 +135,19 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
                     timeTextLabel.text = "\(timeString)"
                 }
         }
+        
+        // Handle Done button presses.
+        self.rac_signalForSelector(#selector(RecorderViewController.onSaveButtonClick))
+            .subscribeNext { (next : AnyObject!) in
+                if let recorder = self.audioRecorder {
+                    // Update the model with the new attachment.
+                    let attachment = Attachment(questionText: self.question, tags: [], recordingUrl: recorder.url.absoluteString)
+                    let update = InterviewUpdate(attachments: self.interview.attachments + [attachment])
+                    InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview, interviewUpdate: update)
+                    
+                    self.navigationController?.popViewControllerAnimated(true)
+                }
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -152,5 +171,7 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         let soundURL = documentDirectory.URLByAppendingPathComponent("sound-\(dateString).wav")
         return soundURL
     }
+    
+    func onSaveButtonClick() {}
 
 }

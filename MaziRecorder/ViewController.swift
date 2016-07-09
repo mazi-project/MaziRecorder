@@ -104,9 +104,8 @@ class ViewController: UIViewController {
                     }
                     
                     // Store the new name in the model.
-                    let identifier = self.interview.identifier
                     let update = InterviewUpdate(name: nameField.text)
-                    InterviewStore.sharedInstance.updateInterview(fromIdentifier: identifier, interviewUpdate: update)
+                    InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview, interviewUpdate: update)
                 }
         }
         roleField.rac_textSignal()
@@ -118,9 +117,8 @@ class ViewController: UIViewController {
                     }
                     
                     // Store the new role in the model.
-                    let identifier = self.interview.identifier
                     let update = InterviewUpdate(role: roleField.text)
-                    InterviewStore.sharedInstance.updateInterview(fromIdentifier: identifier, interviewUpdate: update)
+                    InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview, interviewUpdate: update)
                 }
         }
         
@@ -137,7 +135,7 @@ class ViewController: UIViewController {
         
         // Navigate to the next screen when the user presses Start.
         startButton.rac_signalForControlEvents(.TouchUpInside).subscribeNext { _ in
-            let questionsListVC = QuestionsListViewController()
+            let questionsListVC = QuestionsListViewController(interview: self.interview)
             self.navigationController?.pushViewController(questionsListVC, animated: true)
         }
     }

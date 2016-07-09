@@ -28,6 +28,10 @@ class InterviewStore: NSObject {
         return interview
     }
     
+    func updateInterview(fromInterview interview: Interview, interviewUpdate: InterviewUpdate) {
+        self.updateInterview(fromIdentifier: interview.identifier, interviewUpdate: interviewUpdate)
+    }
+    
     func updateInterview(fromIdentifier identifier: String, interviewUpdate: InterviewUpdate) {
         var interviewsArray = interviews.value
         if let index = interviewsArray.indexOf({ $0.identifier == identifier }) {

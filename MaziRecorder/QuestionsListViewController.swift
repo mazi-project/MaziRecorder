@@ -12,8 +12,19 @@ import SnapKit
 
 class QuestionsListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
-    let cellIdentifier = "cellIdentifier"
+    let interview : Interview
     let questions = ["First question", "Second question", "Third question"]
+    
+    let cellIdentifier = "cellIdentifier"
+    
+    init(interview: Interview) {
+        self.interview = interview
+        super.init(nibName : nil, bundle : nil)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,8 +40,8 @@ class QuestionsListViewController: UIViewController, UITableViewDelegate, UITabl
         tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: self.cellIdentifier)
         self.view.addSubview(tableView)
         
-        // Nav bar button.
-        let acceptButton = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: #selector(QuestionsListViewController.onAcceptButtonClick))
+        // Navigation bar Done button.
+        let acceptButton = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: #selector(QuestionsListViewController.onDoneButtonClick))
         self.navigationItem.rightBarButtonItem = acceptButton
         
         // Create view constraints.
@@ -42,7 +53,7 @@ class QuestionsListViewController: UIViewController, UITableViewDelegate, UITabl
         // Reactive bindings.
         
         // Handle Done button presses.
-        acceptButton.rac_signalForSelector(#selector(QuestionsListViewController.onAcceptButtonClick))
+        self.rac_signalForSelector(#selector(QuestionsListViewController.onDoneButtonClick))
             .subscribeNext { (next : AnyObject!) in
                 print("Click")
         }
@@ -57,7 +68,7 @@ class QuestionsListViewController: UIViewController, UITableViewDelegate, UITabl
                 tableView.deselectRowAtIndexPath(indexPath, animated: true)
                 
                 // Create the new view controller and present it to the user.
-                let recorderVC = RecorderViewController(question : self.questions[indexPath.row])
+                let recorderVC = RecorderViewController(interview: self.interview, question : self.questions[indexPath.row])
                 self.navigationController?.pushViewController(recorderVC, animated: true)
             }
         }
@@ -86,6 +97,6 @@ class QuestionsListViewController: UIViewController, UITableViewDelegate, UITabl
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {}
     
-    func onAcceptButtonClick() {}
+    func onDoneButtonClick() {}
     
 }
