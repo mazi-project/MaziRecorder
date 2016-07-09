@@ -98,6 +98,7 @@ class ViewController: UIViewController {
         // Update the view whenever the model changes.
         InterviewStore.sharedInstance.interviewSignal(interview.identifier)
             .ignoreNil()
+            .observeOn(UIScheduler())
             .startWithNext { (next : Interview) in
                 self.interview = next
                 nameField.text = self.interview.name
@@ -106,6 +107,7 @@ class ViewController: UIViewController {
         
         let maxLength = 60
         nameField.rac_textSignal()
+            .skip(1)
             .subscribeNext { (next : AnyObject!) in
                 if var name = next as? NSString {
                     // Make sure text field doesn't surpass a certain number of characters.
@@ -119,6 +121,7 @@ class ViewController: UIViewController {
                 }
         }
         roleField.rac_textSignal()
+            .skip(1)
             .subscribeNext { (next : AnyObject!) in
                 if var role = next as? NSString {
                     // Make sure text field doesn't surpass a certain number of characters.

@@ -16,6 +16,8 @@ class InterviewStore {
     static let sharedInstance = InterviewStore()
     
     let interviews = MutableProperty<[Interview]>([])
+    
+    private let queue = dispatch_get_global_queue(QOS_CLASS_UTILITY, 0)
     private let archiveFileName = "InterviewStore"
     
     init() {
@@ -63,9 +65,12 @@ class InterviewStore {
         let interview = Interview()
         var interviewsArray = interviews.value
         interviewsArray.append(interview)
-        interviews.value = interviewsArray
         
-        print("Created interview \(interview)")
+        dispatch_async(queue) {
+            self.interviews.value = interviewsArray
+        }
+        
+        print("Created interview: \(interview)")
         
         return interview
     }
@@ -90,9 +95,12 @@ class InterviewStore {
             let newInterview = Interview(interview: oldInterview, interviewUpdate: interviewUpdate)
             interviewsArray.removeAtIndex(index)
             interviewsArray.append(newInterview)
-            interviews.value = interviewsArray.sort({ $0.creationDate.compare($1.creationDate) == NSComparisonResult.OrderedAscending })
             
-            print("Updated interview \(newInterview)")
+            dispatch_async(queue) {
+                self.interviews.value = interviewsArray.sort({ $0.creationDate.compare($1.creationDate) == NSComparisonResult.OrderedAscending })
+            }
+            
+            print("Updated interview: \(newInterview)")
         }
     }
     
