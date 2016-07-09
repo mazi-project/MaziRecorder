@@ -44,9 +44,22 @@ class InterviewStore {
     // A signal of interviews matching a given identifier.
     func interviewSignal(identifier: String) -> SignalProducer<Interview?, NoError> {
         return interviews.producer
-            .map({ (next : [Interview]) -> Interview? in
+            .map { next -> Interview? in
                 return self.getInterview(identifier, interviews: next)
-            })
+            }
+            .replayLazily(1)
+    }
+    
+    // A signal of attachment matching a given question.
+    func attachmentSignal(question: String) -> SignalProducer<Attachment?, NoError> {
+        return interviews.producer
+            .map { next -> Attachment? in
+                let attachments : [Attachment] = next.flatMap { $0.attachments }
+                if let index = attachments.indexOf({ $0.questionText == question }) {
+                    return attachments[index]
+                }
+                return .None
+            }
             .replayLazily(1)
     }
     
