@@ -17,11 +17,11 @@ struct Interview {
     let text : String
     let attachments : [Attachment]
     let imageUrl : String
-    let uploaded : Bool
+    let identifierOnServer : String?
     
     // MARK: Init
     
-    init(identifier: String, creationDate: NSDate, name: String, role: String, text: String, attachments: [Attachment], imageUrl: String, uploaded: Bool) {
+    init(identifier: String, creationDate: NSDate, name: String, role: String, text: String, attachments: [Attachment], imageUrl: String, identifierOnServer: String?) {
         self.identifier = identifier
         self.creationDate = creationDate
         self.name = name
@@ -29,11 +29,11 @@ struct Interview {
         self.text = text
         self.attachments = attachments
         self.imageUrl = imageUrl
-        self.uploaded = uploaded
+        self.identifierOnServer = identifierOnServer
     }
     
     init(name: String = "", role: String = "", text: String = "", attachments: [Attachment] = [], imageUrl: String = "") {
-        self.init(identifier: NSUUID().UUIDString, creationDate: NSDate(), name: name, role: role, text: text, attachments: attachments, imageUrl: imageUrl, uploaded: false)
+        self.init(identifier: NSUUID().UUIDString, creationDate: NSDate(), name: name, role: role, text: text, attachments: attachments, imageUrl: imageUrl, identifierOnServer: .None)
     }
     
     init(interview: Interview, interviewUpdate: InterviewUpdate) {
@@ -44,7 +44,7 @@ struct Interview {
                   text: interviewUpdate.text ?? interview.text,
                   attachments: interviewUpdate.attachments ?? interview.attachments,
                   imageUrl: interviewUpdate.imageUrl ?? interview.imageUrl,
-                  uploaded: interviewUpdate.uploaded ?? interview.uploaded)
+                  identifierOnServer: interviewUpdate.identifierOnServer ?? interview.identifierOnServer)
     }
 }
 
@@ -60,7 +60,8 @@ extension Interview : Storable {
         self.text = warehouse.get("text") ?? ""
         self.attachments = warehouse.get("attachments") ?? []
         self.imageUrl = warehouse.get("imageUrl") ?? ""
-        self.uploaded = warehouse.get("uploaded") ?? false
+        let identifierOnServer : String = warehouse.get("identifierOnServer") ?? ""
+        self.identifierOnServer = identifierOnServer.characters.count > 0 ? identifierOnServer : .None
     }
     
     func toDictionary() -> [String : AnyObject] {
@@ -72,7 +73,7 @@ extension Interview : Storable {
             "text": self.text,
             "attachments": self.attachments.map({ $0.toDictionary() as AnyObject }),
             "imageUrl": self.imageUrl,
-            "uploaded": self.uploaded
+            "identifierOnServer": self.identifierOnServer ?? ""
         ]
     }
 }
@@ -89,7 +90,7 @@ func ==(lhs: Interview, rhs: Interview) -> Bool {
         && lhs.text == rhs.text
         && lhs.attachments == rhs.attachments
         && lhs.imageUrl == rhs.imageUrl
-        && lhs.uploaded == rhs.uploaded
+        && lhs.identifierOnServer == rhs.identifierOnServer
 }
 
 struct InterviewUpdate {
@@ -98,14 +99,14 @@ struct InterviewUpdate {
     var text : String?
     var attachments : [Attachment]?
     var imageUrl : String?
-    var uploaded : Bool?
+    var identifierOnServer : String?
     
-    init(name: String? = .None, role: String? = .None, text: String? = .None, attachments: [Attachment]? = .None, imageUrl: String? = .None, uploaded: Bool? = .None) {
+    init(name: String? = .None, role: String? = .None, text: String? = .None, attachments: [Attachment]? = .None, imageUrl: String? = .None, identifierOnServer: String? = .None) {
         self.name = name
         self.role = role
         self.text = text
         self.attachments = attachments
         self.imageUrl = imageUrl
-        self.uploaded = uploaded
+        self.identifierOnServer = identifierOnServer
     }
 }

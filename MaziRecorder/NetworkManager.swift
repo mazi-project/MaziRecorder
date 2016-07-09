@@ -25,14 +25,15 @@ class NetworkManager {
     func sendInterviewToServer(interview: Interview) -> SignalProducer<String, NSError> {
         // Create producer for sending the interview to the server.
         let interviewDict = ["name": interview.name, "role": interview.role, "text": interview.text]
-        let sendInterviewProducer = requestProducer(.POST, URLString: "\(url)/interviews", parameters: interviewDict)
-        
-        return sendInterviewProducer.flatMap(.Concat) { next -> SignalProducer<String, NSError> in
-            guard let id = next["_id"] as? String else {
-                return SignalProducer(error: NSError(domain: self.errorDomain, code: 0, userInfo: nil))
-            }
-            
-            return SignalProducer(value: id)
+        return requestProducer(.POST, URLString: "\(url)/interviews", parameters: interviewDict)
+            .flatMap(.Concat) { next -> SignalProducer<String, NSError> in
+                guard let id = next["_id"] as? String else {
+                    return SignalProducer(error: NSError(domain: self.errorDomain, code: 0, userInfo: nil))
+                }
+                
+                // Create producer for uploading the photo to the server.
+                return self.uploadProducer(.POST, URLString: "\(self.url)/upload/image/\(id)", fileURL: NSURL(fileURLWithPath: interview.imageUrl))
+                    .map { id }
         }
     }
     
@@ -45,6 +46,22 @@ class NetworkManager {
                     debugPrint(response)
                     if let result = response.result.value as? ResponseDict {
                         observer.sendNext(result)
+                        observer.sendCompleted()
+                    } else {
+                        observer.sendFailed(NSError(domain: self.errorDomain, code: 0, userInfo: nil))
+                    }
+            }
+        })
+    }
+    
+    private func uploadProducer(method: Alamofire.Method, URLString: URLStringConvertible, fileURL: NSURL) -> SignalProducer<Void, NSError> {
+        let (producer, observer) = SignalProducer<Void, NSError>.buffer(1)
+        
+        return producer.on(started: {
+            Alamofire.upload(method, URLString, file: fileURL)
+                .response { request, response, data, error in
+                    if response?.statusCode == 200 {
+                        observer.sendNext()
                         observer.sendCompleted()
                     } else {
                         observer.sendFailed(NSError(domain: self.errorDomain, code: 0, userInfo: nil))
