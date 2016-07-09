@@ -23,12 +23,17 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
     let interview : Interview
     let question : String
     
+    var tags = [String]()
+    
     var audioPlayer: AVAudioPlayer?
     var audioRecorder: AVAudioRecorder?
+    
+    let soundVisualizer = SoundCircle()
     
     init(interview: Interview, question : String) {
         self.interview = interview
         self.question = question
+        
         super.init(nibName : nil, bundle : nil)
     }
     
@@ -74,9 +79,20 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         containerView.addSubview(startButton)
         
         let timeTextLabel = UILabel()
-        timeTextLabel.numberOfLines = 0
+        timeTextLabel.numberOfLines = 1
+        timeTextLabel.text="00:00"
         containerView.addSubview(timeTextLabel)
         timeTextLabel.textAlignment = .Center
+        
+        containerView.addSubview(soundVisualizer)
+        
+        let tagsLabel = UILabel()
+        tagsLabel.text = "Tags:"
+        containerView.addSubview(tagsLabel)
+        
+        let tagsField = UITextField()
+        tagsField.backgroundColor = UIColor.lightGrayColor()
+        containerView.addSubview(tagsField)
         
         // Navigation bar Save button.
         let saveButton = UIBarButtonItem(barButtonSystemItem: .Save, target: self, action: #selector(RecorderViewController.onSaveButtonClick))
@@ -86,6 +102,7 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         
         let outerInset = 20
         let largeSpacing = 20
+        let spacing = 10
         
         containerView.snp_makeConstraints { (make) in
             make.width.equalTo(self.view).multipliedBy(0.5)
@@ -100,27 +117,48 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         }
         timeTextLabel.snp_makeConstraints { (make) in
             make.top.equalTo(startButton.snp_bottom).offset(largeSpacing)
-            make.centerX.bottom.equalTo(containerView).inset(outerInset)
+            make.centerX.equalTo(containerView)
+        }
+        soundVisualizer.snp_makeConstraints { (make) in
+            make.top.equalTo(timeTextLabel.snp_bottom).offset(largeSpacing)
+            make.width.equalTo(120)
+            make.height.equalTo(120)
+            make.centerX.equalTo(containerView)
+        }
+        tagsLabel.snp_makeConstraints { (make) in
+            make.top.equalTo(soundVisualizer.snp_bottom).offset(spacing)
+            make.left.right.equalTo(containerView).inset(outerInset)
+        }
+        tagsField.snp_makeConstraints { (make) in
+            make.top.equalTo(tagsLabel.snp_bottom).offset(spacing)
+            make.left.right.bottom.equalTo(containerView).inset(outerInset)
+            make.height.equalTo(60)
         }
         
         // Reactive bindings.
         
+        tagsField.rac_textSignal()
+            .toSignalProducer()
+            .combinePrevious("")
+            .startWithNext { (prev, new) in
+                if let prevTags = prev as? NSString,
+                    let newTags = new as? NSString {
+                    // make sure that there are only asci chars and spaces in the tag string
+                    let matches = matchesForRegexInText("[a-zA-Z0-9_ ]", text : String(newTags))
+                    let tagString = matches.joinWithSeparator("")
+                    tagsField.text = tagString
+                    
+                    self.tags = tagString.characters.split{$0 == " "}.map(String.init)
+                }
+            }
+        
+        
         startButton.rac_signalForControlEvents(.TouchUpInside).subscribeNext { _ in
             if let recorder = self.audioRecorder {
                 if (recorder.recording) {
-                    // Stop recording.
-                    recorder.stop()
-                    do {
-                        try AVAudioSession.sharedInstance().setActive(false)
-                    } catch {
-                    }
+                    self.stopRecording()
                 } else {
-                    // Start recording.
-                    do {
-                        try AVAudioSession.sharedInstance().setActive(true)
-                    } catch {
-                    }
-                    recorder.record()
+                    self.startRecording()
                 }
             }
         }
@@ -133,6 +171,8 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
                     let minutes = Int(recorder.currentTime) / 60
                     let timeString =  String(format: "%0.2d:%0.2d", minutes, seconds)
                     timeTextLabel.text = "\(timeString)"
+                    
+                    self.updateMeter()
                 }
         }
         
@@ -141,7 +181,7 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
             .subscribeNext { (next : AnyObject!) in
                 if let recorder = self.audioRecorder {
                     // Update the model with the new attachment.
-                    let attachment = Attachment(questionText: self.question, tags: [], recordingUrl: recorder.url)
+                    let attachment = Attachment(questionText: self.question, tags: self.tags, recordingUrl: recorder.url)
                     let update = InterviewUpdate(attachments: self.interview.attachments + [attachment])
                     InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview, interviewUpdate: update)
                     
@@ -149,10 +189,35 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
                 }
         }
     }
+    
+    override func viewDidDisappear(animated: Bool) {
+        stopRecording()
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func stopRecording() {
+        if let recorder = self.audioRecorder {
+            // Stop recording.
+            recorder.stop()
+            do {
+                try AVAudioSession.sharedInstance().setActive(false)
+            } catch {
+            }
+        }
+    }
+    
+    func startRecording() {
+        if let recorder = self.audioRecorder {
+            do {
+                try AVAudioSession.sharedInstance().setActive(true)
+            } catch {
+            }
+            recorder.record()
+        }
     }
     
     func audioRecorderDidFinishRecording(recorder: AVAudioRecorder, successfully flag: Bool) {
@@ -173,5 +238,28 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
     }
     
     func onSaveButtonClick() {}
+    
+    func updateMeter() {
+        if let recorder = self.audioRecorder {
+            recorder.updateMeters()
+            let averageVolume = recorder.averagePowerForChannel(0)
+            let peakVolume = recorder.peakPowerForChannel(0)
+            
+            let baseLevel : Float = 50.0
+            
+            let valVol = (baseLevel + averageVolume) / baseLevel
+            let valPeak = (baseLevel + peakVolume) / baseLevel
+            
+            //draw circle
+            self.soundVisualizer.setValues(valVol, peak: valPeak)
+            self.soundVisualizer.setNeedsDisplay()
+            
+            //print("\(valVol):\(valPeak)")
+        }
+    }
+    
+    func getTags() {
+        
+    }
 
 }
