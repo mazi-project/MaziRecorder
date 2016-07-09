@@ -99,9 +99,9 @@ struct InterviewUpdate {
     var text : String?
     var attachments : [Attachment]?
     var imageUrl : String?
-    var identifierOnServer : String?
+    var identifierOnServer : String??
     
-    init(name: String? = .None, role: String? = .None, text: String? = .None, attachments: [Attachment]? = .None, imageUrl: String? = .None, identifierOnServer: String? = .None) {
+    init(name: String? = .None, role: String? = .None, text: String? = .None, attachments: [Attachment]? = .None, imageUrl: String? = .None, identifierOnServer: String?? = .None) {
         self.name = name
         self.role = role
         self.text = text

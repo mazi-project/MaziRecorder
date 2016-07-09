@@ -51,6 +51,10 @@ class ViewController: UIViewController {
         startButton.setTitle("Start", forState: .Normal)
         containerView.addSubview(startButton)
         
+        // Navigation bar Reset button.
+        let resetButton = UIBarButtonItem(title: "Reset", style: .Plain, target: self, action: #selector(ViewController.onResetButtonClick))
+        self.navigationItem.leftBarButtonItem = resetButton
+        
         // Create view constraints.
         
         let outerInset = 20
@@ -112,8 +116,9 @@ class ViewController: UIViewController {
         // Update the model when the user inputs text.
         let maxLength = 60
         nameField.rac_textSignal()
+            .toSignalProducer()
             .skip(1)
-            .subscribeNext { (next : AnyObject!) in
+            .startWithNext { next in
                 if var name = next as? NSString {
                     // Make sure text field doesn't surpass a certain number of characters.
                     if name.length > maxLength {
@@ -126,8 +131,9 @@ class ViewController: UIViewController {
                 }
         }
         roleField.rac_textSignal()
+            .toSignalProducer()
             .skip(1)
-            .subscribeNext { (next : AnyObject!) in
+            .startWithNext { next in
                 if var role = next as? NSString {
                     // Make sure text field doesn't surpass a certain number of characters.
                     if role.length > maxLength {
@@ -140,10 +146,20 @@ class ViewController: UIViewController {
                 }
         }
         
+        self.rac_signalForSelector(#selector(ViewController.onResetButtonClick))
+            .toSignalProducer()
+            .startWithNext { _ in
+                // Reset the model's fields.
+                let update = InterviewUpdate(name: "", role: "", text: "", attachments: [], imageUrl: "", identifierOnServer: .None)
+                InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview.value, interviewUpdate: update)
+        }
+        
         // Navigate to the next screen when the user presses Start.
-        startButton.rac_signalForControlEvents(.TouchUpInside).subscribeNext { _ in
-            let questionsListVC = QuestionsListViewController(interview: self.interview.value)
-            self.navigationController?.pushViewController(questionsListVC, animated: true)
+        startButton.rac_signalForControlEvents(.TouchUpInside)
+            .toSignalProducer()
+            .startWithNext { _ in
+                let questionsListVC = QuestionsListViewController(interview: self.interview.value)
+                self.navigationController?.pushViewController(questionsListVC, animated: true)
         }
     }
 
@@ -151,7 +167,8 @@ class ViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
+    
+    func onResetButtonClick() {}
 
 }
 
