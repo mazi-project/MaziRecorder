@@ -99,6 +99,26 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
         
         // Reactive bindings.
         
+        // Update the view whenever the model changes.
+        interview.producer
+            .observeOn(UIScheduler())
+            .startWithNext { (newInterview : Interview) in
+                synopsisField.text = newInterview.text
+                
+                // Disable start button when either name or role is empty.
+                uploadButton.enabled = newInterview.text.characters.count > 0 && newInterview.imageUrl.characters.count > 0
+        }
+        
+        interview.producer.observeOn(UIScheduler())
+            .map{ $0.imageUrl }
+            .filter{ $0.characters.count > 0}
+            .skipRepeats()
+            .startWithNext{ (imageUrl : String) in
+                if let url = NSURL(string: imageUrl) {
+                    self.currentImage.image = UIImage(contentsOfFile: url.absoluteString)
+                }
+        }
+        
         let maxLength = 1000
         synopsisField.rac_textSignal()
             .subscribeNext { (next : AnyObject!) in

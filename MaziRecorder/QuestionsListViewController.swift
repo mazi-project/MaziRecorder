@@ -57,6 +57,15 @@ class QuestionsListViewController: UIViewController, UITableViewDelegate, UITabl
         
         // Reactive bindings.
         
+        // Update the view whenever the model changes.
+        interview.producer
+            .observeOn(UIScheduler())
+            .startWithNext { (newInterview : Interview) in
+                
+                // Disable start button when either name or role is empty.
+                acceptButton.enabled = newInterview.attachments.count > 0
+        }
+        
         // Handle Done button presses.
         self.rac_signalForSelector(#selector(QuestionsListViewController.onDoneButtonClick))
             .toSignalProducer()

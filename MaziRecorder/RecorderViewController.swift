@@ -140,12 +140,26 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         
         // Reactive bindings.
         
+        // Update the view whenever the model changes.
+        interview.producer
+            .observeOn(UIScheduler())
+            .startWithNext { (newInterview : Interview) in
+                
+                /*if let found = self.interview.value.attachments.indexOf({$0.questionText == self.question}) {
+                    let attachment = self.interview.value.attachments[found]
+                }
+
+                
+                
+                // Disable start button when either name or role is empty.
+                saveButton.enabled = newInterview.name.characters.count > 0 && newInterview.role.characters.count > 0*/
+        }
+        
         tagsField.rac_textSignal()
             .toSignalProducer()
             .combinePrevious("")
             .startWithNext { (prev, new) in
-                if let prevTags = prev as? NSString,
-                    let newTags = new as? NSString {
+                if  let newTags = new as? NSString {
                     // make sure that there are only asci chars and spaces in the tag string
                     let matches = matchesForRegexInText("[a-zA-Z0-9_ ]", text : String(newTags))
                     let tagString = matches.joinWithSeparator("")
