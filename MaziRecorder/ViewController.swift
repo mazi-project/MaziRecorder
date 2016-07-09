@@ -13,7 +13,7 @@ import ReactiveCocoa
 class ViewController: UIViewController {
     
     // Create a new interview
-    var interview = InterviewStore.sharedInstance.fetchLatestIncompleteOrCreateNewInterview()
+    let interview = MutableProperty<Interview>(InterviewStore.sharedInstance.fetchLatestIncompleteOrCreateNewInterview())
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -95,16 +95,21 @@ class ViewController: UIViewController {
         
         // Reactive bindings.
         
+        // Sync the view's interview with the model.
+        interview <~ InterviewStore.sharedInstance.interviewSignal(interview.value.identifier).ignoreNil()
+        
         // Update the view whenever the model changes.
-        InterviewStore.sharedInstance.interviewSignal(interview.identifier)
-            .ignoreNil()
+        interview.producer
             .observeOn(UIScheduler())
-            .startWithNext { (next : Interview) in
-                self.interview = next
-                nameField.text = self.interview.name
-                roleField.text = self.interview.role
+            .startWithNext { (newInterview : Interview) in
+                nameField.text = newInterview.name
+                roleField.text = newInterview.role
+                
+                // Disable start button when either name or role is empty.
+                startButton.enabled = newInterview.name.characters.count > 0 && newInterview.role.characters.count > 0
         }
         
+        // Update the model when the user inputs text.
         let maxLength = 60
         nameField.rac_textSignal()
             .skip(1)
@@ -117,7 +122,7 @@ class ViewController: UIViewController {
                     
                     // Store the new name in the model.
                     let update = InterviewUpdate(name: name as String)
-                    InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview, interviewUpdate: update)
+                    InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview.value, interviewUpdate: update)
                 }
         }
         roleField.rac_textSignal()
@@ -131,24 +136,13 @@ class ViewController: UIViewController {
                     
                     // Store the new role in the model.
                     let update = InterviewUpdate(role: role as String)
-                    InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview, interviewUpdate: update)
-                }
-        }
-        
-        // Disable start button when either text field is empty.
-        RACSignal.combineLatest([nameField.rac_textSignal(), roleField.rac_textSignal()])
-            .subscribeNext { (next : AnyObject!) in
-                if let tuple = next as? RACTuple,
-                    name = tuple.first as? String,
-                    role = tuple.second as? String {
-                    print("Name: \(name), with role: \(role)")
-                    startButton.enabled = name.characters.count > 0 && role.characters.count > 0
+                    InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview.value, interviewUpdate: update)
                 }
         }
         
         // Navigate to the next screen when the user presses Start.
         startButton.rac_signalForControlEvents(.TouchUpInside).subscribeNext { _ in
-            let questionsListVC = QuestionsListViewController(interview: self.interview)
+            let questionsListVC = QuestionsListViewController(interview: self.interview.value)
             self.navigationController?.pushViewController(questionsListVC, animated: true)
         }
     }
