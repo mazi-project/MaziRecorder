@@ -10,6 +10,7 @@ import UIKit
 import SnapKit
 import AVFoundation
 import ReactiveCocoa
+import enum Result.NoError
 
 class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDelegate {
     
@@ -25,10 +26,11 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
     
     var tags = [String]()
     
-    var audioPlayer: AVAudioPlayer?
-    var audioRecorder: AVAudioRecorder?
+    var audioPlayer : AVAudioPlayer?
+    var audioRecorder : AVAudioRecorder?
     
     let soundVisualizer = SoundCircle()
+    var timerDisposable : Disposable?
     
     init(interview: Interview, question : String) {
         self.interview = MutableProperty<Interview>(interview)
@@ -142,41 +144,39 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         
         tagsField.rac_textSignal()
             .toSignalProducer()
-            .combinePrevious("")
-            .startWithNext { (prev, new) in
-                if let prevTags = prev as? NSString,
-                    let newTags = new as? NSString {
+            .startWithNext { next in
+                if let tags = next as? NSString {
                     // make sure that there are only asci chars and spaces in the tag string
-                    let matches = matchesForRegexInText("[a-zA-Z0-9_ ]", text : String(newTags))
+                    let matches = matchesForRegexInText("[a-zA-Z0-9_ ]", text : String(tags))
                     let tagString = matches.joinWithSeparator("")
                     tagsField.text = tagString
                     
-                    self.tags = tagString.characters.split{$0 == " "}.map(String.init)
+                    self.tags = tagString.characters.split{ $0 == " " }.map(String.init)
                 }
-            }
-        
-        
-        startButton.rac_signalForControlEvents(.TouchUpInside).subscribeNext { _ in
-            if let recorder = self.audioRecorder {
-                if (recorder.recording) {
-                    self.stopRecording()
-                } else {
-                    self.startRecording()
-                }
-            }
         }
         
-        // Update the timer button.
-        RACSignal.interval(0.05, onScheduler:RACScheduler.mainThreadScheduler())
-            .subscribeNext { _ in
-                if let recorder = self.audioRecorder where recorder.recording {
-                    let seconds = Int(recorder.currentTime) % 60
-                    let minutes = Int(recorder.currentTime) / 60
-                    let timeString =  String(format: "%0.2d:%0.2d", minutes, seconds)
-                    timeTextLabel.text = "\(timeString)"
-                    
-                    self.updateMeter()
+        startButton.rac_signalForControlEvents(.TouchUpInside)
+            .toSignalProducer()
+            .startWithNext { _ in
+                if let recorder = self.audioRecorder {
+                    if (recorder.recording) {
+                        self.stopRecording()
+                    } else {
+                        self.startRecording()
+                    }
                 }
+        }
+        
+        // Update the time label and the visualisation.
+        timerDisposable = QueueScheduler.mainQueueScheduler.scheduleAfter(NSDate(), repeatingEvery: 0.1) {
+            if let recorder = self.audioRecorder where recorder.recording {
+                let seconds = Int(recorder.currentTime) % 60
+                let minutes = Int(recorder.currentTime) / 60
+                let timeString =  String(format: "%0.2d:%0.2d", minutes, seconds)
+                timeTextLabel.text = "\(timeString)"
+                
+                self.updateMeter()
+            }
         }
         
         // Handle Done button presses.
