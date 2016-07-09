@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import ReactiveCocoa
+import SnapKit
 
 class QuestionsListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
@@ -36,6 +38,29 @@ class QuestionsListViewController: UIViewController, UITableViewDelegate, UITabl
         tableView.snp_makeConstraints { (make) in
             make.edges.equalTo(self.view)
         }
+        
+        // Reactive bindings.
+        
+        // Handle Done button presses.
+        acceptButton.rac_signalForSelector(#selector(QuestionsListViewController.onAcceptButtonClick))
+            .subscribeNext { (next : AnyObject!) in
+                print("Click")
+        }
+        
+        // Handle table view selections.
+        self.rac_signalForSelector(#selector(QuestionsListViewController.tableView(_:didSelectRowAtIndexPath:)))
+            .subscribeNext { (next : AnyObject!) in
+            if let tuple = next as? RACTuple,
+                tableView = tuple.first as? UITableView,
+                indexPath = tuple.second as? NSIndexPath {
+                // Deselect the selected cell.
+                tableView.deselectRowAtIndexPath(indexPath, animated: true)
+                
+                // Create the new view controller and present it to the user.
+                let recorderVC = RecorderViewController(question : self.questions[indexPath.row])
+                self.navigationController?.pushViewController(recorderVC, animated: true)
+            }
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -59,15 +84,8 @@ class QuestionsListViewController: UIViewController, UITableViewDelegate, UITabl
         return cell
     }
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let recorderVC = RecorderViewController(question : questions[indexPath.row])
-        self.navigationController?.pushViewController(recorderVC, animated: true)
-        
-        print("Selected \(questions[indexPath.row])")
-    }
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {}
     
-    func onAcceptButtonClick() {
-        print("Click")
-    }
+    func onAcceptButtonClick() {}
     
 }
