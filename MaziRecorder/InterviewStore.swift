@@ -9,6 +9,7 @@
 import Foundation
 import ReactiveCocoa
 import Pantry
+import enum Result.NoError
 
 class InterviewStore: NSObject {
     
@@ -36,6 +37,26 @@ class InterviewStore: NSObject {
                 Pantry.pack(newInterviews, key: self.archiveFileName)
                 print("💾 Stored model.")
             })
+    }
+    
+    // MARK: Getters
+    
+    // A signal of interviews matching a given identifier.
+    func interviewSignal(identifier: String) -> SignalProducer<Interview?, NoError> {
+        return interviews.producer
+            .map({ (next : [Interview]) -> Interview? in
+                return self.getInterview(identifier, interviews: next)
+            })
+            .replayLazily(1)
+    }
+    
+    // Get an interview from an array of interviews that matches a given identifier.
+    private func getInterview(identifier: String, interviews: [Interview]) -> Interview? {
+        if let index = interviews.indexOf({ $0.identifier == identifier }) {
+            let interview = interviews[index]
+            return interview
+        }
+        return .None
     }
     
     // MARK: Update

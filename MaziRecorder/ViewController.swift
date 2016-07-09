@@ -13,7 +13,7 @@ import ReactiveCocoa
 class ViewController: UIViewController {
     
     // Create a new interview
-    let interview = InterviewStore.sharedInstance.createInterview()
+    var interview = InterviewStore.sharedInstance.fetchLatestIncompleteOrCreateNewInterview()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -94,30 +94,40 @@ class ViewController: UIViewController {
         }
         
         // Reactive bindings.
+        
+        // Update the view whenever the model changes.
+        InterviewStore.sharedInstance.interviewSignal(interview.identifier)
+            .ignoreNil()
+            .startWithNext { (next : Interview) in
+                self.interview = next
+                nameField.text = self.interview.name
+                roleField.text = self.interview.role
+        }
+        
         let maxLength = 60
         nameField.rac_textSignal()
             .subscribeNext { (next : AnyObject!) in
-                if let name = next as? NSString {
+                if var name = next as? NSString {
                     // Make sure text field doesn't surpass a certain number of characters.
                     if name.length > maxLength {
-                        nameField.text = name.substringToIndex(maxLength)
+                        name = name.substringToIndex(maxLength)
                     }
                     
                     // Store the new name in the model.
-                    let update = InterviewUpdate(name: nameField.text)
+                    let update = InterviewUpdate(name: name as String)
                     InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview, interviewUpdate: update)
                 }
         }
         roleField.rac_textSignal()
             .subscribeNext { (next : AnyObject!) in
-                if let role = next as? NSString {
+                if var role = next as? NSString {
                     // Make sure text field doesn't surpass a certain number of characters.
                     if role.length > maxLength {
-                        roleField.text = role.substringToIndex(maxLength)
+                        role = role.substringToIndex(maxLength)
                     }
                     
                     // Store the new role in the model.
-                    let update = InterviewUpdate(role: roleField.text)
+                    let update = InterviewUpdate(role: role as String)
                     InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview, interviewUpdate: update)
                 }
         }
