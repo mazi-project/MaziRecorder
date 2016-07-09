@@ -28,6 +28,15 @@ class InterviewStore: NSObject {
         return interview
     }
     
+    func fetchLatestIncompleteOrCreateNewInterview() -> Interview {
+        let reverseInterviews = interviews.value.reverse() // Latest first.
+        if let index = reverseInterviews.indexOf({ $0.uploaded == false }) {
+            return reverseInterviews[index]
+        }
+        
+        return createInterview()
+    }
+    
     func updateInterview(fromInterview interview: Interview, interviewUpdate: InterviewUpdate) {
         self.updateInterview(fromIdentifier: interview.identifier, interviewUpdate: interviewUpdate)
     }
