@@ -25,8 +25,6 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
     var audioPlayer: AVAudioPlayer?
     var audioRecorder: AVAudioRecorder?
     
-    var recording = false
-    
     var timeTextLabel = UILabel()
     
     init(question : String) {
@@ -44,48 +42,56 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         self.title = "Audio Recorder"
         self.view.backgroundColor = UIColor.whiteColor()
         
-        let outerInset = 20
-        let spacing = 10
-        let largeSpacing = 20
+        // Create views.
         
         let containerView = UIView()
         containerView.backgroundColor = UIColor.greenColor()
         self.view.addSubview(containerView)
-        containerView.snp_makeConstraints { (make) in
-            make.width.equalTo(self.view).multipliedBy(0.5)
-            make.centerX.centerY.equalTo(self.view)
-        }
         
         let introTextLabel = UILabel()
         introTextLabel.text = self.question
         introTextLabel.numberOfLines = 0
         containerView.addSubview(introTextLabel)
         introTextLabel.textAlignment = .Center
-        introTextLabel.snp_makeConstraints { (make) in
-            make.top.left.right.equalTo(containerView).inset(outerInset)
-        }
         
         let startButton = UIButton(type: .Custom)
         startButton.setTitle("Start Recording", forState: .Normal)
         containerView.addSubview(startButton)
-        startButton.snp_makeConstraints { (make) in
-            make.top.equalTo(introTextLabel.snp_bottom).offset(largeSpacing)
-            make.centerX.equalTo(containerView)
-        }
-        startButton.rac_signalForControlEvents(.TouchUpInside).subscribeNext { _ in
-            self.onRecordButtonClick()
-        }
         
         timeTextLabel.text = "00:00"
         timeTextLabel.numberOfLines = 0
         containerView.addSubview(timeTextLabel)
         timeTextLabel.textAlignment = .Center
+        
+        // Create view constraints.
+        
+        let outerInset = 20
+        let largeSpacing = 20
+        
+        containerView.snp_makeConstraints { (make) in
+            make.width.equalTo(self.view).multipliedBy(0.5)
+            make.centerX.centerY.equalTo(self.view)
+        }
+        introTextLabel.snp_makeConstraints { (make) in
+            make.top.left.right.equalTo(containerView).inset(outerInset)
+        }
+        startButton.snp_makeConstraints { (make) in
+            make.top.equalTo(introTextLabel.snp_bottom).offset(largeSpacing)
+            make.centerX.equalTo(containerView)
+        }
         timeTextLabel.snp_makeConstraints { (make) in
             make.top.equalTo(startButton.snp_bottom).offset(largeSpacing)
             make.centerX.bottom.equalTo(containerView).inset(outerInset)
         }
         
-        // audio recorder
+        // Reactive bindings.
+        
+        startButton.rac_signalForControlEvents(.TouchUpInside).subscribeNext { _ in
+            self.onRecordButtonClick()
+        }
+        
+        // Audio recorder.
+        
         let audioSession = AVAudioSession.sharedInstance()
         do {
             try audioSession.setCategory(AVAudioSessionCategoryPlayAndRecord)
@@ -135,7 +141,6 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
     func audioRecorderDidFinishRecording(recorder: AVAudioRecorder, successfully flag: Bool) {
         print("Recording finished \(recorder.url)")
     }
-    
     
     func directoryURL() -> NSURL? {
         let fileManager = NSFileManager.defaultManager()

@@ -19,69 +19,80 @@ class ViewController: UIViewController {
         
         self.title = "Mazi Recorder"
         
-        let outerInset = 20
-        let spacing = 10
-        let largeSpacing = 20
+        // Create views.
         
         let containerView = UIView()
         containerView.backgroundColor = UIColor.greenColor()
         self.view.addSubview(containerView)
-        containerView.snp_makeConstraints { (make) in
-            make.width.equalTo(self.view).multipliedBy(0.5)
-            make.centerX.centerY.equalTo(self.view)
-        }
         
         let introTextLabel = UILabel()
         introTextLabel.text = "Intro"
         introTextLabel.numberOfLines = 0
         containerView.addSubview(introTextLabel)
-        introTextLabel.snp_makeConstraints { (make) in
-            make.top.left.right.equalTo(containerView).inset(outerInset)
-        }
         
         let nameLabel = UILabel()
         nameLabel.text = "Name:"
         containerView.addSubview(nameLabel)
-        nameLabel.snp_makeConstraints { (make) in
-            make.top.equalTo(introTextLabel.snp_bottom).offset(largeSpacing)
-            make.left.right.equalTo(containerView).inset(outerInset)
-        }
         
         let nameField = UITextField()
         nameField.backgroundColor = UIColor.lightGrayColor()
         containerView.addSubview(nameField)
+        
+        let roleLabel = UILabel()
+        roleLabel.text = "Role:"
+        containerView.addSubview(roleLabel)
+        
+        let roleField = UITextField()
+        roleField.backgroundColor = UIColor.lightGrayColor()
+        containerView.addSubview(roleField)
+        
+        let startButton = UIButton(type: .Custom)
+        startButton.setTitle("Start", forState: .Normal)
+        containerView.addSubview(startButton)
+        
+        // Create view constraints.
+        
+        let outerInset = 20
+        let spacing = 10
+        let largeSpacing = 20
+        
+        containerView.snp_makeConstraints { (make) in
+            make.width.equalTo(self.view).multipliedBy(0.5)
+            make.centerX.centerY.equalTo(self.view)
+        }
+        
+        introTextLabel.snp_makeConstraints { (make) in
+            make.top.left.right.equalTo(containerView).inset(outerInset)
+        }
+        
+        nameLabel.snp_makeConstraints { (make) in
+            make.top.equalTo(introTextLabel.snp_bottom).offset(largeSpacing)
+            make.left.right.equalTo(containerView).inset(outerInset)
+        }
         nameField.snp_makeConstraints { (make) in
             make.top.equalTo(nameLabel.snp_bottom).offset(spacing)
             make.left.right.equalTo(containerView).inset(outerInset)
             make.height.equalTo(60)
         }
         
-        let roleLabel = UILabel()
-        roleLabel.text = "Role:"
-        containerView.addSubview(roleLabel)
         roleLabel.snp_makeConstraints { (make) in
             make.top.equalTo(nameField.snp_bottom).offset(largeSpacing)
             make.left.right.equalTo(containerView).inset(outerInset)
         }
-        
-        let roleField = UITextField()
-        roleField.backgroundColor = UIColor.lightGrayColor()
-        containerView.addSubview(roleField)
         roleField.snp_makeConstraints { (make) in
             make.top.equalTo(roleLabel.snp_bottom).offset(spacing)
             make.left.right.equalTo(containerView).inset(outerInset)
             make.height.equalTo(60)
         }
         
-        let startButton = UIButton(type: .Custom)
-        startButton.setTitle("Start", forState: .Normal)
-        containerView.addSubview(startButton)
         startButton.snp_makeConstraints { (make) in
             make.top.equalTo(roleField.snp_bottom).offset(largeSpacing)
             make.width.equalTo(120)
             make.centerX.equalTo(containerView)
             make.bottom.equalTo(containerView).inset(outerInset)
         }
+        
+        // Reactive bindings.
         
         // Make sure text fields don't surpass a certain number of characters.
         let maxLength = 60
@@ -112,7 +123,6 @@ class ViewController: UIViewController {
         }
         
         startButton.rac_signalForControlEvents(.TouchUpInside).subscribeNext { _ in
-            
             let questionsListVC = QuestionsListViewController()
             self.navigationController?.pushViewController(questionsListVC, animated: true)
         }

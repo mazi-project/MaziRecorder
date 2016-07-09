@@ -19,19 +19,23 @@ class QuestionsListViewController: UIViewController, UITableViewDelegate, UITabl
         self.title = "Questions"
         self.view.backgroundColor = UIColor.whiteColor()
         
+        // Create views.
+        
         let tableView = UITableView()
         tableView.dataSource = self
         tableView.delegate = self
         tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: self.cellIdentifier)
-        
         self.view.addSubview(tableView)
+        
+        // Nav bar button.
+        let acceptButton = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: #selector(QuestionsListViewController.onAcceptButtonClick))
+        self.navigationItem.rightBarButtonItem = acceptButton
+        
+        // Create view constraints.
+        
         tableView.snp_makeConstraints { (make) in
             make.edges.equalTo(self.view)
         }
-        
-        //nav bar button
-        let acceptButton = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: #selector(QuestionsListViewController.onAcceptButtonClick))
-        self.navigationItem.rightBarButtonItem = acceptButton
     }
 
     override func didReceiveMemoryWarning() {
