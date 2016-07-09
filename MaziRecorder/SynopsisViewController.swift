@@ -7,17 +7,23 @@
 //
 
 import UIKit
+import SnapKit
+import ReactiveCocoa
 
 class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
-    let interview : Interview
+    let interview : MutableProperty<Interview>
     
     var currentImage: UIImageView!
     let imagePicker: UIImagePickerController! = UIImagePickerController()
     
     init(interview: Interview) {
-        self.interview = interview
+        self.interview = MutableProperty<Interview>(interview)
+        
         super.init(nibName : nil, bundle : nil)
+        
+        // Sync the view's interview with the model.
+        self.interview <~ InterviewStore.sharedInstance.interviewSignal(interview.identifier).ignoreNil()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -51,7 +57,11 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
         currentImage = UIImageView()
         containerView.addSubview(currentImage)
         
-        // Create Constraints
+        // Navigation bar Upload button.
+        let uploadButton = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: #selector(SynopsisViewController.onUploadButtonClick))
+        self.navigationItem.rightBarButtonItem = uploadButton
+        
+        // Create view constraints.
         
         let outerInset = 20
         let spacing = 10
@@ -87,8 +97,8 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
             make.bottom.equalTo(containerView).inset(outerInset)
         }
         
-        
         // Reactive bindings.
+        
         let maxLength = 1000
         synopsisField.rac_textSignal()
             .subscribeNext { (next : AnyObject!) in
@@ -100,13 +110,25 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
                     
                     // Store the new name in the model.
                     let update = InterviewUpdate(text: synopsisField.text)
-                    InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview, interviewUpdate: update)
+                    InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview.value, interviewUpdate: update)
                 }
         }
         
-        // Take picture
+        // Take picture.
         pictureButton.rac_signalForControlEvents(.TouchUpInside).subscribeNext { _ in
             self.takePicture()
+        }
+        
+        // Handle upload.
+        self.rac_signalForSelector(#selector(SynopsisViewController.onUploadButtonClick))
+            .toSignalProducer()
+            .observeOn(UIScheduler())
+            .startWithNext { (next : AnyObject?) in
+                let networkManager = NetworkManager()
+                networkManager.sendInterviewToServer(self.interview.value)
+                    .startWithNext({ id in
+                        print("Next with id: \(id)")
+                    })
         }
     }
 
@@ -145,7 +167,7 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
                 if imageData!.writeToFile(imagePath, atomically: true) {
                     //add to interview
                     let update = InterviewUpdate(imageUrl: imagePath)
-                    InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview, interviewUpdate: update)
+                    InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview.value, interviewUpdate: update)
                 }
             }
         })
@@ -171,15 +193,6 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
         return imageURL.path ?? ""
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
+    func onUploadButtonClick() {}
 
 }

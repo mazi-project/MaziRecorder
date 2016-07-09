@@ -20,7 +20,7 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         AVEncoderAudioQualityKey : NSNumber(int: Int32(AVAudioQuality.Medium.rawValue))
     ]
     
-    let interview : Interview
+    let interview : MutableProperty<Interview>
     let question : String
     
     var tags = [String]()
@@ -31,10 +31,13 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
     let soundVisualizer = SoundCircle()
     
     init(interview: Interview, question : String) {
-        self.interview = interview
+        self.interview = MutableProperty<Interview>(interview)
         self.question = question
         
         super.init(nibName : nil, bundle : nil)
+        
+        // Sync the view's interview with the model.
+        self.interview <~ InterviewStore.sharedInstance.interviewSignal(interview.identifier).ignoreNil()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -178,12 +181,14 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         
         // Handle Done button presses.
         self.rac_signalForSelector(#selector(RecorderViewController.onSaveButtonClick))
-            .subscribeNext { (next : AnyObject!) in
+            .toSignalProducer()
+            .observeOn(UIScheduler())
+            .startWithNext { (next : AnyObject?) in
                 if let recorder = self.audioRecorder {
                     // Update the model with the new attachment.
-                    let attachment = Attachment(questionText: self.question, tags: self.tags, recordingUrl: recorder.url)
-                    let update = InterviewUpdate(attachments: self.interview.attachments + [attachment])
-                    InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview, interviewUpdate: update)
+                    let attachment = Attachment(questionText: self.question, tags: [], recordingUrl: recorder.url)
+                    let update = InterviewUpdate(attachments: self.interview.value.attachments + [attachment])
+                    InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview.value, interviewUpdate: update)
                     
                     self.navigationController?.popViewControllerAnimated(true)
                 }

@@ -11,16 +11,16 @@ import ReactiveCocoa
 import Pantry
 import enum Result.NoError
 
-class InterviewStore: NSObject {
+class InterviewStore {
     
     static let sharedInstance = InterviewStore()
     
     let interviews = MutableProperty<[Interview]>([])
+    
+    private let queue = dispatch_get_global_queue(QOS_CLASS_UTILITY, 0)
     private let archiveFileName = "InterviewStore"
     
-    override init() {
-        super.init()
-        
+    init() {
         // Load model from storage.
         if let unpackedInterviews: [Interview] = Pantry.unpack(archiveFileName) {
             print("💾 Loaded model: ", unpackedInterviews)
@@ -65,16 +65,19 @@ class InterviewStore: NSObject {
         let interview = Interview()
         var interviewsArray = interviews.value
         interviewsArray.append(interview)
-        interviews.value = interviewsArray
         
-        print("Created interview \(interview)")
+        dispatch_async(queue) {
+            self.interviews.value = interviewsArray
+        }
+        
+        print("Created interview: \(interview)")
         
         return interview
     }
     
     func fetchLatestIncompleteOrCreateNewInterview() -> Interview {
         let reverseInterviews = interviews.value.reverse() // Latest first.
-        if let index = reverseInterviews.indexOf({ $0.uploaded == false }) {
+        if let index = reverseInterviews.indexOf({ $0.identifierOnServer == .None }) {
             return reverseInterviews[index]
         }
         
@@ -92,9 +95,12 @@ class InterviewStore: NSObject {
             let newInterview = Interview(interview: oldInterview, interviewUpdate: interviewUpdate)
             interviewsArray.removeAtIndex(index)
             interviewsArray.append(newInterview)
-            interviews.value = interviewsArray.sort({ $0.creationDate.compare($1.creationDate) == NSComparisonResult.OrderedAscending })
             
-            print("Updated interview \(newInterview)")
+            dispatch_async(queue) {
+                self.interviews.value = interviewsArray.sort({ $0.creationDate.compare($1.creationDate) == NSComparisonResult.OrderedAscending })
+            }
+            
+            print("Updated interview: \(newInterview)")
         }
     }
     
