@@ -25,8 +25,6 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
     var audioPlayer: AVAudioPlayer?
     var audioRecorder: AVAudioRecorder?
     
-    var timeTextLabel = UILabel()
-    
     init(question : String) {
         self.question = question
         super.init(nibName : nil, bundle : nil)
@@ -41,6 +39,21 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
 
         self.title = "Audio Recorder"
         self.view.backgroundColor = UIColor.whiteColor()
+        
+        // Audio recorder.
+        
+        let audioSession = AVAudioSession.sharedInstance()
+        do {
+            try audioSession.setCategory(AVAudioSessionCategoryPlayAndRecord)
+            try audioRecorder = AVAudioRecorder(URL: self.directoryURL()!, settings: recordSettings)
+            if let a = audioRecorder {
+                a.prepareToRecord()
+                a.delegate = self
+                a.meteringEnabled = true
+            }
+        } catch let error {
+            print(error)
+        }
         
         // Create views.
         
@@ -58,7 +71,7 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         startButton.setTitle("Start Recording", forState: .Normal)
         containerView.addSubview(startButton)
         
-        timeTextLabel.text = "00:00"
+        let timeTextLabel = UILabel()
         timeTextLabel.numberOfLines = 0
         containerView.addSubview(timeTextLabel)
         timeTextLabel.textAlignment = .Center
@@ -87,55 +100,40 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         // Reactive bindings.
         
         startButton.rac_signalForControlEvents(.TouchUpInside).subscribeNext { _ in
-            self.onRecordButtonClick()
+            if let recorder = self.audioRecorder {
+                if (recorder.recording) {
+                    // Stop recording.
+                    recorder.stop()
+                    do {
+                        try AVAudioSession.sharedInstance().setActive(false)
+                    } catch {
+                    }
+                } else {
+                    // Start recording.
+                    do {
+                        try AVAudioSession.sharedInstance().setActive(true)
+                    } catch {
+                    }
+                    recorder.record()
+                }
+            }
         }
         
-        // Audio recorder.
-        
-        let audioSession = AVAudioSession.sharedInstance()
-        do {
-            try audioSession.setCategory(AVAudioSessionCategoryPlayAndRecord)
-            try audioRecorder = AVAudioRecorder(URL: self.directoryURL()!, settings: recordSettings)
-            if let a = audioRecorder {
-                a.prepareToRecord()
-                a.delegate = self
-                a.meteringEnabled = true
-            }
-        } catch let error {
-            print(error)
+        // Update the timer button.
+        RACSignal.interval(0.05, onScheduler:RACScheduler.mainThreadScheduler())
+            .subscribeNext { _ in
+                if let recorder = self.audioRecorder where recorder.recording {
+                    let seconds = Int(recorder.currentTime) % 60
+                    let minutes = Int(recorder.currentTime) / 60
+                    let timeString =  String(format: "%0.2d:%0.2d", minutes, seconds)
+                    timeTextLabel.text = "\(timeString)"
+                }
         }
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
-    }
-    
-    func onRecordButtonClick() {
-        
-        if let a = audioRecorder {
-            if (a.recording) {
-                a.stop()
-                let audioSession = AVAudioSession.sharedInstance()
-                do {
-                    try audioSession.setActive(false)
-                } catch {
-                }
-            } else {
-                let audioSession = AVAudioSession.sharedInstance()
-                do {
-                    try audioSession.setActive(true)
-                    a.record()
-                    RACSignal.interval(0.05, onScheduler:RACScheduler.mainThreadScheduler()).subscribeNext { _ in
-                        let seconds = Int(a.currentTime) % 60
-                        let minutes = Int(a.currentTime) / 60
-                        let timeString =  NSString(format: "%0.2d:%0.2d",minutes,seconds)
-                        self.timeTextLabel.text = "\(timeString)"
-                    }
-                } catch {
-                }
-            }
-        }
     }
     
     func audioRecorderDidFinishRecording(recorder: AVAudioRecorder, successfully flag: Bool) {
