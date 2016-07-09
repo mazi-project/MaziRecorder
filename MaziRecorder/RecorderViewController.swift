@@ -186,7 +186,7 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
             .startWithNext { (next : AnyObject?) in
                 if let recorder = self.audioRecorder {
                     // Update the model with the new attachment.
-                    let attachment = Attachment(questionText: self.question, tags: [], recordingUrl: recorder.url)
+                    let attachment = Attachment(questionText: self.question, tags: self.tags, recordingUrl: recorder.url)
                     let update = InterviewUpdate(attachments: self.interview.value.attachments + [attachment])
                     InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview.value, interviewUpdate: update)
                     
