@@ -9,13 +9,13 @@
 import Foundation
 
 struct Attachment {
-    let text : String
+    let questionText : String
     let tags : [String]
-    let textUrl : String
+    let recordingUrl : String
     
-    init(text: String, tags: [String], textUrl: String) {
-        self.text = text
+    init(questionText: String = "", tags: [String] = [], recordingUrl: String = "") {
+        self.questionText = questionText
         self.tags = tags
-        self.textUrl = textUrl
+        self.recordingUrl = recordingUrl
     }
 }
