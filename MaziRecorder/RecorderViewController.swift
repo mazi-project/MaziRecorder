@@ -54,7 +54,7 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         containerView.addSubview(introTextLabel)
         introTextLabel.textAlignment = .Center
         
-        let startButton = UIButton(type: .Custom)
+        let startButton = UIButton(type: .System)
         startButton.setTitle("Start Recording", forState: .Normal)
         containerView.addSubview(startButton)
         

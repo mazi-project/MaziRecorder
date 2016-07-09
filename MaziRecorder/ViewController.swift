@@ -46,7 +46,7 @@ class ViewController: UIViewController {
         roleField.backgroundColor = UIColor.lightGrayColor()
         containerView.addSubview(roleField)
         
-        let startButton = UIButton(type: .Custom)
+        let startButton = UIButton(type: .System)
         startButton.setTitle("Start", forState: .Normal)
         containerView.addSubview(startButton)
         
