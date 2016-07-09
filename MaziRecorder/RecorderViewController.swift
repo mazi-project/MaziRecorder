@@ -141,7 +141,7 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
             .subscribeNext { (next : AnyObject!) in
                 if let recorder = self.audioRecorder {
                     // Update the model with the new attachment.
-                    let attachment = Attachment(questionText: self.question, tags: [], recordingUrl: recorder.url.absoluteString)
+                    let attachment = Attachment(questionText: self.question, tags: [], recordingUrl: recorder.url)
                     let update = InterviewUpdate(attachments: self.interview.attachments + [attachment])
                     InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview, interviewUpdate: update)
                     
@@ -156,7 +156,7 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
     }
     
     func audioRecorderDidFinishRecording(recorder: AVAudioRecorder, successfully flag: Bool) {
-        print("Recording finished \(recorder.url)")
+        print("🎶 Recording finished \(recorder.url)")
     }
     
     func directoryURL() -> NSURL? {

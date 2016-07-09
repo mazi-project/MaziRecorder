@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Pantry
 
 struct Interview {
     let identifier : String
@@ -17,6 +18,8 @@ struct Interview {
     let attachments : [Attachment]
     let imageUrl : String
     let uploaded : Bool
+    
+    // MARK: Init
     
     init(identifier: String, creationDate: NSDate, name: String, role: String, text: String, attachments: [Attachment], imageUrl: String, uploaded: Bool) {
         self.identifier = identifier
@@ -30,7 +33,7 @@ struct Interview {
     }
     
     init(name: String = "", role: String = "", text: String = "", attachments: [Attachment] = [], imageUrl: String = "") {
-        self.init(identifier: NSUUID().UUIDString, creationDate: NSDate.init(), name: name, role: role, text: text, attachments: attachments, imageUrl: imageUrl, uploaded: false)
+        self.init(identifier: NSUUID().UUIDString, creationDate: NSDate(), name: name, role: role, text: text, attachments: attachments, imageUrl: imageUrl, uploaded: false)
     }
     
     init(interview: Interview, interviewUpdate: InterviewUpdate) {
@@ -43,6 +46,50 @@ struct Interview {
                   imageUrl: interviewUpdate.imageUrl ?? interview.imageUrl,
                   uploaded: interviewUpdate.uploaded ?? interview.uploaded)
     }
+}
+
+// MARK: Storable
+
+extension Interview : Storable {
+    init(warehouse: JSONWarehouse) {
+        self.identifier = warehouse.get("identifier") ?? NSUUID().UUIDString
+        let creationTimeString : String = warehouse.get("creationDate") ?? ""
+        self.creationDate = NSDate(timeIntervalSinceReferenceDate: Double(creationTimeString) ?? NSDate.timeIntervalSinceReferenceDate())
+        self.name = warehouse.get("name") ?? ""
+        self.role = warehouse.get("role") ?? ""
+        self.text = warehouse.get("text") ?? ""
+        self.attachments = warehouse.get("attachments") ?? []
+        self.imageUrl = warehouse.get("imageUrl") ?? ""
+        self.uploaded = warehouse.get("uploaded") ?? false
+    }
+    
+    func toDictionary() -> [String : AnyObject] {
+        return [
+            "identifier": self.identifier,
+            "creationDate": String(self.creationDate.timeIntervalSinceReferenceDate),
+            "name": self.name,
+            "role": self.role,
+            "text": self.text,
+            "attachments": self.attachments.map({ $0.toDictionary() as AnyObject }),
+            "imageUrl": self.imageUrl,
+            "uploaded": self.uploaded
+        ]
+    }
+}
+
+// MARK: Equatable
+
+extension Interview : Equatable {}
+
+func ==(lhs: Interview, rhs: Interview) -> Bool {
+    return lhs.identifier == rhs.identifier
+        && lhs.creationDate.isEqual(rhs.creationDate)
+        && lhs.name == rhs.name
+        && lhs.role == rhs.role
+        && lhs.text == rhs.text
+        && lhs.attachments == rhs.attachments
+        && lhs.imageUrl == rhs.imageUrl
+        && lhs.uploaded == rhs.uploaded
 }
 
 struct InterviewUpdate {

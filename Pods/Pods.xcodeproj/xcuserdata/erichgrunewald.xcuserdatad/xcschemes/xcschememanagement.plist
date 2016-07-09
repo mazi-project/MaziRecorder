@@ -9,6 +9,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>Pantry.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Pods-MaziRecorder.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -37,22 +42,27 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>7B3533158E3802825F1250FB770B1EE1</key>
+		<key>81B3FD003FABA173925C93D2721CD932</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>8516B8D7C95EA0FED0AB27B7812A859A</key>
+		<key>860093265DB9F010D51ED82FDD181776</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>AF911C65219BCB08C17B48342E10F053</key>
+		<key>AC373238FDDAC10D89EE59523FAEFD85</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>F7C8D9EACBD05F43320F75628E614C17</key>
+		<key>EC4AEC4AB76FDACD7C4BC2B8F11F8A59</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>F393BB12A4014ED161991FD66B042E64</key>
 		<dict>
 			<key>primary</key>
 			<true/>

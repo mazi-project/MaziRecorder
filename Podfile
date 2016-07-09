@@ -9,4 +9,5 @@ target 'MaziRecorder' do
   pod 'SnapKit', '~> 0.15'
   pod 'ReactiveCocoa', '~> 4.1'
   pod 'Alamofire', '~> 3.4'
+  pod 'Pantry', '~> 0.2'
 end

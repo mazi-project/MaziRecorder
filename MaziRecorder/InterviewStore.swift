@@ -8,14 +8,37 @@
 
 import Foundation
 import ReactiveCocoa
+import Pantry
 
 class InterviewStore: NSObject {
     
     static let sharedInstance = InterviewStore()
     
     let interviews = MutableProperty<[Interview]>([])
-    
     private let archiveFileName = "InterviewStore"
+    
+    override init() {
+        super.init()
+        
+        // Load model from storage.
+        if let unpackedInterviews: [Interview] = Pantry.unpack(archiveFileName) {
+            print("💾 Loaded model: ", unpackedInterviews)
+            interviews.value = unpackedInterviews
+        } else {
+            print("💾 There was no model to load.")
+        }
+
+        // Store model whenever it changes.
+        interviews.producer
+            .skipRepeats({ $0 == $1 })
+            .debounce(1, onScheduler: QueueScheduler.mainQueueScheduler)
+            .startWithNext({ (newInterviews : [Interview]) in
+                Pantry.pack(newInterviews, key: self.archiveFileName)
+                print("💾 Stored model.")
+            })
+    }
+    
+    // MARK: Update
     
     func createInterview() -> Interview {
         let interview = Interview()
@@ -52,30 +75,6 @@ class InterviewStore: NSObject {
             
             print("Updated interview \(newInterview)")
         }
-    }
-    
-    // MARK: Persistence
-    
-    func archiveToDisk() {
-//        let interviewsDict = interviews.map { $0.encode() }
-//        
-//        if let filePath = persistentFilePath() {
-//            NSKeyedArchiver.archiveRootObject(interviewsDict, toFile: filePath)
-//        }
-    }
-    
-    func unarchiveFromDisk() {
-//        if let
-//            path = persistentFilePath(),
-//            interviewsDict = NSKeyedUnarchiver.unarchiveObjectWithFile(path),
-//            interviews: [Interview] = decode(interviewsDict) {
-//            self.interviews = interviews
-//        }
-    }
-    
-    private func persistentFilePath() -> String? {
-        let basePath = NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomainMask.UserDomainMask, true).first as NSString?
-        return basePath?.stringByAppendingPathComponent(archiveFileName)
     }
     
 }
