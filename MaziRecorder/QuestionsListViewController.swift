@@ -29,7 +29,7 @@ class QuestionsListViewController: UIViewController, UITableViewDelegate, UITabl
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.title = "Questions"
+        self.title = "Interview Questions"
         self.view.backgroundColor = UIColor.whiteColor()
         
         // Create views.
@@ -97,6 +97,9 @@ class QuestionsListViewController: UIViewController, UITableViewDelegate, UITabl
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {}
     
-    func onDoneButtonClick() {}
+    func onDoneButtonClick() {
+        let synospisVC = SynopsisViewController(interview: self.interview)
+        self.navigationController?.pushViewController(synospisVC, animated: true)
+    }
     
 }

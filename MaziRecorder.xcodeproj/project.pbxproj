@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		496B21761D31195E009EAD71 /* SynopsisViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 496B21751D31195E009EAD71 /* SynopsisViewController.swift */; };
 		49C9F9181D3042DD00CCA9B6 /* RecorderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49C9F9171D3042DD00CCA9B6 /* RecorderViewController.swift */; };
 		EC3A9C5E8F610FAE805292DB /* Pods_MaziRecorder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8149A2B55EFD3E58ED95E4D3 /* Pods_MaziRecorder.framework */; };
 		FCCDE1B31D30285600E156A5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCDE1B21D30285600E156A5 /* AppDelegate.swift */; };
@@ -21,6 +22,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		496B21751D31195E009EAD71 /* SynopsisViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SynopsisViewController.swift; sourceTree = "<group>"; };
 		49C9F9171D3042DD00CCA9B6 /* RecorderViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecorderViewController.swift; sourceTree = "<group>"; };
 		7D9854E607C33CA6B09B37EE /* Pods-MaziRecorder.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MaziRecorder.release.xcconfig"; path = "Pods/Target Support Files/Pods-MaziRecorder/Pods-MaziRecorder.release.xcconfig"; sourceTree = "<group>"; };
 		8149A2B55EFD3E58ED95E4D3 /* Pods_MaziRecorder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MaziRecorder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -97,6 +99,7 @@
 				FCCDE1C41D3034B700E156A5 /* QuestionsListViewController.swift */,
 				49C9F9171D3042DD00CCA9B6 /* RecorderViewController.swift */,
 				FCCDE1B41D30285600E156A5 /* ViewController.swift */,
+				496B21751D31195E009EAD71 /* SynopsisViewController.swift */,
 			);
 			path = MaziRecorder;
 			sourceTree = "<group>";
@@ -240,6 +243,7 @@
 				FCCDE1B31D30285600E156A5 /* AppDelegate.swift in Sources */,
 				FCCDE1CC1D30484A00E156A5 /* InterviewStore.swift in Sources */,
 				FCCDE1C81D30459300E156A5 /* Interview.swift in Sources */,
+				496B21761D31195E009EAD71 /* SynopsisViewController.swift in Sources */,
 				FCCDE1CA1D30475200E156A5 /* Attachment.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
