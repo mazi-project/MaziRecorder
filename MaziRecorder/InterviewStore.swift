@@ -11,16 +11,14 @@ import ReactiveCocoa
 import Pantry
 import enum Result.NoError
 
-class InterviewStore: NSObject {
+class InterviewStore {
     
     static let sharedInstance = InterviewStore()
     
     let interviews = MutableProperty<[Interview]>([])
     private let archiveFileName = "InterviewStore"
     
-    override init() {
-        super.init()
-        
+    init() {
         // Load model from storage.
         if let unpackedInterviews: [Interview] = Pantry.unpack(archiveFileName) {
             print("💾 Loaded model: ", unpackedInterviews)
