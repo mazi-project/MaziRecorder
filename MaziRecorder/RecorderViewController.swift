@@ -159,14 +159,8 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         
         tagsField.rac_textSignal()
             .toSignalProducer()
-<<<<<<< HEAD
-            .combinePrevious("")
-            .startWithNext { (prev, new) in
-                if  let newTags = new as? NSString {
-=======
             .startWithNext { next in
                 if let tags = next as? NSString {
->>>>>>> 8f5d976ac9688f845ed938fde3687c569d3ac778
                     // make sure that there are only asci chars and spaces in the tag string
                     let matches = matchesForRegexInText("[a-zA-Z0-9_ ]", text : String(tags))
                     let tagString = matches.joinWithSeparator("")
