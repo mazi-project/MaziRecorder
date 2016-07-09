@@ -12,7 +12,8 @@ import ReactiveCocoa
 
 class ViewController: UIViewController {
     
-    let interview = Interview(name: "", role: "", text: "", attachments: [], imageUrl: "")
+    // Create a new interview
+    let interview = InterviewStore.sharedInstance.createInterview()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -93,35 +94,48 @@ class ViewController: UIViewController {
         }
         
         // Reactive bindings.
-        
-        // Make sure text fields don't surpass a certain number of characters.
         let maxLength = 60
         nameField.rac_textSignal()
             .subscribeNext { (next : AnyObject!) in
                 if let name = next as? NSString {
+                    // Make sure text field doesn't surpass a certain number of characters.
                     if name.length > maxLength {
                         nameField.text = name.substringToIndex(maxLength)
                     }
+                    
+                    // Store the new name in the model.
+                    let identifier = self.interview.identifier
+                    let update = InterviewUpdate(name: nameField.text)
+                    InterviewStore.sharedInstance.updateInterview(fromIdentifier: identifier, interviewUpdate: update)
                 }
         }
         roleField.rac_textSignal()
             .subscribeNext { (next : AnyObject!) in
                 if let role = next as? NSString {
+                    // Make sure text field doesn't surpass a certain number of characters.
                     if role.length > maxLength {
                         roleField.text = role.substringToIndex(maxLength)
                     }
+                    
+                    // Store the new role in the model.
+                    let identifier = self.interview.identifier
+                    let update = InterviewUpdate(role: roleField.text)
+                    InterviewStore.sharedInstance.updateInterview(fromIdentifier: identifier, interviewUpdate: update)
                 }
         }
         
         // Disable start button when either text field is empty.
         RACSignal.combineLatest([nameField.rac_textSignal(), roleField.rac_textSignal()])
-            .subscribeNext {
-                let name : String = ($0 as! RACTuple).first as! String
-                let role : String = ($0 as! RACTuple).second as! String
-                print("Hello \(name) with \(role)")
-                startButton.enabled = name.characters.count > 0 && role.characters.count > 0
+            .subscribeNext { (next : AnyObject!) in
+                if let tuple = next as? RACTuple,
+                    name = tuple.first as? String,
+                    role = tuple.second as? String {
+                    print("Name: \(name), with role: \(role)")
+                    startButton.enabled = name.characters.count > 0 && role.characters.count > 0
+                }
         }
         
+        // Navigate to the next screen when the user presses Start.
         startButton.rac_signalForControlEvents(.TouchUpInside).subscribeNext { _ in
             let questionsListVC = QuestionsListViewController()
             self.navigationController?.pushViewController(questionsListVC, animated: true)

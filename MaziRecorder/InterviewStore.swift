@@ -17,12 +17,27 @@ class InterviewStore: NSObject {
     
     private let archiveFileName = "InterviewStore"
     
-    func updateInterview(interview: Interview) {
+    func createInterview() -> Interview {
+        let interview = Interview()
         var interviewsArray = interviews.value
-        if let index = interviewsArray.indexOf({ $0.identifier == interview.identifier }) {
+        interviewsArray.append(interview)
+        interviews.value = interviewsArray
+        
+        print("Created interview \(interview)")
+        
+        return interview
+    }
+    
+    func updateInterview(fromIdentifier identifier: String, interviewUpdate: InterviewUpdate) {
+        var interviewsArray = interviews.value
+        if let index = interviewsArray.indexOf({ $0.identifier == identifier }) {
+            let oldInterview = interviewsArray[index]
+            let newInterview = Interview(interview: oldInterview, interviewUpdate: interviewUpdate)
             interviewsArray.removeAtIndex(index)
-            interviewsArray.insert(interview, atIndex: index)
-            interviews.value = interviewsArray
+            interviewsArray.append(newInterview)
+            interviews.value = interviewsArray.sort({ $0.creationDate.compare($1.creationDate) == NSComparisonResult.OrderedAscending })
+            
+            print("Updated interview \(newInterview)")
         }
     }
     
