@@ -9,4 +9,4 @@
 * [ ] Color questions depening on if they are answered
 * [ ] Upload View
 * [ ] Fix Label Text
-* [ ] Sound Visualisation for Audio Recorder
+* [x] Sound Visualisation for Audio Recorder

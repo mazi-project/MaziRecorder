@@ -17,6 +17,8 @@ class QuestionsListViewController: UIViewController, UITableViewDelegate, UITabl
     
     let cellIdentifier = "cellIdentifier"
     
+    let tableView = UITableView()
+    
     init(interview: Interview) {
         self.interview = MutableProperty<Interview>(interview)
         
@@ -38,7 +40,6 @@ class QuestionsListViewController: UIViewController, UITableViewDelegate, UITabl
         
         // Create views.
         
-        let tableView = UITableView()
         tableView.dataSource = self
         tableView.delegate = self
         tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: self.cellIdentifier)
@@ -82,6 +83,10 @@ class QuestionsListViewController: UIViewController, UITableViewDelegate, UITabl
             }
         }
     }
+    
+    override func viewWillAppear(animated: Bool) {
+        self.tableView.reloadData()
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -99,10 +104,18 @@ class QuestionsListViewController: UIViewController, UITableViewDelegate, UITabl
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier)! as UITableViewCell
         
-        cell.textLabel?.text = questions[indexPath.row]
+        let questionString = questions[indexPath.row]
+        cell.textLabel?.text = questionString
+        
+        // change background if already existent
+        if (interview.value.attachments.contains { $0.questionText == questionString }) {
+            cell.backgroundColor = UIColor.cyanColor()
+        }
+        
         
         return cell
     }
+    
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {}
     
