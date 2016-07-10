@@ -34,23 +34,20 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
         super.viewDidLoad()
 
         self.title = "Interview Synopsis"
-        self.view.backgroundColor = UIColor.whiteColor()
+        self.view.backgroundColor = MaziStyle.backgroundColor
         
         // Create views.
-        
         let containerView = UIView()
-        containerView.backgroundColor = UIColor.greenColor()
         self.view.addSubview(containerView)
         
-        let synopsisLabel = UILabel()
-        synopsisLabel.text = "Synopsis:"
+        let synopsisLabel = MaziUILabel()
+        synopsisLabel.text = "Synopsis"
         containerView.addSubview(synopsisLabel)
         
-        let synopsisField = UITextView()
-        synopsisField.backgroundColor = UIColor.lightGrayColor()
+        let synopsisField = MaziUITextView()
         containerView.addSubview(synopsisField)
         
-        let pictureButton = UIButton(type: .System)
+        let pictureButton = MaziUIButton(type: .System)
         pictureButton.setTitle("Take Picture", forState: .Normal)
         containerView.addSubview(pictureButton)
         
@@ -63,38 +60,35 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
         
         // Create view constraints.
         
-        let outerInset = 20
-        let spacing = 10
-        let largeSpacing = 20
-        
         containerView.snp_makeConstraints { (make) in
             make.width.equalTo(self.view).multipliedBy(0.5)
-            make.centerX.centerY.equalTo(self.view)
+            make.centerX.equalTo(self.view)
+            make.top.equalTo(self.view.snp_top).offset(MaziStyle.containerOfssetY)
         }
         
         synopsisLabel.snp_makeConstraints { (make) in
-            make.top.equalTo(containerView.snp_top).offset(largeSpacing)
-            make.left.right.equalTo(containerView).inset(outerInset)
+            make.top.equalTo(containerView.snp_top).offset(MaziStyle.largeSpacing)
+            make.left.right.equalTo(containerView).inset(MaziStyle.outerInset)
         }
         
         synopsisField.snp_makeConstraints { (make) in
-            make.top.equalTo(synopsisLabel.snp_bottom).offset(spacing)
-            make.left.right.equalTo(containerView).inset(outerInset)
+            make.top.equalTo(synopsisLabel.snp_bottom).offset(MaziStyle.spacing)
+            make.left.right.equalTo(containerView).inset(MaziStyle.outerInset)
             make.height.equalTo(120)
         }
         
         pictureButton.snp_makeConstraints { (make) in
-            make.top.equalTo(synopsisField.snp_bottom).offset(largeSpacing)
+            make.top.equalTo(synopsisField.snp_bottom).offset(MaziStyle.largeSpacing)
             make.width.equalTo(120)
             make.centerX.equalTo(containerView)
         }
         
         currentImage.snp_makeConstraints { (make) in
-            make.top.equalTo(pictureButton.snp_bottom).offset(largeSpacing)
+            make.top.equalTo(pictureButton.snp_bottom).offset(MaziStyle.largeSpacing)
             make.width.equalTo(100)
             make.height.equalTo(100)
             make.centerX.equalTo(containerView)
-            make.bottom.equalTo(containerView).inset(outerInset)
+            make.bottom.equalTo(containerView).inset(MaziStyle.outerInset)
         }
         
         // Reactive bindings.

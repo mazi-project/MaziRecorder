@@ -19,35 +19,35 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         
         self.title = "Mazi Recorder"
+        self.view.backgroundColor = MaziStyle.backgroundColor
         
         // Create views.
         
         let containerView = UIView()
-        containerView.backgroundColor = UIColor.greenColor()
         self.view.addSubview(containerView)
         
-        let introTextLabel = UILabel()
-        introTextLabel.text = "Intro"
+        let introTextLabel = MaziUILabel()
+        introTextLabel.text = "Preparing a new Interview"
         introTextLabel.numberOfLines = 0
         containerView.addSubview(introTextLabel)
         
-        let nameLabel = UILabel()
-        nameLabel.text = "Name:"
+        let nameLabel = MaziUIInputLabel()
+        nameLabel.text = "Name"
         containerView.addSubview(nameLabel)
         
-        let nameField = UITextField()
-        nameField.backgroundColor = UIColor.lightGrayColor()
+        let nameField = MaziUITextField()
+        nameField.attributedPlaceholder = NSAttributedString(string: "Name of the interviewed Person")
         containerView.addSubview(nameField)
         
-        let roleLabel = UILabel()
-        roleLabel.text = "Role:"
+        let roleLabel = MaziUIInputLabel()
+        roleLabel.text = "Role"
         containerView.addSubview(roleLabel)
         
-        let roleField = UITextField()
-        roleField.backgroundColor = UIColor.lightGrayColor()
+        let roleField = MaziUITextField()
+        roleField.attributedPlaceholder = NSAttributedString(string: "Expertise/Role of the person")
         containerView.addSubview(roleField)
         
-        let startButton = UIButton(type: .System)
+        let startButton = MaziUIButton(type: .System)
         startButton.setTitle("Start", forState: .Normal)
         containerView.addSubview(startButton)
         
@@ -56,45 +56,45 @@ class ViewController: UIViewController {
         self.navigationItem.leftBarButtonItem = resetButton
         
         // Create view constraints.
-        
-        let outerInset = 20
-        let spacing = 10
-        let largeSpacing = 20
+        let labelWidth = 60
         
         containerView.snp_makeConstraints { (make) in
             make.width.equalTo(self.view).multipliedBy(0.5)
-            make.centerX.centerY.equalTo(self.view)
+            make.centerX.equalTo(self.view)
+            make.top.equalTo(self.view.snp_top).offset(MaziStyle.containerOfssetY)
         }
         
         introTextLabel.snp_makeConstraints { (make) in
-            make.top.left.right.equalTo(containerView).inset(outerInset)
+            make.top.left.right.equalTo(containerView).inset(MaziStyle.outerInset)
         }
         
         nameLabel.snp_makeConstraints { (make) in
-            make.top.equalTo(introTextLabel.snp_bottom).offset(largeSpacing)
-            make.left.right.equalTo(containerView).inset(outerInset)
+            make.top.equalTo(introTextLabel.snp_bottom).offset(MaziStyle.paragrahSpacing)
+            make.left.equalTo(containerView).inset(MaziStyle.outerInset)
+            make.width.equalTo(labelWidth)
         }
         nameField.snp_makeConstraints { (make) in
-            make.top.equalTo(nameLabel.snp_bottom).offset(spacing)
-            make.left.right.equalTo(containerView).inset(outerInset)
-            make.height.equalTo(60)
+            make.centerY.equalTo(nameLabel.snp_centerY)
+            make.left.equalTo(nameLabel.snp_right).offset(MaziStyle.spacing)
+            make.right.equalTo(containerView).inset(MaziStyle.outerInset)
         }
         
         roleLabel.snp_makeConstraints { (make) in
-            make.top.equalTo(nameField.snp_bottom).offset(largeSpacing)
-            make.left.right.equalTo(containerView).inset(outerInset)
+            make.top.equalTo(nameField.snp_bottom).offset(MaziStyle.largeSpacing)
+            make.left.equalTo(containerView).inset(MaziStyle.outerInset)
+            make.width.equalTo(labelWidth)
         }
         roleField.snp_makeConstraints { (make) in
-            make.top.equalTo(roleLabel.snp_bottom).offset(spacing)
-            make.left.right.equalTo(containerView).inset(outerInset)
-            make.height.equalTo(60)
+            make.centerY.equalTo(roleLabel.snp_centerY)
+            make.left.equalTo(roleLabel.snp_right).offset(MaziStyle.spacing)
+            make.right.equalTo(containerView).inset(MaziStyle.outerInset)
         }
         
         startButton.snp_makeConstraints { (make) in
-            make.top.equalTo(roleField.snp_bottom).offset(largeSpacing)
+            make.top.equalTo(roleField.snp_bottom).offset(MaziStyle.largeSpacing)
             make.width.equalTo(120)
             make.centerX.equalTo(containerView)
-            make.bottom.equalTo(containerView).inset(outerInset)
+            make.bottom.equalTo(containerView).inset(MaziStyle.outerInset)
         }
         
         // Reactive bindings.

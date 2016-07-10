@@ -36,7 +36,7 @@ class QuestionsListViewController: UIViewController, UITableViewDelegate, UITabl
         super.viewDidLoad()
         
         self.title = "Interview Questions"
-        self.view.backgroundColor = UIColor.whiteColor()
+        self.view.backgroundColor = MaziStyle.backgroundColor
         
         // Create views.
         
@@ -52,7 +52,7 @@ class QuestionsListViewController: UIViewController, UITableViewDelegate, UITabl
         // Create view constraints.
         
         tableView.snp_makeConstraints { (make) in
-            make.edges.equalTo(self.view)
+            make.edges.equalTo(self.view).inset(MaziStyle.outerInset)
         }
         
         // Reactive bindings.
@@ -118,7 +118,10 @@ class QuestionsListViewController: UIViewController, UITableViewDelegate, UITabl
         
         // change background if already existent
         if (interview.value.attachments.contains { $0.questionText == questionString }) {
-            cell.backgroundColor = UIColor.cyanColor()
+            cell.accessoryType = UITableViewCellAccessoryType.Checkmark
+            cell.textLabel!.textColor = MaziStyle.textColor
+        } else {
+            cell.textLabel!.textColor = MaziStyle.textColorAlternative
         }
         
         

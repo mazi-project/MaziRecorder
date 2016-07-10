@@ -50,7 +50,7 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         super.viewDidLoad()
 
         self.title = "Audio Recorder"
-        self.view.backgroundColor = UIColor.whiteColor()
+        self.view.backgroundColor = MaziStyle.backgroundColor
         
         // Audio recorder.
         
@@ -70,33 +70,28 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         // Create views.
         
         let containerView = UIView()
-        containerView.backgroundColor = UIColor.greenColor()
         self.view.addSubview(containerView)
         
-        let introTextLabel = UILabel()
+        let introTextLabel = MaziUILabel()
         introTextLabel.text = self.question
-        introTextLabel.numberOfLines = 0
         containerView.addSubview(introTextLabel)
         introTextLabel.textAlignment = .Center
         
-        let startButton = UIButton(type: .System)
+        let startButton = MaziUIButton(type: .System)
         startButton.setTitle("Start Recording", forState: .Normal)
         containerView.addSubview(startButton)
         
-        let timeTextLabel = UILabel()
+        let timeTextLabel = MaziUILabel()
         timeTextLabel.numberOfLines = 1
         timeTextLabel.text="00:00"
-        containerView.addSubview(timeTextLabel)
         timeTextLabel.textAlignment = .Center
+        timeTextLabel.font = UIFont.systemFontOfSize(60)
+        containerView.addSubview(timeTextLabel)
         
         containerView.addSubview(soundVisualizer)
         
-        let tagsLabel = UILabel()
-        tagsLabel.text = "Tags:"
-        containerView.addSubview(tagsLabel)
-        
-        let tagsField = UITextField()
-        tagsField.backgroundColor = UIColor.lightGrayColor()
+        let tagsField = MaziUITextField()
+        tagsField.attributedPlaceholder = NSAttributedString(string: "Tag question by space seperated tags")
         containerView.addSubview(tagsField)
         
         // Navigation bar Save button.
@@ -105,39 +100,32 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         
         // Create view constraints.
         
-        let outerInset = 20
-        let largeSpacing = 20
-        let spacing = 10
-        
         containerView.snp_makeConstraints { (make) in
             make.width.equalTo(self.view).multipliedBy(0.5)
-            make.centerX.centerY.equalTo(self.view)
+            make.centerX.equalTo(self.view)
+            make.top.equalTo(self.view.snp_top).offset(MaziStyle.containerOfssetY)
         }
         introTextLabel.snp_makeConstraints { (make) in
-            make.top.left.right.equalTo(containerView).inset(outerInset)
+            make.top.left.right.equalTo(containerView).inset(MaziStyle.outerInset)
         }
         startButton.snp_makeConstraints { (make) in
-            make.top.equalTo(introTextLabel.snp_bottom).offset(largeSpacing)
+            make.top.equalTo(introTextLabel.snp_bottom).offset(MaziStyle.paragrahSpacing)
             make.centerX.equalTo(containerView)
+            make.width.equalTo(120)
         }
         timeTextLabel.snp_makeConstraints { (make) in
-            make.top.equalTo(startButton.snp_bottom).offset(largeSpacing)
+            make.top.equalTo(startButton.snp_bottom).offset(MaziStyle.largeSpacing)
             make.centerX.equalTo(containerView)
         }
         soundVisualizer.snp_makeConstraints { (make) in
-            make.top.equalTo(timeTextLabel.snp_bottom).offset(largeSpacing)
-            make.width.equalTo(120)
-            make.height.equalTo(120)
+            make.top.equalTo(timeTextLabel.snp_bottom).offset(MaziStyle.largeSpacing)
+            make.width.equalTo(180)
+            make.height.equalTo(180)
             make.centerX.equalTo(containerView)
         }
-        tagsLabel.snp_makeConstraints { (make) in
-            make.top.equalTo(soundVisualizer.snp_bottom).offset(spacing)
-            make.left.right.equalTo(containerView).inset(outerInset)
-        }
         tagsField.snp_makeConstraints { (make) in
-            make.top.equalTo(tagsLabel.snp_bottom).offset(spacing)
-            make.left.right.bottom.equalTo(containerView).inset(outerInset)
-            make.height.equalTo(60)
+            make.top.equalTo(soundVisualizer.snp_bottom).offset(MaziStyle.paragrahSpacing)
+            make.left.right.bottom.equalTo(containerView).inset(MaziStyle.outerInset)
         }
         
         // Reactive bindings.

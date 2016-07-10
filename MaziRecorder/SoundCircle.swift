@@ -15,7 +15,7 @@ class SoundCircle: UIView {
     
     override init(frame : CGRect) {
         super.init(frame: frame)
-        self.backgroundColor = UIColor.greenColor()
+        self.backgroundColor = UIColor.whiteColor().colorWithAlphaComponent(0)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -48,8 +48,8 @@ class SoundCircle: UIView {
         let rectangle = CGRect(x: xPeak, y: yPeak, width: widthPeak, height: heightPeak)
         
         //CGContextSetFillColorWithColor(context, UIColor.redColor().CGColor)
-        CGContextSetStrokeColorWithColor(context, UIColor.blackColor().CGColor)
-        CGContextSetLineWidth(context, 2)
+        CGContextSetStrokeColorWithColor(context, UIColor.darkGrayColor().CGColor)
+        CGContextSetLineWidth(context, 1)
         CGContextStrokeEllipseInRect(context, rectangle)
         //CGContextDrawPath(context, .FillStroke)
         
