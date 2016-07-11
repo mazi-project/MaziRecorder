@@ -4,9 +4,10 @@
 
 * [ ] Load persisted state
 * [ ] Create Network manager
-* [ ] Styling
-* [ ] Reseting Interview
-* [ ] Color questions depening on if they are answered
+* [x] Styling
+* [x] Reseting Interview
+* [x] Color questions depening on if they are answered
+* [ ] RecorderView : Load tags from model and update attachment in interview model instead of pushing it
 * [ ] Upload View
 * [ ] Fix Label Text
 * [x] Sound Visualisation for Audio Recorder

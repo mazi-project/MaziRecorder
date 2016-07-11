@@ -24,10 +24,13 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
     let interview : MutableProperty<Interview>
     let question : String
     
+    var attachment : Attachment?
+    
     var tags = [String]()
     
     var audioPlayer : AVAudioPlayer?
     var audioRecorder : AVAudioRecorder?
+    var hasRecorderd = false
     
     let soundVisualizer = SoundCircle()
     var timerDisposable : Disposable?
@@ -40,6 +43,13 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         
         // Sync the view's interview with the model.
         self.interview <~ InterviewStore.sharedInstance.interviewSignal(interview.identifier).ignoreNil()
+        
+        //get attachment if there is already on saved
+        if let found = self.interview.value.attachments.indexOf({$0.questionText == self.question}) {
+            self.attachment = self.interview.value.attachments[found]
+        } else {
+            self.attachment = Attachment(questionText: self.question, tags: [], recordingUrl: NSURL(fileURLWithPath: ""))
+        }
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -91,6 +101,7 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         containerView.addSubview(soundVisualizer)
         
         let tagsField = MaziUITextField()
+        tagsField.text = self.attachment!.tags.joinWithSeparator(" ")
         tagsField.attributedPlaceholder = NSAttributedString(string: "Tag question by space seperated tags")
         containerView.addSubview(tagsField)
         
@@ -163,6 +174,7 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
             .startWithNext { _ in
                 if let recorder = self.audioRecorder {
                     if (recorder.recording) {
+                        self.hasRecorderd = true
                         self.stopRecording()
                     } else {
                         self.startRecording()
