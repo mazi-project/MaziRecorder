@@ -151,11 +151,6 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
                     })
                     .on(completed: {
                         // Hide spinner.
-                    })
-                    .startWithNext({ interviewId in
-                        // Store the new interview id in the model.
-                        let update = InterviewUpdate(identifierOnServer: interviewId)
-                        InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview.value, interviewUpdate: update)
                         
                         // Show a popup saying the upload was successful.
                         let alertView = UIAlertView(title: "Success", message: "The interview was uploaded to the server.", delegate: nil, cancelButtonTitle: "Ok")
@@ -166,6 +161,11 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
                             rootViewController.interview.value = InterviewStore.sharedInstance.createInterview()
                             self.navigationController?.popToRootViewControllerAnimated(true)
                         }
+                    })
+                    .startWithNext({ interviewId in
+                        // Store the new interview id in the model.
+                        let update = InterviewUpdate(identifierOnServer: interviewId)
+                        InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview.value, interviewUpdate: update)
                     })
         }
     }
