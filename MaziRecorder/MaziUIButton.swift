@@ -18,18 +18,53 @@ class MaziUIButton : UIButton {
         self.layer.cornerRadius = MaziStyle.cornerRadius
         
         //add border
-        self.layer.borderColor = MaziStyle.buttonBorderColor.CGColor
-        self.layer.borderWidth = MaziStyle.borderWidth
+        //self.layer.borderColor = MaziStyle.buttonBorderColor.CGColor
+        //self.layer.borderWidth = MaziStyle.borderWidth
         
         //add shadow
-        self.layer.shadowColor = UIColor.blackColor().CGColor;
+        /*self.layer.shadowColor = UIColor.blackColor().CGColor;
         self.layer.shadowOpacity = 0.5
         self.layer.shadowRadius = 1
         self.layer.shadowOffset = CGSizeMake(1, 1)
-        self.layer.masksToBounds = false
+        self.layer.masksToBounds = false*/
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+class MaziUIRecordingButton : MaziUIButton {
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        
+        //self.back
+        self.setTitleColor(MaziStyle.buttonTextColor, forState: .Selected)
+        
+        self.setBackgroundImage(MaziUIRecordingButton.imageWithColor(MaziStyle.buttonBgColor), forState: .Selected)
+        
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func setSelectState(selected : Bool) {
+        self.selected = selected
+    }
+    
+    static func imageWithColor(color : UIColor) -> UIImage {
+        let rect = CGRectMake(0.0, 0.0, 1.0, 1.0);
+        UIGraphicsBeginImageContext(rect.size);
+        let context = UIGraphicsGetCurrentContext();
+    
+        CGContextSetFillColorWithColor(context, color.CGColor);
+        CGContextFillRect(context, rect);
+    
+        let image = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+    
+        return image;
     }
 }

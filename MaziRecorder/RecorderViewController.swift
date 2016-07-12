@@ -87,8 +87,8 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         containerView.addSubview(introTextLabel)
         introTextLabel.textAlignment = .Center
         
-        let startButton = MaziUIButton(type: .System)
-        startButton.setTitle("Start Recording", forState: .Normal)
+        let startButton = MaziUIRecordingButton(type: .System)
+        startButton.setTitle("Start", forState: .Normal)
         containerView.addSubview(startButton)
         
         let timeTextLabel = MaziUILabel()
@@ -177,8 +177,10 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
                     if (recorder.recording) {
                         self.hasRecorderd = true
                         self.stopRecording()
+                        startButton.setTitle("Start", forState: .Normal)
                     } else {
                         self.startRecording()
+                        startButton.setTitle("Stop", forState: .Normal)
                     }
                 }
         }

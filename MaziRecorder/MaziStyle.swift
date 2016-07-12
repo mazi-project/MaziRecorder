@@ -8,7 +8,7 @@
 
 import UIKit
 
-class MaziStyle {
+struct MaziStyle {
     
     // Spacings
     
@@ -31,7 +31,7 @@ class MaziStyle {
     static let inputBgColor = UIColor.whiteColor()
     static let textColor = UIColor.blackColor()
     static let textColorAlternative = UIColor.darkGrayColor()
-    static let buttonBgColor = UIColor(netHex:0xB3B3B3)
+    static let buttonBgColor = UIColor(netHex:0xFFFF00)
     static let buttonTextColor = UIColor.blackColor()
     static let buttonBorderColor = UIColor(netHex:0xA3A3A3)
     
