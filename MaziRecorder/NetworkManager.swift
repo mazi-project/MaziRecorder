@@ -51,6 +51,8 @@ class NetworkManager {
                     observer.sendNext(attachmentProducer)
                 }
                 
+                observer.sendCompleted()
+                
                 return producer.flatMap(.Merge) { next -> SignalProducer<String, NSError> in
                     return SignalProducer(value: interviewId)
                 }
