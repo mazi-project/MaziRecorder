@@ -32,6 +32,12 @@ class MaziUIButton : UIButton {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    override func setTitle(title: String?, forState state: UIControlState) {
+        super.setTitle(title, forState: state)
+        
+        self.titleLabel!.font = UIFont.systemFontOfSize(16.0, weight: UIFontWeightBold)
+    }
 }
 
 class MaziUIRecordingButton : MaziUIButton {
