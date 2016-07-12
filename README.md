@@ -3,7 +3,7 @@
 ## TODO
 
 * [x] Load persisted state
-* [ ] Create network manager
+* [x] Create network manager
 * [x] Styling
 * [x] Reseting Interview
 * [x] Color questions depening on if they are answered

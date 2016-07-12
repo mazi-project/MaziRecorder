@@ -55,13 +55,14 @@ class SoundCircle: UIView {
         
         // draw volume
         let rectangle2 = CGRect(x: xVol, y: yVol, width: widthVol, height: heightVol)
+        let fillcolor = UIColor.redColor().colorWithAlphaComponent(CGFloat(self.volume))
         
-        //CGContextSetFillColorWithColor(context, UIColor.redColor().CGColor)
+        CGContextSetFillColorWithColor(context, fillcolor.CGColor)
         CGContextSetStrokeColorWithColor(context, UIColor.blackColor().CGColor)
         CGContextSetLineWidth(context, 2)
-        //CGContextAddEllipseInRect(context, rectangle2)
-        CGContextStrokeEllipseInRect(context, rectangle2)
-        //CGContextDrawPath(context, .FillStroke)
+        CGContextAddEllipseInRect(context, rectangle2)
+        //CGContextStrokeEllipseInRect(context, rectangle2)
+        CGContextDrawPath(context, .FillStroke)
         
     }
 }

@@ -14,7 +14,8 @@ class ViewController: UIViewController {
     
     // Create a new interview
     let interview = MutableProperty<Interview>(InterviewStore.sharedInstance.fetchLatestIncompleteOrCreateNewInterview())
-
+    let scrollView = UIScrollView()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -22,9 +23,10 @@ class ViewController: UIViewController {
         self.view.backgroundColor = MaziStyle.backgroundColor
         
         // Create views.
+        self.view.addSubview(scrollView)
         
         let containerView = UIView()
-        self.view.addSubview(containerView)
+        self.scrollView.addSubview(containerView)
         
         let introTextLabel = MaziUILabel()
         introTextLabel.text = "Preparing a new Interview"
@@ -58,10 +60,15 @@ class ViewController: UIViewController {
         // Create view constraints.
         let labelWidth = 60
         
+        self.scrollView.snp_makeConstraints { (make) in
+            make.edges.equalTo(self.view)
+        }
+        
         containerView.snp_makeConstraints { (make) in
-            make.width.equalTo(self.view).multipliedBy(0.5)
-            make.centerX.equalTo(self.view)
-            make.top.equalTo(self.view.snp_top).offset(MaziStyle.containerOfssetY)
+            make.width.equalTo(self.scrollView).multipliedBy(0.5)
+            make.center.equalTo(self.scrollView)
+            make.top.equalTo(self.scrollView.snp_top).offset(MaziStyle.containerOfssetY)
+            make.bottom.lessThanOrEqualTo(self.scrollView.snp_bottom).priorityHigh()
         }
         
         introTextLabel.snp_makeConstraints { (make) in
@@ -111,6 +118,21 @@ class ViewController: UIViewController {
                 
                 // Disable start button when either name or role is empty.
                 startButton.enabled = newInterview.name.characters.count > 0 && newInterview.role.characters.count > 0
+        }
+        
+        NSNotificationCenter.defaultCenter()
+            .rac_addObserverForName(UIKeyboardWillShowNotification, object: nil)
+            .toSignalProducer()
+            .startWithNext { (next : AnyObject?) in
+                if let notification = next as? NSNotification {
+                    var userInfo = notification.userInfo!
+                    var keyboardFrame:CGRect = (userInfo[UIKeyboardFrameBeginUserInfoKey] as! NSValue).CGRectValue()
+                    keyboardFrame = self.view.convertRect(keyboardFrame, fromView: nil)
+                    
+                    var contentInset:UIEdgeInsets = self.scrollView.contentInset
+                    contentInset.bottom = keyboardFrame.size.height
+                    self.scrollView.contentInset = contentInset
+                }
         }
         
         // Update the model when the user inputs text.
