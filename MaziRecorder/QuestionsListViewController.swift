@@ -61,6 +61,8 @@ class QuestionsListViewController: UIViewController, UITableViewDelegate, UITabl
         interview.producer
             .observeOn(UIScheduler())
             .startWithNext { (newInterview : Interview) in
+                // Reload table view data.
+                self.tableView.reloadData()
                 
                 // Disable start button when either name or role is empty.
                 acceptButton.enabled = newInterview.attachments.count > 0
@@ -91,10 +93,6 @@ class QuestionsListViewController: UIViewController, UITableViewDelegate, UITabl
                 self.navigationController?.pushViewController(recorderVC, animated: true)
             }
         }
-    }
-    
-    override func viewWillAppear(animated: Bool) {
-        self.tableView.reloadData()
     }
 
     override func didReceiveMemoryWarning() {
