@@ -272,7 +272,7 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
             self.soundVisualizer.setValues(valVol, peak: valPeak)
             self.soundVisualizer.setNeedsDisplay()
             
-            print("\(valVol):\(valPeak)")
+            //print("\(valVol):\(valPeak)")
         }
     }
     
