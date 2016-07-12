@@ -219,6 +219,8 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         if let recorder = self.audioRecorder {
             // Stop recording.
             recorder.stop()
+            self.soundVisualizer.setValues(0, peak: 0)
+            self.soundVisualizer.setNeedsDisplay()
             do {
                 try AVAudioSession.sharedInstance().setActive(false)
             } catch {
@@ -261,16 +263,16 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
             let averageVolume = recorder.averagePowerForChannel(0)
             let peakVolume = recorder.peakPowerForChannel(0)
             
-            let baseLevel : Float = 50.0
+            let baseLevel = Float(80.0)
             
-            let valVol = (baseLevel + averageVolume) / baseLevel
-            let valPeak = (baseLevel + peakVolume) / baseLevel
+            let valVol = min( (baseLevel + averageVolume) / baseLevel, Float(1.0))
+            let valPeak = min( (baseLevel + peakVolume) / baseLevel, Float(1.0))
             
             //draw circle
             self.soundVisualizer.setValues(valVol, peak: valPeak)
             self.soundVisualizer.setNeedsDisplay()
             
-            //print("\(valVol):\(valPeak)")
+            print("\(valVol):\(valPeak)")
         }
     }
     

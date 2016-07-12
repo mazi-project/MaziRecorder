@@ -29,17 +29,19 @@ class SoundCircle: UIView {
     
     override func drawRect(rect: CGRect) {
         
-        let widthVol = self.bounds.width * CGFloat(volume)
-        let heightVol = self.bounds.height * CGFloat(volume)
+        let offset = CGFloat(2);
         
-        let xVol = self.bounds.width/2 - widthVol/2
-        let yVol = self.bounds.height/2 - heightVol/2
+        let widthVol = self.bounds.width * CGFloat(volume) - offset*2
+        let heightVol = self.bounds.height * CGFloat(volume) - offset*2
         
-        let widthPeak = self.bounds.width * CGFloat(peak)
-        let heightPeak = self.bounds.height * CGFloat(peak)
+        let xVol = self.bounds.width/2 - widthVol/2 + offset/2.0
+        let yVol = self.bounds.height/2 - heightVol/2 + offset/2.0
         
-        let xPeak = self.bounds.width/2 - widthPeak/2
-        let yPeak = self.bounds.height/2 - heightPeak/2
+        let widthPeak = self.bounds.width * CGFloat(peak) - offset*2
+        let heightPeak = self.bounds.height * CGFloat(peak) - offset*2
+        
+        let xPeak = self.bounds.width/2 - widthPeak/2 + offset/2.0
+        let yPeak = self.bounds.height/2 - heightPeak/2 + offset/2.0
         
         
         let context = UIGraphicsGetCurrentContext()
