@@ -16,6 +16,17 @@ class MaziUIButton : UIButton {
         self.backgroundColor = MaziStyle.buttonBgColor
         self.setTitleColor(MaziStyle.buttonTextColor, forState: .Normal)
         self.layer.cornerRadius = MaziStyle.cornerRadius
+        
+        //add border
+        self.layer.borderColor = MaziStyle.buttonBorderColor.CGColor
+        self.layer.borderWidth = MaziStyle.borderWidth
+        
+        //add shadow
+        self.layer.shadowColor = UIColor.blackColor().CGColor;
+        self.layer.shadowOpacity = 0.5
+        self.layer.shadowRadius = 1
+        self.layer.shadowOffset = CGSizeMake(1, 1)
+        self.layer.masksToBounds = false
     }
     
     required init?(coder aDecoder: NSCoder) {

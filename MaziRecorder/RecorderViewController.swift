@@ -103,6 +103,7 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         let tagsField = MaziUITextField()
         tagsField.text = self.attachment!.tags.joinWithSeparator(" ")
         tagsField.attributedPlaceholder = NSAttributedString(string: "Tag question by space seperated tags")
+        tagsField.keyboardType = UIKeyboardType.ASCIICapable
         containerView.addSubview(tagsField)
         
         // Navigation bar Save button.

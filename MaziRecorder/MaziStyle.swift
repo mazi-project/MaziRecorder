@@ -31,8 +31,9 @@ class MaziStyle {
     static let inputBgColor = UIColor.whiteColor()
     static let textColor = UIColor.blackColor()
     static let textColorAlternative = UIColor.darkGrayColor()
-    static let buttonBgColor = UIColor(netHex:0x800000)
-    static let buttonTextColor = UIColor.whiteColor()
+    static let buttonBgColor = UIColor(netHex:0xB3B3B3)
+    static let buttonTextColor = UIColor.blackColor()
+    static let buttonBorderColor = UIColor(netHex:0xA3A3A3)
     
     // Fonts
     
