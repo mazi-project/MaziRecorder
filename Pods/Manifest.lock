@@ -1,5 +1,6 @@
 PODS:
   - Alamofire (3.4.1)
+  - NVActivityIndicatorView (2.9)
   - Pantry (0.2.1)
   - ReactiveCocoa (4.2.1):
     - Result (~> 2.0)
@@ -8,17 +9,19 @@ PODS:
 
 DEPENDENCIES:
   - Alamofire (~> 3.4)
+  - NVActivityIndicatorView
   - Pantry (~> 0.2)
   - ReactiveCocoa (~> 4.1)
   - SnapKit (~> 0.15)
 
 SPEC CHECKSUMS:
   Alamofire: 01a82e2f6c0f860ade35534c8dd88be61bdef40c
+  NVActivityIndicatorView: 0084f6be71bdf4735b5424ebfb530b1e3db3276c
   Pantry: 433931c8f545dd3426ca7d09a4edd5afa89c6e01
   ReactiveCocoa: 5a42745f11ea236f405bb9ce5e97c5e3b23562dd
   Result: 6e722d4a66b1408680dbfcdf51c0b1c4b706316a
   SnapKit: bbad04cb016c7cead63965f16b00c09318d271ee
 
-PODFILE CHECKSUM: 8fe09642b3badb012b1a5fc017ef4a882e518449
+PODFILE CHECKSUM: 1221db1008d5144bafc4952dd9b3eabbf4fb2a79
 
 COCOAPODS: 1.0.1

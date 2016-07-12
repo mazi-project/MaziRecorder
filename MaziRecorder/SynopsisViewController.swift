@@ -9,8 +9,9 @@
 import UIKit
 import SnapKit
 import ReactiveCocoa
+import NVActivityIndicatorView
 
-class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, NVActivityIndicatorViewable {
     
     let interview : MutableProperty<Interview>
     
@@ -144,10 +145,10 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
                 let networkManager = NetworkManager()
                 networkManager.sendInterviewToServer(self.interview.value)
                     .on(started: {
-                        // Show spinner.
+                        self.startActivityAnimating(CGSize(width: 100, height: 100))
                     })
                     .on(failed: { error in
-                        // Hide spinner.
+                        self.stopActivityAnimating()
                     })
                     .on(completed: {
                         // Hide spinner.

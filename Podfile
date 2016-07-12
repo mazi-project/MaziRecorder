@@ -10,4 +10,5 @@ target 'MaziRecorder' do
   pod 'ReactiveCocoa', '~> 4.1'
   pod 'Alamofire', '~> 3.4'
   pod 'Pantry', '~> 0.2'
+  pod 'NVActivityIndicatorView'
 end
