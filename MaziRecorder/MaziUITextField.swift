@@ -15,8 +15,8 @@ class MaziUITextField : UITextField {
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.backgroundColor = MaziStyle.inputBgColor
-        self.layer.borderColor = MaziStyle.borderColor.CGColor
-        self.layer.borderWidth = MaziStyle.borderWidth
+        //self.layer.borderColor = MaziStyle.borderColor.CGColor
+        //self.layer.borderWidth = MaziStyle.borderWidth
         self.layer.cornerRadius = MaziStyle.cornerRadius
         
     }

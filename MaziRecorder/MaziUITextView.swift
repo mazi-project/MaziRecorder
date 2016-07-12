@@ -16,8 +16,8 @@ class MaziUITextView : UITextView {
         self.textContainerInset = UIEdgeInsetsMake(MaziStyle.textPadding, MaziStyle.textPadding, MaziStyle.textPadding, MaziStyle.textPadding);
         
         self.backgroundColor = MaziStyle.inputBgColor
-        self.layer.borderColor = MaziStyle.borderColor.CGColor
-        self.layer.borderWidth = MaziStyle.borderWidth
+        //self.layer.borderColor = MaziStyle.borderColor.CGColor
+        //self.layer.borderWidth = MaziStyle.borderWidth
         self.layer.cornerRadius = MaziStyle.cornerRadius
         
         self.font = UIFont.systemFontOfSize(CGFloat(MaziStyle.fontSize))

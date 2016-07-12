@@ -28,7 +28,7 @@ struct MaziStyle {
     // Colors
     
     static let backgroundColor = UIColor.whiteColor()
-    static let inputBgColor = UIColor.whiteColor()
+    static let inputBgColor = UIColor(netHex: 0xEAEAED)
     static let textColor = UIColor.blackColor()
     static let textColorAlternative = UIColor.darkGrayColor()
     static let buttonBgColor = UIColor(netHex:0xFFFF00)
