@@ -78,7 +78,7 @@
 			name = Networking;
 			sourceTree = "<group>";
 		};
-		496B217A1D314129009EAD71 /* CustomViews */ = {
+		496B217A1D314129009EAD71 /* Custom Views */ = {
 			isa = PBXGroup;
 			children = (
 				496B217B1D31414A009EAD71 /* SoundCircle.swift */,
@@ -88,7 +88,7 @@
 				49D5689B1D326A0300E99BAB /* MaziUITextView.swift */,
 				49D5689D1D3272DC00E99BAB /* MaziUIButton.swift */,
 			);
-			name = CustomViews;
+			name = "Custom Views";
 			sourceTree = "<group>";
 		};
 		496B217D1D3169F0009EAD71 /* Helpers */ = {
@@ -138,19 +138,19 @@
 		FCCDE1B11D30285600E156A5 /* MaziRecorder */ = {
 			isa = PBXGroup;
 			children = (
-				496B217D1D3169F0009EAD71 /* Helpers */,
-				496B217A1D314129009EAD71 /* CustomViews */,
-				496B21771D313230009EAD71 /* Networking */,
-				FCCDE1C61D30458700E156A5 /* Model */,
 				FCCDE1B21D30285600E156A5 /* AppDelegate.swift */,
 				FCCDE1B91D30285600E156A5 /* Assets.xcassets */,
+				496B217A1D314129009EAD71 /* Custom Views */,
+				496B217D1D3169F0009EAD71 /* Helpers */,
 				FCCDE1BE1D30285600E156A5 /* Info.plist */,
 				FCCDE1BB1D30285600E156A5 /* LaunchScreen.storyboard */,
 				FCCDE1B61D30285600E156A5 /* Main.storyboard */,
+				FCCDE1C61D30458700E156A5 /* Model */,
+				496B21771D313230009EAD71 /* Networking */,
 				FCCDE1C41D3034B700E156A5 /* QuestionsListViewController.swift */,
 				49C9F9171D3042DD00CCA9B6 /* RecorderViewController.swift */,
-				FCCDE1B41D30285600E156A5 /* ViewController.swift */,
 				496B21751D31195E009EAD71 /* SynopsisViewController.swift */,
+				FCCDE1B41D30285600E156A5 /* ViewController.swift */,
 			);
 			path = MaziRecorder;
 			sourceTree = "<group>";
