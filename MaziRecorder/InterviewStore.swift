@@ -90,7 +90,7 @@ class InterviewStore {
     
     func fetchLatestIncompleteOrCreateNewInterview() -> Interview {
         let reverseInterviews = interviews.value.reverse() // Latest first.
-        if let index = reverseInterviews.indexOf({ $0.identifierOnServer == .None }) {
+        if let index = reverseInterviews.indexOf({ $0.identifierOnServer == nil }) {
             return reverseInterviews[index]
         }
         

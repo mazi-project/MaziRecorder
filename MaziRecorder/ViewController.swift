@@ -150,7 +150,7 @@ class ViewController: UIViewController {
             .toSignalProducer()
             .startWithNext { _ in
                 // Reset the model's fields.
-                let update = InterviewUpdate(name: "", role: "", text: "", attachments: [], imageUrl: "", identifierOnServer: .None)
+                let update = InterviewUpdate(name: "", role: "", text: "", attachments: [], imageUrl: .None, identifierOnServer: .None)
                 InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview.value, interviewUpdate: update)
         }
         

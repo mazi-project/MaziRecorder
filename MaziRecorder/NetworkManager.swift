@@ -33,7 +33,7 @@ class NetworkManager {
                 let (producer, observer) = SignalProducer<SignalProducer<ResponseDict, NSError>, NSError>.buffer(1 + interview.attachments.count)
                 
                 // Create producer for uploading the photo to the server.
-                if let imageURL = NSURL(string: interview.imageUrl) {
+                if let imageURL = interview.imageUrl {
                     let uploadImageProducer = self.uploadProducer(.POST, URLString: "\(self.urlString)/upload/image/\(interviewId)", fileURL: imageURL, mimeType: "image/jpeg")
                     observer.sendNext(uploadImageProducer)
                 }

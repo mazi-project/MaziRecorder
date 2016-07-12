@@ -100,15 +100,15 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
                 synopsisField.text = newInterview.text
                 
                 // Disable start button when either name or role is empty.
-                uploadButton.enabled = newInterview.text.characters.count > 0 && newInterview.imageUrl.characters.count > 0
+                uploadButton.enabled = newInterview.text.characters.count > 0 && newInterview.imageUrl != nil
         }
         
         interview.producer.observeOn(UIScheduler())
-            .map{ $0.imageUrl }
-            .filter{ $0.characters.count > 0}
-            .skipRepeats()
-            .startWithNext{ (imageUrl : String) in
-                if let url = NSURL(string: imageUrl) {
+            .map { $0.imageUrl }
+            .filter { $0 != nil }
+            .skipRepeats { $0 == $1 }
+            .startWithNext { imageUrl in
+                if let url = imageUrl {
                     self.currentImage.image = UIImage(contentsOfFile: url.absoluteString)
                 }
         }
@@ -204,7 +204,7 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
                 let imageData = UIImageJPEGRepresentation(image, 0.6)
                 if imageData!.writeToFile(imagePath, atomically: true) {
                     //add to interview
-                    let update = InterviewUpdate(imageUrl: imagePath)
+                    let update = InterviewUpdate(imageUrl: NSURL(fileURLWithPath: imagePath))
                     InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview.value, interviewUpdate: update)
                 }
             }

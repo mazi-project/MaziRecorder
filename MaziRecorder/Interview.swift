@@ -16,12 +16,12 @@ struct Interview {
     let role : String
     let text : String
     let attachments : [Attachment]
-    let imageUrl : String
+    let imageUrl : NSURL?
     let identifierOnServer : String?
     
     // MARK: Init
     
-    init(identifier: String, creationDate: NSDate, name: String, role: String, text: String, attachments: [Attachment], imageUrl: String, identifierOnServer: String?) {
+    init(identifier: String, creationDate: NSDate, name: String, role: String, text: String, attachments: [Attachment], imageUrl: NSURL?, identifierOnServer: String?) {
         self.identifier = identifier
         self.creationDate = creationDate
         self.name = name
@@ -32,8 +32,8 @@ struct Interview {
         self.identifierOnServer = identifierOnServer
     }
     
-    init(name: String = "", role: String = "", text: String = "", attachments: [Attachment] = [], imageUrl: String = "") {
-        self.init(identifier: NSUUID().UUIDString, creationDate: NSDate(), name: name, role: role, text: text, attachments: attachments, imageUrl: imageUrl, identifierOnServer: .None)
+    init(name: String = "", role: String = "", text: String = "", attachments: [Attachment] = []) {
+        self.init(identifier: NSUUID().UUIDString, creationDate: NSDate(), name: name, role: role, text: text, attachments: attachments, imageUrl: .None, identifierOnServer: .None)
     }
     
     init(interview: Interview, interviewUpdate: InterviewUpdate) {
@@ -59,7 +59,7 @@ extension Interview : Storable {
         self.role = warehouse.get("role") ?? ""
         self.text = warehouse.get("text") ?? ""
         self.attachments = warehouse.get("attachments") ?? []
-        self.imageUrl = warehouse.get("imageUrl") ?? ""
+        self.imageUrl = NSURL(string: warehouse.get("imageUrl") ?? "") ?? NSURL()
         let identifierOnServer : String = warehouse.get("identifierOnServer") ?? ""
         self.identifierOnServer = identifierOnServer.characters.count > 0 ? identifierOnServer : .None
     }
@@ -72,7 +72,7 @@ extension Interview : Storable {
             "role": self.role,
             "text": self.text,
             "attachments": self.attachments.map({ $0.toDictionary() as AnyObject }),
-            "imageUrl": self.imageUrl,
+            "imageUrl": self.imageUrl?.absoluteString ?? "",
             "identifierOnServer": self.identifierOnServer ?? ""
         ]
     }
@@ -98,10 +98,10 @@ struct InterviewUpdate {
     var role : String?
     var text : String?
     var attachments : [Attachment]?
-    var imageUrl : String?
+    var imageUrl : NSURL??
     var identifierOnServer : String??
     
-    init(name: String? = .None, role: String? = .None, text: String? = .None, attachments: [Attachment]? = .None, imageUrl: String? = .None, identifierOnServer: String?? = .None) {
+    init(name: String? = .None, role: String? = .None, text: String? = .None, attachments: [Attachment]? = .None, imageUrl: NSURL?? = .None, identifierOnServer: String?? = .None) {
         self.name = name
         self.role = role
         self.text = text
