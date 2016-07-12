@@ -97,6 +97,19 @@ class InterviewStore {
         return createInterview()
     }
     
+    func updateAttachment(interview: Interview, attachment: Attachment) {
+        var newAttachments = interview.attachments
+        if let existingIndex = interview.attachments.indexOf({ $0.questionText == attachment.questionText }) {
+            newAttachments.removeAtIndex(existingIndex)
+            newAttachments.insert(attachment, atIndex: existingIndex)
+        } else {
+            newAttachments = newAttachments + [attachment]
+        }
+        
+        let update = InterviewUpdate(attachments: newAttachments)
+        self.updateInterview(fromInterview: interview, interviewUpdate: update)
+    }
+    
     func updateInterview(fromInterview interview: Interview, interviewUpdate: InterviewUpdate) {
         self.updateInterview(fromIdentifier: interview.identifier, interviewUpdate: interviewUpdate)
     }
