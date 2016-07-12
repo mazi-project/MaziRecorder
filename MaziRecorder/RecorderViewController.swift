@@ -93,7 +93,7 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         
         let timeTextLabel = MaziUILabel()
         timeTextLabel.numberOfLines = 1
-        timeTextLabel.text="00:00"
+        timeTextLabel.text = self.stringWithTime(attachment?.recordingDuration ?? 0)
         timeTextLabel.textAlignment = .Center
         timeTextLabel.font = UIFont.systemFontOfSize(60)
         containerView.addSubview(timeTextLabel)
@@ -101,7 +101,7 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         containerView.addSubview(soundVisualizer)
         
         let tagsField = MaziUITextField()
-        tagsField.text = self.attachment!.tags.joinWithSeparator(" ")
+        tagsField.text = self.attachment?.tags.joinWithSeparator(" ")
         tagsField.attributedPlaceholder = NSAttributedString(string: "Tag question by space seperated tags")
         tagsField.keyboardType = UIKeyboardType.ASCIICapable
         containerView.addSubview(tagsField)
@@ -147,14 +147,7 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
             .observeOn(UIScheduler())
             .startWithNext { (newInterview : Interview) in
                 
-                /*if let found = self.interview.value.attachments.indexOf({$0.questionText == self.question}) {
-                    let attachment = self.interview.value.attachments[found]
-                }
-
                 
-                
-                // Disable start button when either name or role is empty.
-                saveButton.enabled = newInterview.name.characters.count > 0 && newInterview.role.characters.count > 0*/
         }
         
         tagsField.rac_textSignal()
@@ -188,10 +181,7 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         // Update the time label and the visualisation.
         timerDisposable = QueueScheduler.mainQueueScheduler.scheduleAfter(NSDate(), repeatingEvery: 0.1) {
             if let recorder = self.audioRecorder where recorder.recording {
-                let seconds = Int(recorder.currentTime) % 60
-                let minutes = Int(recorder.currentTime) / 60
-                let timeString =  String(format: "%0.2d:%0.2d", minutes, seconds)
-                timeTextLabel.text = "\(timeString)"
+                timeTextLabel.text = "\(self.stringWithTime(Int(recorder.currentTime)))"
                 
                 self.updateMeter()
             }
@@ -203,10 +193,13 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
             .observeOn(UIScheduler())
             .startWithNext { (next : AnyObject?) in
                 if let recorder = self.audioRecorder {
+                    // Get the duration of the recording (in seconds).
+                    let asset = AVURLAsset(URL: recorder.url)
+                    let recordingDuration = Int(CMTimeGetSeconds(asset.duration))
+                    
                     // Update the model with the new attachment.
-                    let attachment = Attachment(questionText: self.question, tags: self.tags, recordingUrl: recorder.url)
-                    let update = InterviewUpdate(attachments: self.interview.value.attachments + [attachment])
-                    InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview.value, interviewUpdate: update)
+                    let attachment = Attachment(questionText: self.question, tags: self.tags, recordingUrl: recorder.url, recordingDuration: recordingDuration)
+                    InterviewStore.sharedInstance.updateAttachment(self.interview.value, attachment: attachment)
                     
                     self.navigationController?.popViewControllerAnimated(true)
                 }
@@ -283,6 +276,12 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
     
     func getTags() {
         
+    }
+    
+    func stringWithTime(time: Int) -> String {
+        let seconds = time % 60
+        let minutes = time / 60
+        return String(format: "%0.2d:%0.2d", minutes, seconds)
     }
 
 }

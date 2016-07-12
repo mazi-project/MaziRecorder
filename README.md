@@ -7,11 +7,12 @@
 * [x] Styling
 * [x] Reseting Interview
 * [x] Color questions depening on if they are answered
-* [ ] RecorderView : Load tags from model and update attachment in interview model instead of pushing it
+* [x] RecorderView : Load tags from model and update attachment in interview model instead of pushing it
 * [ ] Upload View
 * [x] Fix Label Text
 * [x] Sound Visualisation for Audio Recorder
-* [ ] scroll up page, when keyboard slides in
+* [ ] Scroll up when the keyboard appears
+* [ ] Fix retain cycles
 
 
 
