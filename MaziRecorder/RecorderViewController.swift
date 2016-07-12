@@ -78,9 +78,11 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         }
         
         // Create views.
+        let scrollView = UIScrollView()
+        self.view.addSubview(scrollView)
         
         let containerView = UIView()
-        self.view.addSubview(containerView)
+        scrollView.addSubview(containerView)
         
         let introTextLabel = MaziUILabel()
         introTextLabel.text = self.question
@@ -112,16 +114,21 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         
         // Create view constraints.
         
+        scrollView.snp_makeConstraints { (make) in
+            make.edges.equalTo(self.view)
+        }
+        
         containerView.snp_makeConstraints { (make) in
             make.width.equalTo(self.view).multipliedBy(0.5)
             make.centerX.equalTo(self.view)
-            make.top.equalTo(self.view.snp_top).offset(MaziStyle.containerOfssetY)
+            make.top.greaterThanOrEqualTo(scrollView).offset(MaziStyle.containerOffsetY)
+            make.bottom.lessThanOrEqualTo(scrollView)
         }
         introTextLabel.snp_makeConstraints { (make) in
             make.top.left.right.equalTo(containerView).inset(MaziStyle.outerInset)
         }
         startButton.snp_makeConstraints { (make) in
-            make.top.equalTo(introTextLabel.snp_bottom).offset(MaziStyle.paragrahSpacing)
+            make.top.equalTo(introTextLabel.snp_bottom).offset(MaziStyle.paragraphSpacing)
             make.centerX.equalTo(containerView)
             make.width.equalTo(120)
         }
@@ -136,7 +143,7 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
             make.centerX.equalTo(containerView)
         }
         tagsField.snp_makeConstraints { (make) in
-            make.top.equalTo(soundVisualizer.snp_bottom).offset(MaziStyle.paragrahSpacing)
+            make.top.equalTo(soundVisualizer.snp_bottom).offset(MaziStyle.paragraphSpacing)
             make.left.right.bottom.equalTo(containerView).inset(MaziStyle.outerInset)
         }
         
@@ -160,6 +167,36 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
                     tagsField.text = tagString
                     
                     self.tags = tagString.characters.split{ $0 == " " }.map(String.init)
+                }
+        }
+        
+        RACSignal.merge([
+            NSNotificationCenter.defaultCenter().rac_addObserverForName(UIKeyboardWillShowNotification, object: nil),
+            NSNotificationCenter.defaultCenter().rac_addObserverForName(UIKeyboardWillHideNotification, object: nil)
+            ])
+            .takeUntil(self.rac_willDeallocSignal())
+            .toSignalProducer()
+            .observeOn(UIScheduler())
+            .startWithNext { [weak self] (next : AnyObject?) in
+                if let notification = next as? NSNotification,
+                    userInfo = notification.userInfo,
+                    keyboardSize = (userInfo["UIKeyboardFrameEndUserInfoKey"] as? NSValue)?.CGRectValue() {
+                    if notification.name == UIKeyboardWillShowNotification {
+                        let height = self?.view.convertRect(keyboardSize, fromView: nil).size.height ?? 0
+                        
+                        scrollView.snp_updateConstraints { (make) in
+                            make.bottom.equalTo(self!.view).inset(height)
+                        }
+                        scrollView.setContentOffset(CGPoint(x: scrollView.contentOffset.x ?? 0, y: 0), animated: true)
+                    } else {
+                        scrollView.snp_updateConstraints { (make) in
+                            make.bottom.equalTo(self!.view).inset(0)
+                        }
+                    }
+                    
+                    UIView.animateWithDuration(0.5, animations: {
+                        scrollView.layoutIfNeeded()
+                    })
                 }
         }
         

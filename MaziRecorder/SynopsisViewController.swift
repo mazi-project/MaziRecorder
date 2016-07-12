@@ -38,8 +38,11 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
         self.view.backgroundColor = MaziStyle.backgroundColor
         
         // Create views.
+        let scrollView = UIScrollView()
+        self.view.addSubview(scrollView)
+        
         let containerView = UIView()
-        self.view.addSubview(containerView)
+        scrollView.addSubview(containerView)
         
         let synopsisLabel = MaziUILabel()
         synopsisLabel.text = "Synopsis"
@@ -60,11 +63,15 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
         self.navigationItem.rightBarButtonItem = uploadButton
         
         // Create view constraints.
+        scrollView.snp_makeConstraints { (make) in
+            make.edges.equalTo(self.view)
+        }
         
         containerView.snp_makeConstraints { (make) in
             make.width.equalTo(self.view).multipliedBy(0.5)
             make.centerX.equalTo(self.view)
-            make.top.equalTo(self.view.snp_top).offset(MaziStyle.containerOfssetY)
+            make.top.equalTo(scrollView).offset(MaziStyle.containerOffsetY)
+            make.bottom.lessThanOrEqualTo(scrollView)
         }
         
         synopsisLabel.snp_makeConstraints { (make) in
@@ -102,6 +109,36 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
                 
                 // Disable start button when either name or role is empty.
                 uploadButton.enabled = newInterview.text.characters.count > 0 && newInterview.imageUrl != nil
+        }
+        
+        RACSignal.merge([
+            NSNotificationCenter.defaultCenter().rac_addObserverForName(UIKeyboardWillShowNotification, object: nil),
+            NSNotificationCenter.defaultCenter().rac_addObserverForName(UIKeyboardWillHideNotification, object: nil)
+            ])
+            .takeUntil(self.rac_willDeallocSignal())
+            .toSignalProducer()
+            .observeOn(UIScheduler())
+            .startWithNext { [weak self] (next : AnyObject?) in
+                if let notification = next as? NSNotification,
+                    userInfo = notification.userInfo,
+                    keyboardSize = (userInfo["UIKeyboardFrameEndUserInfoKey"] as? NSValue)?.CGRectValue() {
+                    if notification.name == UIKeyboardWillShowNotification {
+                        let height = self?.view.convertRect(keyboardSize, fromView: nil).size.height ?? 0
+                        
+                        scrollView.snp_updateConstraints { (make) in
+                            make.bottom.equalTo(self!.view).inset(height)
+                        }
+                        scrollView.setContentOffset(CGPoint(x: scrollView.contentOffset.x ?? 0, y: 0), animated: true)
+                    } else {
+                        scrollView.snp_updateConstraints { (make) in
+                            make.bottom.equalTo(self!.view).inset(0)
+                        }
+                    }
+                    
+                    UIView.animateWithDuration(0.5, animations: {
+                        scrollView.layoutIfNeeded()
+                    })
+                }
         }
         
         interview.producer.observeOn(UIScheduler())

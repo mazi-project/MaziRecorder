@@ -14,7 +14,6 @@ class ViewController: UIViewController {
     
     // Create a new interview
     let interview = MutableProperty<Interview>(InterviewStore.sharedInstance.fetchLatestIncompleteOrCreateNewInterview())
-    let scrollView = UIScrollView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,10 +22,11 @@ class ViewController: UIViewController {
         self.view.backgroundColor = MaziStyle.backgroundColor
         
         // Create views.
+        let scrollView = UIScrollView()
         self.view.addSubview(scrollView)
         
         let containerView = UIView()
-        self.scrollView.addSubview(containerView)
+        scrollView.addSubview(containerView)
         
         let introTextLabel = MaziUILabel()
         introTextLabel.text = "Preparing a new Interview"
@@ -60,15 +60,15 @@ class ViewController: UIViewController {
         // Create view constraints.
         let labelWidth = 60
         
-        self.scrollView.snp_makeConstraints { (make) in
+        scrollView.snp_makeConstraints { (make) in
             make.edges.equalTo(self.view)
         }
         
         containerView.snp_makeConstraints { (make) in
-            make.width.equalTo(self.scrollView).multipliedBy(0.5)
-            make.center.equalTo(self.scrollView)
-            make.top.equalTo(self.scrollView.snp_top).offset(MaziStyle.containerOfssetY)
-            make.bottom.lessThanOrEqualTo(self.scrollView.snp_bottom).priorityHigh()
+            make.width.equalTo(self.view).multipliedBy(0.5)
+            make.centerX.equalTo(self.view)
+            make.top.equalTo(scrollView).offset(MaziStyle.containerOffsetY)
+            make.bottom.lessThanOrEqualTo(scrollView)
         }
         
         introTextLabel.snp_makeConstraints { (make) in
@@ -76,7 +76,7 @@ class ViewController: UIViewController {
         }
         
         nameLabel.snp_makeConstraints { (make) in
-            make.top.equalTo(introTextLabel.snp_bottom).offset(MaziStyle.paragrahSpacing)
+            make.top.equalTo(introTextLabel.snp_bottom).offset(MaziStyle.paragraphSpacing)
             make.left.equalTo(containerView).inset(MaziStyle.outerInset)
             make.width.equalTo(labelWidth)
         }
@@ -120,18 +120,33 @@ class ViewController: UIViewController {
                 startButton.enabled = newInterview.name.characters.count > 0 && newInterview.role.characters.count > 0
         }
         
-        NSNotificationCenter.defaultCenter()
-            .rac_addObserverForName(UIKeyboardWillShowNotification, object: nil)
+        RACSignal.merge([
+            NSNotificationCenter.defaultCenter().rac_addObserverForName(UIKeyboardWillShowNotification, object: nil),
+            NSNotificationCenter.defaultCenter().rac_addObserverForName(UIKeyboardWillHideNotification, object: nil)
+            ])
+            .takeUntil(self.rac_willDeallocSignal())
             .toSignalProducer()
-            .startWithNext { (next : AnyObject?) in
-                if let notification = next as? NSNotification {
-                    var userInfo = notification.userInfo!
-                    var keyboardFrame:CGRect = (userInfo[UIKeyboardFrameBeginUserInfoKey] as! NSValue).CGRectValue()
-                    keyboardFrame = self.view.convertRect(keyboardFrame, fromView: nil)
+            .observeOn(UIScheduler())
+            .startWithNext { [weak self] (next : AnyObject?) in
+                if let notification = next as? NSNotification,
+                    userInfo = notification.userInfo,
+                    keyboardSize = (userInfo["UIKeyboardFrameEndUserInfoKey"] as? NSValue)?.CGRectValue() {
+                    if notification.name == UIKeyboardWillShowNotification {
+                        let height = self?.view.convertRect(keyboardSize, fromView: nil).size.height ?? 0
+                        
+                        scrollView.snp_updateConstraints { (make) in
+                            make.bottom.equalTo(self!.view).inset(height)
+                        }
+                        scrollView.setContentOffset(CGPoint(x: scrollView.contentOffset.x ?? 0, y: 0), animated: true)
+                    } else {
+                        scrollView.snp_updateConstraints { (make) in
+                            make.bottom.equalTo(self!.view).inset(0)
+                        }
+                    }
                     
-                    var contentInset:UIEdgeInsets = self.scrollView.contentInset
-                    contentInset.bottom = keyboardFrame.size.height
-                    self.scrollView.contentInset = contentInset
+                    UIView.animateWithDuration(0.5, animations: {
+                        scrollView.layoutIfNeeded()
+                    })
                 }
         }
         

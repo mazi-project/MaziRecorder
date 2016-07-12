@@ -11,8 +11,9 @@
 * [ ] Upload View
 * [x] Fix Label Text
 * [x] Sound Visualisation for Audio Recorder
-* [ ] Scroll up when the keyboard appears
+* [x] Scroll up when the keyboard appears
 * [ ] Fix retain cycles
+* [ ] Reset interview after submitting
 
 
 

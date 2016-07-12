@@ -12,11 +12,11 @@ struct MaziStyle {
     
     // Spacings
     
-    static let containerOfssetY = 100
+    static let containerOffsetY = 100
     static let outerInset = 20
     static let spacing = 10
     static let largeSpacing = 20
-    static let paragrahSpacing = 50
+    static let paragraphSpacing = 50
     static let textPadding = CGFloat(10)
     
     // Borders
