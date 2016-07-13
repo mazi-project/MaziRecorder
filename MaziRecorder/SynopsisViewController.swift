@@ -182,13 +182,16 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
                 let networkManager = NetworkManager()
                 networkManager.sendInterviewToServer(self.interview.value)
                     .on(started: {
+                        // Show spinner.
                         self.startActivityAnimating(CGSize(width: 100, height: 100))
                     })
                     .on(failed: { error in
+                        // Hide spinner.
                         self.stopActivityAnimating()
                     })
                     .on(completed: {
                         // Hide spinner.
+                        self.stopActivityAnimating()
                         
                         // Show a popup saying the upload was successful.
                         let alertView = UIAlertView(title: "Success", message: "The interview was uploaded to the server.", delegate: nil, cancelButtonTitle: "Ok")

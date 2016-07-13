@@ -8,11 +8,11 @@
 * [x] Reseting Interview
 * [x] Color questions depening on if they are answered
 * [x] RecorderView : Load tags from model and update attachment in interview model instead of pushing it
-* [ ] Upload View
+* [x] Upload View
 * [x] Fix Label Text
 * [x] Sound Visualisation for Audio Recorder
 * [x] Scroll up when the keyboard appears
-* [ ] Fix retain cycles
+* [x] Fix retain cycles
 * [ ] Reset interview after submitting
 
 
