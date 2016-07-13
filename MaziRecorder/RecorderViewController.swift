@@ -117,13 +117,17 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         scrollView.snp_makeConstraints { (make) in
             make.edges.equalTo(self.view)
         }
-        
+
+        let navigationBarHeight = UIApplication.sharedApplication().statusBarFrame.height +
+            (navigationController?.navigationBar.bounds.height ?? 0)
         containerView.snp_makeConstraints { (make) in
             make.width.equalTo(self.view).multipliedBy(0.5)
             make.centerX.equalTo(self.view)
-            make.top.greaterThanOrEqualTo(scrollView).offset(MaziStyle.containerOffsetY)
+            make.top.greaterThanOrEqualTo(scrollView)
+            make.centerY.equalTo(scrollView).offset(-navigationBarHeight).priorityLow()
             make.bottom.lessThanOrEqualTo(scrollView)
         }
+
         introTextLabel.snp_makeConstraints { (make) in
             make.top.left.right.equalTo(containerView).inset(MaziStyle.outerInset)
         }
@@ -182,18 +186,19 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
                     userInfo = notification.userInfo,
                     keyboardSize = (userInfo["UIKeyboardFrameEndUserInfoKey"] as? NSValue)?.CGRectValue() {
                     if notification.name == UIKeyboardWillShowNotification {
+                        // Keyboard will show.
                         let height = self.view.convertRect(keyboardSize, fromView: nil).size.height ?? 0
-                        
                         scrollView.snp_updateConstraints { (make) in
                             make.bottom.equalTo(self.view).inset(height)
                         }
-                        scrollView.setContentOffset(CGPoint(x: scrollView.contentOffset.x ?? 0, y: 0), animated: true)
                     } else {
+                        // Keyboard will hide.
                         scrollView.snp_updateConstraints { (make) in
                             make.bottom.equalTo(self.view).inset(0)
                         }
                     }
-                    
+
+                    // Animate the constraint changes.
                     UIView.animateWithDuration(0.5, animations: {
                         scrollView.layoutIfNeeded()
                     })
