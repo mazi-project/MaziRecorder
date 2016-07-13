@@ -118,20 +118,20 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
             .takeUntil(self.rac_willDeallocSignal())
             .toSignalProducer()
             .observeOn(UIScheduler())
-            .startWithNext { [weak self] (next : AnyObject?) in
+            .startWithNext { [unowned self] next in
                 if let notification = next as? NSNotification,
                     userInfo = notification.userInfo,
                     keyboardSize = (userInfo["UIKeyboardFrameEndUserInfoKey"] as? NSValue)?.CGRectValue() {
                     if notification.name == UIKeyboardWillShowNotification {
-                        let height = self?.view.convertRect(keyboardSize, fromView: nil).size.height ?? 0
+                        let height = self.view.convertRect(keyboardSize, fromView: nil).size.height ?? 0
                         
                         scrollView.snp_updateConstraints { (make) in
-                            make.bottom.equalTo(self!.view).inset(height)
+                            make.bottom.equalTo(self.view).inset(height)
                         }
                         scrollView.setContentOffset(CGPoint(x: scrollView.contentOffset.x ?? 0, y: 0), animated: true)
                     } else {
                         scrollView.snp_updateConstraints { (make) in
-                            make.bottom.equalTo(self!.view).inset(0)
+                            make.bottom.equalTo(self.view).inset(0)
                         }
                     }
                     
@@ -145,7 +145,7 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
             .map { $0.imageUrl }
             .filter { $0 != nil }
             .skipRepeats { $0 == $1 }
-            .startWithNext { imageUrl in
+            .startWithNext { [unowned self] imageUrl in
                 if let url = imageUrl {
                     self.currentImage.image = UIImage(contentsOfFile: url.absoluteString)
                 }
@@ -154,7 +154,7 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
         let maxLength = 1000
         synopsisField.rac_textSignal()
             .toSignalProducer()
-            .startWithNext { next in
+            .startWithNext { [unowned self] next in
                 if let text = next as? NSString {
                     // Make sure text field doesn't surpass a certain number of characters.
                     if text.length > maxLength {
@@ -170,7 +170,7 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
         // Take picture.
         pictureButton.rac_signalForControlEvents(.TouchUpInside)
             .toSignalProducer()
-            .startWithNext { _ in
+            .startWithNext { [unowned self] _ in
                 self.takePicture()
         }
         
@@ -178,7 +178,7 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
         self.rac_signalForSelector(#selector(SynopsisViewController.onUploadButtonClick))
             .toSignalProducer()
             .observeOn(UIScheduler())
-            .startWithNext { _ in
+            .startWithNext { [unowned self] _ in
                 let networkManager = NetworkManager()
                 networkManager.sendInterviewToServer(self.interview.value)
                     .on(started: {

@@ -60,7 +60,7 @@ class QuestionsListViewController: UIViewController, UITableViewDelegate, UITabl
         // Update the view whenever the model changes.
         interview.producer
             .observeOn(UIScheduler())
-            .startWithNext { (newInterview : Interview) in
+            .startWithNext { [unowned self] (newInterview : Interview) in
                 // Reload table view data.
                 self.tableView.reloadData()
                 
@@ -72,7 +72,7 @@ class QuestionsListViewController: UIViewController, UITableViewDelegate, UITabl
         self.rac_signalForSelector(#selector(QuestionsListViewController.onDoneButtonClick))
             .toSignalProducer()
             .observeOn(UIScheduler())
-            .startWithNext { (next : AnyObject?) in
+            .startWithNext { [unowned self] next in
                 let synospisVC = SynopsisViewController(interview: self.interview.value)
                 self.navigationController?.pushViewController(synospisVC, animated: true)
         }
@@ -81,7 +81,7 @@ class QuestionsListViewController: UIViewController, UITableViewDelegate, UITabl
         self.rac_signalForSelector(#selector(QuestionsListViewController.tableView(_:didSelectRowAtIndexPath:)))
             .toSignalProducer()
             .observeOn(UIScheduler())
-            .startWithNext { (next : AnyObject?) in
+            .startWithNext { [unowned self] next in
             if let tuple = next as? RACTuple,
                 tableView = tuple.first as? UITableView,
                 indexPath = tuple.second as? NSIndexPath {
