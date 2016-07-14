@@ -172,7 +172,7 @@ class ViewController: UIViewController {
                     }
                     
                     // Store the new name in the model.
-                    let update = InterviewUpdate(name: name as String)
+                    let update = InterviewUpdate(name: .Changed(name as String))
                     InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview.value, interviewUpdate: update)
                 }
         }
@@ -189,18 +189,19 @@ class ViewController: UIViewController {
                     }
                     
                     // Store the new role in the model.
-                    let update = InterviewUpdate(role: role as String)
+                    let update = InterviewUpdate(role: .Changed(role as String))
                     InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview.value, interviewUpdate: update)
                 }
         }
         
+        // Manual resetting.
         self.rac_signalForSelector(#selector(ViewController.onResetButtonClick))
             .toSignalProducer()
             .startWithNext { [weak self] _ in
                 guard let `self` = self else { return }
                 
                 // Reset the model's fields.
-                let update = InterviewUpdate(name: "", role: "", text: "", attachments: [], imageUrl: .None, identifierOnServer: .None)
+                let update = InterviewUpdate(name: .Changed(""), role: .Changed(""), text: .Changed(""), attachments: .Changed([]), imageUrl: .Changed(.None), identifierOnServer: .Changed(.None))
                 InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview.value, interviewUpdate: update)
         }
         

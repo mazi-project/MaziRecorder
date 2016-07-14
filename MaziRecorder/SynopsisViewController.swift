@@ -173,7 +173,7 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
                     }
                     
                     // Store the new name in the model.
-                    let update = InterviewUpdate(text: synopsisField.text)
+                    let update = InterviewUpdate(text: .Changed(synopsisField.text))
                     InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview.value, interviewUpdate: update)
                 }
         }
@@ -222,7 +222,7 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
                     })
                     .startWithNext({ interviewId in
                         // Store the new interview id in the model.
-                        let update = InterviewUpdate(identifierOnServer: interviewId)
+                        let update = InterviewUpdate(identifierOnServer: .Changed(interviewId))
                         InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview.value, interviewUpdate: update)
                     })
         }
@@ -262,7 +262,7 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
                 let imageData = UIImageJPEGRepresentation(image, 0.6)
                 if imageData!.writeToFile(imagePath, atomically: true) {
                     //add to interview
-                    let update = InterviewUpdate(imageUrl: NSURL(fileURLWithPath: imagePath))
+                    let update = InterviewUpdate(imageUrl: .Changed(NSURL(fileURLWithPath: imagePath)))
                     InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview.value, interviewUpdate: update)
                 }
             }

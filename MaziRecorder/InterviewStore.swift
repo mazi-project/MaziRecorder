@@ -106,7 +106,7 @@ class InterviewStore {
             newAttachments = newAttachments + [attachment]
         }
         
-        let update = InterviewUpdate(attachments: newAttachments)
+        let update = InterviewUpdate(attachments: .Changed(newAttachments))
         self.updateInterview(fromInterview: interview, interviewUpdate: update)
     }
     

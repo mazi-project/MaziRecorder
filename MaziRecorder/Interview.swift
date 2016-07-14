@@ -39,12 +39,12 @@ struct Interview {
     init(interview: Interview, interviewUpdate: InterviewUpdate) {
         self.init(identifier: interview.identifier,
                   creationDate: interview.creationDate,
-                  name: interviewUpdate.name ?? interview.name,
-                  role: interviewUpdate.role ?? interview.role,
-                  text: interviewUpdate.text ?? interview.text,
-                  attachments: interviewUpdate.attachments ?? interview.attachments,
-                  imageUrl: interviewUpdate.imageUrl ?? interview.imageUrl,
-                  identifierOnServer: interviewUpdate.identifierOnServer ?? interview.identifierOnServer)
+                  name: interviewUpdate.name.newValue(interview.name),
+                  role: interviewUpdate.role.newValue(interview.role),
+                  text: interviewUpdate.text.newValue(interview.text),
+                  attachments: interviewUpdate.attachments.newValue(interview.attachments),
+                  imageUrl: interviewUpdate.imageUrl.newValue(interview.imageUrl),
+                  identifierOnServer: interviewUpdate.identifierOnServer.newValue(interview.identifierOnServer))
     }
 }
 
@@ -93,15 +93,29 @@ func ==(lhs: Interview, rhs: Interview) -> Bool {
         && lhs.identifierOnServer == rhs.identifierOnServer
 }
 
-struct InterviewUpdate {
-    var name : String?
-    var role : String?
-    var text : String?
-    var attachments : [Attachment]?
-    var imageUrl : NSURL??
-    var identifierOnServer : String??
+enum UpdateValue<T> {
+    case Unchanged
+    case Changed(T)
     
-    init(name: String? = .None, role: String? = .None, text: String? = .None, attachments: [Attachment]? = .None, imageUrl: NSURL?? = .None, identifierOnServer: String?? = .None) {
+    func newValue(oldValue: T) -> T {
+        switch self {
+        case .Changed(let x):
+            return x
+        default:
+            return oldValue
+        }
+    }
+}
+
+struct InterviewUpdate {
+    var name : UpdateValue<String>
+    var role : UpdateValue<String>
+    var text : UpdateValue<String>
+    var attachments : UpdateValue<[Attachment]>
+    var imageUrl : UpdateValue<NSURL?>
+    var identifierOnServer : UpdateValue<String?>
+    
+    init(name: UpdateValue<String> = .Unchanged, role: UpdateValue<String> = .Unchanged, text: UpdateValue<String> = .Unchanged, attachments: UpdateValue<[Attachment]> = .Unchanged, imageUrl: UpdateValue<NSURL?> = .Unchanged, identifierOnServer: UpdateValue<String?> = .Unchanged) {
         self.name = name
         self.role = role
         self.text = text
