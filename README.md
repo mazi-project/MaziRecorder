@@ -13,8 +13,8 @@
 * [x] Sound visualisation for audio recorder
 * [x] Scroll up when the keyboard appears
 * [x] Fix retain cycles
-* [ ] Reset interview after submitting
-* [ ] Fix bug where photo isn't displayed
+* [x] Reset interview after submitting
+* [x] Fix bug where photo isn't displayed
 
 
 
