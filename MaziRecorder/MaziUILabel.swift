@@ -13,6 +13,8 @@ class MaziUILabel : UILabel {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
+        self.numberOfLines = 2
+        
     }
     
     required init?(coder aDecoder: NSCoder) {

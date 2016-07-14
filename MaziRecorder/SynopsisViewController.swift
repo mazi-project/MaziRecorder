@@ -44,7 +44,7 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
         let containerView = UIView()
         scrollView.addSubview(containerView)
         
-        let synopsisLabel = MaziUILabel()
+        let synopsisLabel = MaziUIInputLabel()
         synopsisLabel.text = "Synopsis"
         containerView.addSubview(synopsisLabel)
         
@@ -186,6 +186,8 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
                     })
                     .on(failed: { error in
                         self.stopActivityAnimating()
+                        let alertView = UIAlertView(title: "Error", message: "Could not connect to server.", delegate: nil, cancelButtonTitle: "Ok")
+                        alertView.show()
                     })
                     .on(completed: {
                         // Hide spinner.
@@ -215,7 +217,7 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
     
     func takePicture() {
         if (UIImagePickerController.isSourceTypeAvailable(.Camera)) {
-            if UIImagePickerController.availableCaptureModesForCameraDevice(.Rear) != nil {
+            if UIImagePickerController.availableCaptureModesForCameraDevice(.Front) != nil {
                 imagePicker.delegate = self
                 imagePicker.allowsEditing = false
                 imagePicker.sourceType = .Camera

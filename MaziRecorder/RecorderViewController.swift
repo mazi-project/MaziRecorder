@@ -102,6 +102,11 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         
         containerView.addSubview(soundVisualizer)
         
+        let tagsLabel = MaziUIInputLabel()
+        tagsLabel.text = "Tags"
+        tagsLabel.textAlignment = .Left
+        containerView.addSubview(tagsLabel)
+        
         let tagsField = MaziUITextField()
         tagsField.text = self.attachment?.tags.joinWithSeparator(" ")
         tagsField.attributedPlaceholder = NSAttributedString(string: "Tag question by space seperated tags")
@@ -142,8 +147,12 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
             make.height.equalTo(180)
             make.centerX.equalTo(containerView)
         }
-        tagsField.snp_makeConstraints { (make) in
+        tagsLabel.snp_makeConstraints { (make) in
             make.top.equalTo(soundVisualizer.snp_bottom).offset(MaziStyle.paragraphSpacing)
+            make.left.right.equalTo(containerView).inset(MaziStyle.outerInset)
+        }
+        tagsField.snp_makeConstraints { (make) in
+            make.top.equalTo(tagsLabel.snp_bottom).offset(MaziStyle.spacing)
             make.left.right.bottom.equalTo(containerView).inset(MaziStyle.outerInset)
         }
         

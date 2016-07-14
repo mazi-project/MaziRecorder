@@ -13,7 +13,14 @@ import SnapKit
 class QuestionsListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     let interview : MutableProperty<Interview>
-    let questions = ["First question", "Second question", "Third question"]
+    let questions = [
+        "What are the topics you are interested in or working with?",
+        "What is the strongest tool/method/practice you work with?",
+        "What public/shared/open space in your city do you love?",
+        "Describe a context/conversation/situation that you have been part of, that you were satisfied with.",
+        "What was you biggest insight in the time we have spent together?",
+        "What problem would you like to solve next?"
+    ]
     
     let cellIdentifier = "cellIdentifier"
     

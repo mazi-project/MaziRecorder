@@ -29,8 +29,9 @@ class ViewController: UIViewController {
         scrollView.addSubview(containerView)
         
         let introTextLabel = MaziUILabel()
-        introTextLabel.text = "Preparing a new Interview"
+        introTextLabel.text = "Prepare a new Interview."
         introTextLabel.numberOfLines = 0
+        introTextLabel.textAlignment = .Center
         containerView.addSubview(introTextLabel)
         
         let nameLabel = MaziUIInputLabel()
