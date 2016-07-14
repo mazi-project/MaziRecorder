@@ -118,7 +118,9 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
             .map { $0.imageUrl }
             .filter { $0 != nil }
             .skipRepeats { $0 == $1 }
-            .startWithNext { [unowned self] imageUrl in
+            .startWithNext { [weak self] imageUrl in
+                guard let `self` = self else { return }
+                
                 if let url = imageUrl,
                     imageData = NSData(contentsOfURL: url) {
                     self.currentImage.image = UIImage(data: imageData)
@@ -132,7 +134,9 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
             .takeUntil(self.rac_willDeallocSignal())
             .toSignalProducer()
             .observeOn(UIScheduler())
-            .startWithNext { [unowned self] next in
+            .startWithNext { [weak self] next in
+                guard let `self` = self else { return }
+                
                 if let notification = next as? NSNotification,
                     userInfo = notification.userInfo,
                     keyboardSize = (userInfo["UIKeyboardFrameEndUserInfoKey"] as? NSValue)?.CGRectValue() {
@@ -159,7 +163,9 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
         let maxLength = 1000
         synopsisField.rac_textSignal()
             .toSignalProducer()
-            .startWithNext { [unowned self] next in
+            .startWithNext { [weak self] next in
+                guard let `self` = self else { return }
+                
                 if let text = next as? NSString {
                     // Make sure text field doesn't surpass a certain number of characters.
                     if text.length > maxLength {
@@ -175,7 +181,9 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
         // Take picture.
         pictureButton.rac_signalForControlEvents(.TouchUpInside)
             .toSignalProducer()
-            .startWithNext { [unowned self] _ in
+            .startWithNext { [weak self] _ in
+                guard let `self` = self else { return }
+                
                 self.takePicture()
         }
         
@@ -183,7 +191,9 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
         self.rac_signalForSelector(#selector(SynopsisViewController.onUploadButtonClick))
             .toSignalProducer()
             .observeOn(UIScheduler())
-            .startWithNext { [unowned self] _ in
+            .startWithNext { [weak self] _ in
+                guard let `self` = self else { return }
+                
                 let networkManager = NetworkManager()
                 networkManager.sendInterviewToServer(self.interview.value)
                     .on(started: {

@@ -172,7 +172,9 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         
         tagsField.rac_textSignal()
             .toSignalProducer()
-            .startWithNext { [unowned self] next in
+            .startWithNext { [weak self] next in
+                guard let `self` = self else { return }
+                
                 if let tags = next as? NSString {
                     // make sure that there are only asci chars and spaces in the tag string
                     let matches = matchesForRegexInText("[a-zA-Z0-9_ ]", text : String(tags))
@@ -190,7 +192,9 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
             .takeUntil(self.rac_willDeallocSignal())
             .toSignalProducer()
             .observeOn(UIScheduler())
-            .startWithNext { [unowned self] next in
+            .startWithNext { [weak self] next in
+                guard let `self` = self else { return }
+                
                 if let notification = next as? NSNotification,
                     userInfo = notification.userInfo,
                     keyboardSize = (userInfo["UIKeyboardFrameEndUserInfoKey"] as? NSValue)?.CGRectValue() {
@@ -216,7 +220,9 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         
         startButton.rac_signalForControlEvents(.TouchUpInside)
             .toSignalProducer()
-            .startWithNext { [unowned self] _ in
+            .startWithNext { [weak self] _ in
+                guard let `self` = self else { return }
+                
                 if let recorder = self.audioRecorder {
                     if (recorder.recording) {
                         self.hasRecorderd = true
@@ -242,7 +248,9 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         self.rac_signalForSelector(#selector(RecorderViewController.onSaveButtonClick))
             .toSignalProducer()
             .observeOn(UIScheduler())
-            .startWithNext { [unowned self] next in
+            .startWithNext { [weak self] next in
+                guard let `self` = self else { return }
+                
                 if let recorder = self.audioRecorder {
                     // Get the duration of the recording (in seconds).
                     let asset = AVURLAsset(URL: recorder.url)

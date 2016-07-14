@@ -131,7 +131,9 @@ class ViewController: UIViewController {
             .takeUntil(self.rac_willDeallocSignal())
             .toSignalProducer()
             .observeOn(UIScheduler())
-            .startWithNext { [unowned self] next in
+            .startWithNext { [weak self] next in
+                guard let `self` = self else { return }
+                
                 if let notification = next as? NSNotification,
                     userInfo = notification.userInfo,
                     keyboardSize = (userInfo["UIKeyboardFrameEndUserInfoKey"] as? NSValue)?.CGRectValue() {
@@ -160,7 +162,9 @@ class ViewController: UIViewController {
         nameField.rac_textSignal()
             .toSignalProducer()
             .skip(1)
-            .startWithNext { [unowned self] next in
+            .startWithNext { [weak self] next in
+                guard let `self` = self else { return }
+                
                 if var name = next as? NSString {
                     // Make sure text field doesn't surpass a certain number of characters.
                     if name.length > maxLength {
@@ -175,7 +179,9 @@ class ViewController: UIViewController {
         roleField.rac_textSignal()
             .toSignalProducer()
             .skip(1)
-            .startWithNext { [unowned self] next in
+            .startWithNext { [weak self] next in
+                guard let `self` = self else { return }
+                
                 if var role = next as? NSString {
                     // Make sure text field doesn't surpass a certain number of characters.
                     if role.length > maxLength {
@@ -190,7 +196,9 @@ class ViewController: UIViewController {
         
         self.rac_signalForSelector(#selector(ViewController.onResetButtonClick))
             .toSignalProducer()
-            .startWithNext { [unowned self] _ in
+            .startWithNext { [weak self] _ in
+                guard let `self` = self else { return }
+                
                 // Reset the model's fields.
                 let update = InterviewUpdate(name: "", role: "", text: "", attachments: [], imageUrl: .None, identifierOnServer: .None)
                 InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview.value, interviewUpdate: update)
@@ -199,7 +207,9 @@ class ViewController: UIViewController {
         // Navigate to the next screen when the user presses Start.
         startButton.rac_signalForControlEvents(.TouchUpInside)
             .toSignalProducer()
-            .startWithNext { [unowned self] _ in
+            .startWithNext { [weak self] _ in
+                guard let `self` = self else { return }
+                
                 let questionsListVC = QuestionsListViewController(interview: self.interview.value)
                 self.navigationController?.pushViewController(questionsListVC, animated: true)
         }
