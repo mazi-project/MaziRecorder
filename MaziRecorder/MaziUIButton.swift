@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import ReactiveCocoa
 
 class MaziUIButton : UIButton {
     
@@ -17,16 +18,14 @@ class MaziUIButton : UIButton {
         self.setTitleColor(MaziStyle.buttonTextColor, forState: .Normal)
         self.layer.cornerRadius = MaziStyle.cornerRadius
         
-        //add border
-        //self.layer.borderColor = MaziStyle.buttonBorderColor.CGColor
-        //self.layer.borderWidth = MaziStyle.borderWidth
-        
-        //add shadow
-        /*self.layer.shadowColor = UIColor.blackColor().CGColor;
-        self.layer.shadowOpacity = 0.5
-        self.layer.shadowRadius = 1
-        self.layer.shadowOffset = CGSizeMake(1, 1)
-        self.layer.masksToBounds = false*/
+        self.rac_valuesForKeyPath("enabled", observer: self)
+            .toSignalProducer()
+            .observeOn(UIScheduler())
+            .startWithNext { [weak self] next in
+                guard let `self` = self,
+                enabled = next as? Bool else { return }
+                self.alpha = enabled ? 1 : 0.2
+        }
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -45,19 +44,13 @@ class MaziUIRecordingButton : MaziUIButton {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        //self.back
-        self.setTitleColor(MaziStyle.buttonTextColor, forState: .Selected)
-        
         self.setBackgroundImage(MaziUIRecordingButton.imageWithColor(MaziStyle.buttonBgColor), forState: .Selected)
+        self.setTitleColor(MaziStyle.buttonTextColor, forState: .Selected)
         
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    func setSelectState(selected : Bool) {
-        self.selected = selected
     }
     
     static func imageWithColor(color : UIColor) -> UIImage {

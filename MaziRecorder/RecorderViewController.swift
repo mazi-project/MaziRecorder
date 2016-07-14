@@ -140,6 +140,7 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
             make.top.equalTo(introTextLabel.snp_bottom).offset(MaziStyle.paragraphSpacing)
             make.centerX.equalTo(containerView)
             make.width.equalTo(120)
+            make.height.equalTo(44)
         }
         timeTextLabel.snp_makeConstraints { (make) in
             make.top.equalTo(startButton.snp_bottom).offset(MaziStyle.largeSpacing)

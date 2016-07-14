@@ -104,6 +104,7 @@ class ViewController: UIViewController {
         startButton.snp_makeConstraints { (make) in
             make.top.equalTo(roleField.snp_bottom).offset(MaziStyle.largeSpacing)
             make.width.equalTo(120)
+            make.height.equalTo(44)
             make.centerX.equalTo(containerView)
             make.bottom.equalTo(containerView).inset(MaziStyle.outerInset)
         }
