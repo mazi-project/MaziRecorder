@@ -197,6 +197,7 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
                 
                 let networkManager = NetworkManager()
                 networkManager.sendInterviewToServer(self.interview.value)
+                    .observeOn(UIScheduler())
                     .on(started: {
                         // Show spinner.
                         self.startActivityAnimating(CGSize(width: 100, height: 100))
@@ -217,7 +218,7 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
                         
                         // Create a new interview for the starting view, and navigate back to it.
                         if let rootViewController = self.navigationController?.viewControllers.first as? ViewController {
-                            rootViewController.interview.value = InterviewStore.sharedInstance.createInterview()
+                            rootViewController.setNewInterviewObservation(InterviewStore.sharedInstance.createInterview())
                             self.navigationController?.popToRootViewControllerAnimated(true)
                         }
                     })

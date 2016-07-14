@@ -9,11 +9,24 @@
 import UIKit
 import SnapKit
 import ReactiveCocoa
+import enum Result.NoError
 
 class ViewController: UIViewController {
     
     // Create a new interview
-    let interview = MutableProperty<Interview>(InterviewStore.sharedInstance.fetchLatestIncompleteOrCreateNewInterview())
+    private let interview = MutableProperty<Interview>(InterviewStore.sharedInstance.fetchLatestIncompleteOrCreateNewInterview())
+    
+    // Signal of signals of interviews. This producer allows us to change which
+    // interview to observe (used when resetting after a successful submission).
+    private let (interviewObservationsProducer, interviewObservationsObserver) = SignalProducer<SignalProducer<Interview, NoError>, NoError>.buffer(1)
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        
+        // Sync the view's interview with the model.
+        interview <~ interviewObservationsProducer.flatten(.Latest)
+        self.setNewInterviewObservation(interview.value)
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -111,9 +124,6 @@ class ViewController: UIViewController {
         
         // Reactive bindings.
         
-        // Sync the view's interview with the model.
-        interview <~ InterviewStore.sharedInstance.interviewSignal(interview.value.identifier).ignoreNil()
-        
         // Update the view whenever the model changes.
         interview.producer
             .observeOn(UIScheduler())
@@ -122,7 +132,8 @@ class ViewController: UIViewController {
                 roleField.text = newInterview.role
                 
                 // Disable start button when either name or role is empty.
-                startButton.enabled = newInterview.name.characters.count > 0 && newInterview.role.characters.count > 0
+                startButton.enabled = newInterview.name.characters.count > 0
+                    && newInterview.role.characters.count > 0
         }
         
         RACSignal.merge([
@@ -220,6 +231,11 @@ class ViewController: UIViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func setNewInterviewObservation(newInterview: Interview) {
+        let newInterviewProducer = InterviewStore.sharedInstance.interviewSignal(newInterview.identifier).ignoreNil().skipRepeats()
+        interviewObservationsObserver.sendNext(newInterviewProducer)
     }
     
     func onResetButtonClick() {}
