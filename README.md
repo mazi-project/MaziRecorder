@@ -5,15 +5,16 @@
 * [x] Load persisted state
 * [x] Create network manager
 * [x] Styling
-* [x] Reseting Interview
-* [x] Color questions depening on if they are answered
-* [x] RecorderView : Load tags from model and update attachment in interview model instead of pushing it
-* [ ] Upload View
-* [x] Fix Label Text
-* [x] Sound Visualisation for Audio Recorder
+* [x] Add manual resetting functionality
+* [x] Color questions depending on if they are answered
+* [x] Recorder view: load tags from model and update attachment in interview model instead of creating a new one
+* [x] Add upload feedback
+* [x] Fix label text in recording view
+* [x] Sound visualisation for audio recorder
 * [x] Scroll up when the keyboard appears
-* [ ] Fix retain cycles
+* [x] Fix retain cycles
 * [ ] Reset interview after submitting
+* [ ] Fix bug where photo isn't displayed
 
 
 

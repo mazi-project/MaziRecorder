@@ -66,11 +66,14 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
         scrollView.snp_makeConstraints { (make) in
             make.edges.equalTo(self.view)
         }
-        
+
+        let navigationBarHeight = UIApplication.sharedApplication().statusBarFrame.height +
+            (navigationController?.navigationBar.bounds.height ?? 0)
         containerView.snp_makeConstraints { (make) in
             make.width.equalTo(self.view).multipliedBy(0.5)
             make.centerX.equalTo(self.view)
-            make.top.equalTo(scrollView).offset(MaziStyle.containerOffsetY)
+            make.top.greaterThanOrEqualTo(scrollView)
+            make.centerY.equalTo(scrollView).offset(-navigationBarHeight).priorityLow()
             make.bottom.lessThanOrEqualTo(scrollView)
         }
         
@@ -118,23 +121,24 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
             .takeUntil(self.rac_willDeallocSignal())
             .toSignalProducer()
             .observeOn(UIScheduler())
-            .startWithNext { [weak self] (next : AnyObject?) in
+            .startWithNext { [unowned self] next in
                 if let notification = next as? NSNotification,
                     userInfo = notification.userInfo,
                     keyboardSize = (userInfo["UIKeyboardFrameEndUserInfoKey"] as? NSValue)?.CGRectValue() {
                     if notification.name == UIKeyboardWillShowNotification {
-                        let height = self?.view.convertRect(keyboardSize, fromView: nil).size.height ?? 0
-                        
+                        // Keyboard will show.
+                        let height = self.view.convertRect(keyboardSize, fromView: nil).size.height ?? 0
                         scrollView.snp_updateConstraints { (make) in
-                            make.bottom.equalTo(self!.view).inset(height)
+                            make.bottom.equalTo(self.view).inset(height)
                         }
-                        scrollView.setContentOffset(CGPoint(x: scrollView.contentOffset.x ?? 0, y: 0), animated: true)
                     } else {
+                        // Keyboard will hide.
                         scrollView.snp_updateConstraints { (make) in
-                            make.bottom.equalTo(self!.view).inset(0)
+                            make.bottom.equalTo(self.view).inset(0)
                         }
                     }
-                    
+
+                    // Animate the constraint changes.
                     UIView.animateWithDuration(0.5, animations: {
                         scrollView.layoutIfNeeded()
                     })
@@ -145,7 +149,7 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
             .map { $0.imageUrl }
             .filter { $0 != nil }
             .skipRepeats { $0 == $1 }
-            .startWithNext { imageUrl in
+            .startWithNext { [unowned self] imageUrl in
                 if let url = imageUrl {
                     self.currentImage.image = UIImage(contentsOfFile: url.absoluteString)
                 }
@@ -154,7 +158,7 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
         let maxLength = 1000
         synopsisField.rac_textSignal()
             .toSignalProducer()
-            .startWithNext { next in
+            .startWithNext { [unowned self] next in
                 if let text = next as? NSString {
                     // Make sure text field doesn't surpass a certain number of characters.
                     if text.length > maxLength {
@@ -170,7 +174,7 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
         // Take picture.
         pictureButton.rac_signalForControlEvents(.TouchUpInside)
             .toSignalProducer()
-            .startWithNext { _ in
+            .startWithNext { [unowned self] _ in
                 self.takePicture()
         }
         
@@ -178,19 +182,22 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
         self.rac_signalForSelector(#selector(SynopsisViewController.onUploadButtonClick))
             .toSignalProducer()
             .observeOn(UIScheduler())
-            .startWithNext { _ in
+            .startWithNext { [unowned self] _ in
                 let networkManager = NetworkManager()
                 networkManager.sendInterviewToServer(self.interview.value)
                     .on(started: {
+                        // Show spinner.
                         self.startActivityAnimating(CGSize(width: 100, height: 100))
                     })
                     .on(failed: { error in
+                        // Hide spinner.
                         self.stopActivityAnimating()
                         let alertView = UIAlertView(title: "Error", message: "Could not connect to server.", delegate: nil, cancelButtonTitle: "Ok")
                         alertView.show()
                     })
                     .on(completed: {
                         // Hide spinner.
+                        self.stopActivityAnimating()
                         
                         // Show a popup saying the upload was successful.
                         let alertView = UIAlertView(title: "Success", message: "The interview was uploaded to the server.", delegate: nil, cancelButtonTitle: "Ok")

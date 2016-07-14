@@ -64,11 +64,14 @@ class ViewController: UIViewController {
         scrollView.snp_makeConstraints { (make) in
             make.edges.equalTo(self.view)
         }
-        
+
+        let navigationBarHeight = UIApplication.sharedApplication().statusBarFrame.height +
+            (navigationController?.navigationBar.bounds.height ?? 0)
         containerView.snp_makeConstraints { (make) in
             make.width.equalTo(self.view).multipliedBy(0.5)
             make.centerX.equalTo(self.view)
-            make.top.equalTo(scrollView).offset(MaziStyle.containerOffsetY)
+            make.top.greaterThanOrEqualTo(scrollView)
+            make.centerY.equalTo(scrollView).offset(-navigationBarHeight).priorityLow()
             make.bottom.lessThanOrEqualTo(scrollView)
         }
         
@@ -128,23 +131,24 @@ class ViewController: UIViewController {
             .takeUntil(self.rac_willDeallocSignal())
             .toSignalProducer()
             .observeOn(UIScheduler())
-            .startWithNext { [weak self] (next : AnyObject?) in
+            .startWithNext { [unowned self] next in
                 if let notification = next as? NSNotification,
                     userInfo = notification.userInfo,
                     keyboardSize = (userInfo["UIKeyboardFrameEndUserInfoKey"] as? NSValue)?.CGRectValue() {
                     if notification.name == UIKeyboardWillShowNotification {
-                        let height = self?.view.convertRect(keyboardSize, fromView: nil).size.height ?? 0
-                        
+                        // Keyboard will show.
+                        let height = self.view.convertRect(keyboardSize, fromView: nil).size.height ?? 0
                         scrollView.snp_updateConstraints { (make) in
-                            make.bottom.equalTo(self!.view).inset(height)
+                            make.bottom.equalTo(self.view).inset(height)
                         }
-                        scrollView.setContentOffset(CGPoint(x: scrollView.contentOffset.x ?? 0, y: 0), animated: true)
                     } else {
+                        // Keyboard will hide.
                         scrollView.snp_updateConstraints { (make) in
-                            make.bottom.equalTo(self!.view).inset(0)
+                            make.bottom.equalTo(self.view).inset(0)
                         }
                     }
-                    
+
+                    // Animate the constraint changes.
                     UIView.animateWithDuration(0.5, animations: {
                         scrollView.layoutIfNeeded()
                     })
@@ -156,7 +160,7 @@ class ViewController: UIViewController {
         nameField.rac_textSignal()
             .toSignalProducer()
             .skip(1)
-            .startWithNext { next in
+            .startWithNext { [unowned self] next in
                 if var name = next as? NSString {
                     // Make sure text field doesn't surpass a certain number of characters.
                     if name.length > maxLength {
@@ -171,7 +175,7 @@ class ViewController: UIViewController {
         roleField.rac_textSignal()
             .toSignalProducer()
             .skip(1)
-            .startWithNext { next in
+            .startWithNext { [unowned self] next in
                 if var role = next as? NSString {
                     // Make sure text field doesn't surpass a certain number of characters.
                     if role.length > maxLength {
@@ -186,7 +190,7 @@ class ViewController: UIViewController {
         
         self.rac_signalForSelector(#selector(ViewController.onResetButtonClick))
             .toSignalProducer()
-            .startWithNext { _ in
+            .startWithNext { [unowned self] _ in
                 // Reset the model's fields.
                 let update = InterviewUpdate(name: "", role: "", text: "", attachments: [], imageUrl: .None, identifierOnServer: .None)
                 InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview.value, interviewUpdate: update)
@@ -195,7 +199,7 @@ class ViewController: UIViewController {
         // Navigate to the next screen when the user presses Start.
         startButton.rac_signalForControlEvents(.TouchUpInside)
             .toSignalProducer()
-            .startWithNext { _ in
+            .startWithNext { [unowned self] _ in
                 let questionsListVC = QuestionsListViewController(interview: self.interview.value)
                 self.navigationController?.pushViewController(questionsListVC, animated: true)
         }

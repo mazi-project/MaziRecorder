@@ -122,13 +122,17 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         scrollView.snp_makeConstraints { (make) in
             make.edges.equalTo(self.view)
         }
-        
+
+        let navigationBarHeight = UIApplication.sharedApplication().statusBarFrame.height +
+            (navigationController?.navigationBar.bounds.height ?? 0)
         containerView.snp_makeConstraints { (make) in
             make.width.equalTo(self.view).multipliedBy(0.5)
             make.centerX.equalTo(self.view)
-            make.top.greaterThanOrEqualTo(scrollView).offset(MaziStyle.containerOffsetY)
+            make.top.greaterThanOrEqualTo(scrollView)
+            make.centerY.equalTo(scrollView).offset(-navigationBarHeight).priorityLow()
             make.bottom.lessThanOrEqualTo(scrollView)
         }
+
         introTextLabel.snp_makeConstraints { (make) in
             make.top.left.right.equalTo(containerView).inset(MaziStyle.outerInset)
         }
@@ -168,7 +172,7 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         
         tagsField.rac_textSignal()
             .toSignalProducer()
-            .startWithNext { next in
+            .startWithNext { [unowned self] next in
                 if let tags = next as? NSString {
                     // make sure that there are only asci chars and spaces in the tag string
                     let matches = matchesForRegexInText("[a-zA-Z0-9_ ]", text : String(tags))
@@ -186,23 +190,24 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
             .takeUntil(self.rac_willDeallocSignal())
             .toSignalProducer()
             .observeOn(UIScheduler())
-            .startWithNext { [weak self] (next : AnyObject?) in
+            .startWithNext { [unowned self] next in
                 if let notification = next as? NSNotification,
                     userInfo = notification.userInfo,
                     keyboardSize = (userInfo["UIKeyboardFrameEndUserInfoKey"] as? NSValue)?.CGRectValue() {
                     if notification.name == UIKeyboardWillShowNotification {
-                        let height = self?.view.convertRect(keyboardSize, fromView: nil).size.height ?? 0
-                        
+                        // Keyboard will show.
+                        let height = self.view.convertRect(keyboardSize, fromView: nil).size.height ?? 0
                         scrollView.snp_updateConstraints { (make) in
-                            make.bottom.equalTo(self!.view).inset(height)
+                            make.bottom.equalTo(self.view).inset(height)
                         }
-                        scrollView.setContentOffset(CGPoint(x: scrollView.contentOffset.x ?? 0, y: 0), animated: true)
                     } else {
+                        // Keyboard will hide.
                         scrollView.snp_updateConstraints { (make) in
-                            make.bottom.equalTo(self!.view).inset(0)
+                            make.bottom.equalTo(self.view).inset(0)
                         }
                     }
-                    
+
+                    // Animate the constraint changes.
                     UIView.animateWithDuration(0.5, animations: {
                         scrollView.layoutIfNeeded()
                     })
@@ -211,7 +216,7 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         
         startButton.rac_signalForControlEvents(.TouchUpInside)
             .toSignalProducer()
-            .startWithNext { _ in
+            .startWithNext { [unowned self] _ in
                 if let recorder = self.audioRecorder {
                     if (recorder.recording) {
                         self.hasRecorderd = true
@@ -237,7 +242,7 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         self.rac_signalForSelector(#selector(RecorderViewController.onSaveButtonClick))
             .toSignalProducer()
             .observeOn(UIScheduler())
-            .startWithNext { (next : AnyObject?) in
+            .startWithNext { [unowned self] next in
                 if let recorder = self.audioRecorder {
                     // Get the duration of the recording (in seconds).
                     let asset = AVURLAsset(URL: recorder.url)
@@ -253,6 +258,7 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
     }
     
     override func viewDidDisappear(animated: Bool) {
+        super.viewDidDisappear(animated)
         stopRecording()
     }
 
