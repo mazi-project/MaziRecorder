@@ -90,7 +90,8 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
         
         pictureButton.snp_makeConstraints { (make) in
             make.top.equalTo(synopsisField.snp_bottom).offset(MaziStyle.largeSpacing)
-            make.width.equalTo(120)
+            make.width.equalTo(MaziStyle.buttonSize.width)
+            make.height.equalTo(MaziStyle.buttonSize.height)
             make.centerX.equalTo(containerView)
         }
         

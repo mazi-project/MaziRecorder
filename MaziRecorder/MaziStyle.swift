@@ -18,6 +18,7 @@ enum MaziStyle {
     static let largeSpacing = 20
     static let paragraphSpacing = 50
     static let textPadding = CGFloat(10)
+    static let buttonSize = CGSize(width: 120, height: 44)
     
     // Borders
     
