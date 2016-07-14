@@ -114,6 +114,17 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
                 uploadButton.enabled = newInterview.text.characters.count > 0 && newInterview.imageUrl != nil
         }
         
+        interview.producer.observeOn(UIScheduler())
+            .map { $0.imageUrl }
+            .filter { $0 != nil }
+            .skipRepeats { $0 == $1 }
+            .startWithNext { [unowned self] imageUrl in
+                if let url = imageUrl,
+                    imageData = NSData(contentsOfURL: url) {
+                    self.currentImage.image = UIImage(data: imageData)
+                }
+        }
+        
         RACSignal.merge([
             NSNotificationCenter.defaultCenter().rac_addObserverForName(UIKeyboardWillShowNotification, object: nil),
             NSNotificationCenter.defaultCenter().rac_addObserverForName(UIKeyboardWillHideNotification, object: nil)
@@ -137,21 +148,11 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
                             make.bottom.equalTo(self.view).inset(0)
                         }
                     }
-
+                    
                     // Animate the constraint changes.
                     UIView.animateWithDuration(0.5, animations: {
                         scrollView.layoutIfNeeded()
                     })
-                }
-        }
-        
-        interview.producer.observeOn(UIScheduler())
-            .map { $0.imageUrl }
-            .filter { $0 != nil }
-            .skipRepeats { $0 == $1 }
-            .startWithNext { [unowned self] imageUrl in
-                if let url = imageUrl {
-                    self.currentImage.image = UIImage(contentsOfFile: url.absoluteString)
                 }
         }
         
