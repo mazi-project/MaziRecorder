@@ -8,7 +8,7 @@
 
 import UIKit
 
-struct MaziStyle {
+enum MaziStyle {
     
     // Spacings
     
