@@ -9,16 +9,17 @@
 import UIKit
 import SnapKit
 import AVFoundation
+import ReactiveSwift
 import ReactiveCocoa
 import enum Result.NoError
 
 class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDelegate {
     
     let recordSettings = [
-        AVSampleRateKey : NSNumber(float: Float(44100.0)),
-        AVFormatIDKey : NSNumber(int: Int32(kAudioFormatLinearPCM)),
-        AVNumberOfChannelsKey : NSNumber(int: 1),
-        AVEncoderAudioQualityKey : NSNumber(int: Int32(AVAudioQuality.Medium.rawValue))
+        AVSampleRateKey : NSNumber(value: Float(44100.0) as Float),
+        AVFormatIDKey : NSNumber(value: Int32(kAudioFormatLinearPCM) as Int32),
+        AVNumberOfChannelsKey : NSNumber(value: 1 as Int32),
+        AVEncoderAudioQualityKey : NSNumber(value: Int32(AVAudioQuality.medium.rawValue) as Int32)
     ]
     
     let interview : MutableProperty<Interview>
@@ -38,17 +39,17 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
     init(interview: Interview, question : String) {
         self.interview = MutableProperty<Interview>(interview)
         self.question = question
-        
+
         super.init(nibName : nil, bundle : nil)
         
         // Sync the view's interview with the model.
-        self.interview <~ InterviewStore.sharedInstance.interviewSignal(interview.identifier).ignoreNil()
+        self.interview <~ InterviewStore.sharedInstance.interviewSignal(interview.identifier).skipNil()
         
         //get attachment if there is already on saved
-        if let found = self.interview.value.attachments.indexOf({$0.questionText == self.question}) {
+        if let found = self.interview.value.attachments.index(where: {$0.questionText == self.question}) {
             self.attachment = self.interview.value.attachments[found]
         } else {
-            self.attachment = Attachment(questionText: self.question, tags: [], recordingUrl: NSURL(fileURLWithPath: ""))
+            self.attachment = Attachment(questionText: self.question, tags: [], recordingUrl: URL(fileURLWithPath: ""))
         }
     }
     
@@ -67,11 +68,11 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         let audioSession = AVAudioSession.sharedInstance()
         do {
             try audioSession.setCategory(AVAudioSessionCategoryPlayAndRecord)
-            try audioRecorder = AVAudioRecorder(URL: self.directoryURL()!, settings: recordSettings)
+            try audioRecorder = AVAudioRecorder(url: self.directoryURL()!, settings: recordSettings)
             if let a = audioRecorder {
                 a.prepareToRecord()
                 a.delegate = self
-                a.meteringEnabled = true
+                a.isMeteringEnabled = true
             }
         } catch let error {
             print(error)
@@ -87,77 +88,77 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         let introTextLabel = MaziUILabel()
         introTextLabel.text = self.question
         containerView.addSubview(introTextLabel)
-        introTextLabel.textAlignment = .Center
+        introTextLabel.textAlignment = .center
         
-        let startButton = MaziUIRecordingButton(type: .System)
-        startButton.setTitle("Start", forState: .Normal)
+        let startButton = MaziUIRecordingButton(type: .system)
+        startButton.setTitle("Start", for: UIControlState())
         containerView.addSubview(startButton)
         
         let timeTextLabel = MaziUILabel()
         timeTextLabel.numberOfLines = 1
         timeTextLabel.text = self.stringWithTime(attachment?.recordingDuration ?? 0)
-        timeTextLabel.textAlignment = .Center
-        timeTextLabel.font = UIFont.systemFontOfSize(60)
+        timeTextLabel.textAlignment = .center
+        timeTextLabel.font = UIFont.systemFont(ofSize: 60)
         containerView.addSubview(timeTextLabel)
         
         containerView.addSubview(soundVisualizer)
         
         let tagsLabel = MaziUIInputLabel()
         tagsLabel.text = "Tags"
-        tagsLabel.textAlignment = .Left
+        tagsLabel.textAlignment = .left
         containerView.addSubview(tagsLabel)
         
         let tagsField = MaziUITextField()
-        tagsField.text = self.attachment?.tags.joinWithSeparator(" ")
+        tagsField.text = self.attachment?.tags.joined(separator: " ")
         tagsField.attributedPlaceholder = NSAttributedString(string: "Tag question by space seperated tags")
-        tagsField.keyboardType = UIKeyboardType.ASCIICapable
+        tagsField.keyboardType = UIKeyboardType.asciiCapable
         containerView.addSubview(tagsField)
         
         // Navigation bar Save button.
-        let saveButton = UIBarButtonItem(barButtonSystemItem: .Save, target: self, action: #selector(RecorderViewController.onSaveButtonClick))
+        let saveButton = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(RecorderViewController.onSaveButtonClick))
         self.navigationItem.rightBarButtonItem = saveButton
         
         // Create view constraints.
         
-        scrollView.snp_makeConstraints { (make) in
+        scrollView.snp.makeConstraints { (make) in
             make.edges.equalTo(self.view)
         }
 
-        let navigationBarHeight = UIApplication.sharedApplication().statusBarFrame.height +
+        let navigationBarHeight = UIApplication.shared.statusBarFrame.height +
             (navigationController?.navigationBar.bounds.height ?? 0)
-        containerView.snp_makeConstraints { (make) in
+        containerView.snp.makeConstraints { (make) in
             make.width.equalTo(self.view).multipliedBy(0.5)
             make.centerX.equalTo(self.view)
             make.top.greaterThanOrEqualTo(scrollView)
-            make.centerY.equalTo(scrollView).offset(-navigationBarHeight).priorityLow()
+            make.centerY.equalTo(scrollView).offset(-navigationBarHeight).priority(UILayoutPriorityDefaultLow)
             make.bottom.lessThanOrEqualTo(scrollView)
         }
 
-        introTextLabel.snp_makeConstraints { (make) in
+        introTextLabel.snp.makeConstraints { (make) in
             make.top.left.right.equalTo(containerView).inset(MaziStyle.outerInset)
         }
-        startButton.snp_makeConstraints { (make) in
-            make.top.equalTo(introTextLabel.snp_bottom).offset(MaziStyle.paragraphSpacing)
+        startButton.snp.makeConstraints { (make) in
+            make.top.equalTo(introTextLabel.snp.bottom).offset(MaziStyle.paragraphSpacing)
             make.centerX.equalTo(containerView)
             make.width.equalTo(MaziStyle.buttonSize.width)
             make.height.equalTo(MaziStyle.buttonSize.height)
         }
-        timeTextLabel.snp_makeConstraints { (make) in
-            make.top.equalTo(startButton.snp_bottom).offset(MaziStyle.largeSpacing)
+        timeTextLabel.snp.makeConstraints { (make) in
+            make.top.equalTo(startButton.snp.bottom).offset(MaziStyle.largeSpacing)
             make.centerX.equalTo(containerView)
         }
-        soundVisualizer.snp_makeConstraints { (make) in
-            make.top.equalTo(timeTextLabel.snp_bottom).offset(MaziStyle.largeSpacing)
+        soundVisualizer.snp.makeConstraints { (make) in
+            make.top.equalTo(timeTextLabel.snp.bottom).offset(MaziStyle.largeSpacing)
             make.width.equalTo(180)
             make.height.equalTo(180)
             make.centerX.equalTo(containerView)
         }
-        tagsLabel.snp_makeConstraints { (make) in
-            make.top.equalTo(soundVisualizer.snp_bottom).offset(MaziStyle.paragraphSpacing)
+        tagsLabel.snp.makeConstraints { (make) in
+            make.top.equalTo(soundVisualizer.snp.bottom).offset(MaziStyle.paragraphSpacing)
             make.left.right.equalTo(containerView).inset(MaziStyle.outerInset)
         }
-        tagsField.snp_makeConstraints { (make) in
-            make.top.equalTo(tagsLabel.snp_bottom).offset(MaziStyle.spacing)
+        tagsField.snp.makeConstraints { (make) in
+            make.top.equalTo(tagsLabel.snp.bottom).offset(MaziStyle.spacing)
             make.left.right.bottom.equalTo(containerView).inset(MaziStyle.outerInset)
         }
         
@@ -165,80 +166,76 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         
         // Update the view whenever the model changes.
         interview.producer
-            .observeOn(UIScheduler())
-            .startWithNext { (newInterview : Interview) in
+            .observe(on: UIScheduler())
+            .startWithValues { (newInterview : Interview) in
                 
                 
         }
         
-        tagsField.rac_textSignal()
-            .toSignalProducer()
-            .startWithNext { [weak self] next in
+        tagsField.reactive.continuousTextValues
+            .observeValues { [weak self] next in
                 guard let `self` = self else { return }
                 
-                if let tags = next as? NSString {
+                if let tags = next {
                     // make sure that there are only asci chars and spaces in the tag string
-                    let matches = matchesForRegexInText("[a-zA-Z0-9_ ]", text : String(tags))
-                    let tagString = matches.joinWithSeparator("")
+                    let matches = matchesForRegexInText("[a-zA-Z0-9_ ]", text : tags)
+                    let tagString = matches.joined(separator: "")
                     tagsField.text = tagString
                     
                     self.tags = tagString.characters.split{ $0 == " " }.map(String.init)
                 }
         }
-        
-        RACSignal.merge([
-            NSNotificationCenter.defaultCenter().rac_addObserverForName(UIKeyboardWillShowNotification, object: nil),
-            NSNotificationCenter.defaultCenter().rac_addObserverForName(UIKeyboardWillHideNotification, object: nil)
+
+        Signal.merge([
+            NotificationCenter.default.reactive.notifications(forName: NSNotification.Name.UIKeyboardWillShow),
+            NotificationCenter.default.reactive.notifications(forName: NSNotification.Name.UIKeyboardWillHide)
             ])
-            .takeUntil(self.rac_willDeallocSignal())
-            .toSignalProducer()
-            .observeOn(UIScheduler())
-            .startWithNext { [weak self] next in
+            .take(until: self.reactive.lifetime.ended)
+            .observe(on: UIScheduler())
+            .observeValues { [weak self] notification in
                 guard let `self` = self else { return }
                 
-                if let notification = next as? NSNotification,
-                    userInfo = notification.userInfo,
-                    keyboardSize = (userInfo["UIKeyboardFrameEndUserInfoKey"] as? NSValue)?.CGRectValue() {
-                    if notification.name == UIKeyboardWillShowNotification {
+                if let userInfo = notification.userInfo,
+                    let keyboardSize = (userInfo["UIKeyboardFrameEndUserInfoKey"] as? NSValue)?.cgRectValue {
+                    if notification.name == NSNotification.Name.UIKeyboardWillShow {
                         // Keyboard will show.
-                        let height = self.view.convertRect(keyboardSize, fromView: nil).size.height ?? 0
-                        scrollView.snp_updateConstraints { (make) in
+                        let height = self.view.convert(keyboardSize, from: nil).size.height
+                        scrollView.snp.updateConstraints { (make) in
                             make.bottom.equalTo(self.view).inset(height)
                         }
                     } else {
                         // Keyboard will hide.
-                        scrollView.snp_updateConstraints { (make) in
+                        scrollView.snp.updateConstraints { (make) in
                             make.bottom.equalTo(self.view).inset(0)
                         }
                     }
 
                     // Animate the constraint changes.
-                    UIView.animateWithDuration(0.5, animations: {
+                    UIView.animate(withDuration: 0.5, animations: {
                         scrollView.layoutIfNeeded()
                     })
                 }
         }
         
-        startButton.rac_signalForControlEvents(.TouchUpInside)
-            .toSignalProducer()
-            .startWithNext { [weak self] _ in
+        startButton.reactive.trigger(for: .touchUpInside)
+            .observeValues { [weak self] _ in
                 guard let `self` = self else { return }
                 
                 if let recorder = self.audioRecorder {
-                    if (recorder.recording) {
+                    if (recorder.isRecording) {
                         self.hasRecorderd = true
                         self.stopRecording()
-                        startButton.setTitle("Start", forState: .Normal)
+                        startButton.setTitle("Start", for: .normal)
                     } else {
                         self.startRecording()
-                        startButton.setTitle("Stop", forState: .Normal)
+                        startButton.setTitle("Stop", for: .normal)
                     }
                 }
         }
         
         // Update the time label and the visualisation.
-        timerDisposable = QueueScheduler.mainQueueScheduler.scheduleAfter(NSDate(), repeatingEvery: 0.1) {
-            if let recorder = self.audioRecorder where recorder.recording {
+        timerDisposable = QueueScheduler.main.schedule(after: Date(), interval: 0.1) {
+            if let recorder = self.audioRecorder, recorder.isRecording {
                 timeTextLabel.text = "\(self.stringWithTime(Int(recorder.currentTime)))"
                 
                 self.updateMeter()
@@ -246,27 +243,26 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         }
         
         // Handle Done button presses.
-        self.rac_signalForSelector(#selector(RecorderViewController.onSaveButtonClick))
-            .toSignalProducer()
-            .observeOn(UIScheduler())
-            .startWithNext { [weak self] next in
+        self.reactive.trigger(for: #selector(RecorderViewController.onSaveButtonClick))
+            .observe(on: UIScheduler())
+            .observeValues { [weak self] next in
                 guard let `self` = self else { return }
                 
                 if let recorder = self.audioRecorder {
                     // Get the duration of the recording (in seconds).
-                    let asset = AVURLAsset(URL: recorder.url)
+                    let asset = AVURLAsset(url: recorder.url)
                     let recordingDuration = Int(CMTimeGetSeconds(asset.duration))
                     
                     // Update the model with the new attachment.
                     let attachment = Attachment(questionText: self.question, tags: self.tags, recordingUrl: recorder.url, recordingDuration: recordingDuration)
                     InterviewStore.sharedInstance.updateAttachment(self.interview.value, attachment: attachment)
                     
-                    self.navigationController?.popViewControllerAnimated(true)
+                    _ = self.navigationController?.popViewController(animated: true)
                 }
         }
     }
     
-    override func viewDidDisappear(animated: Bool) {
+    override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         stopRecording()
     }
@@ -299,20 +295,20 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         }
     }
     
-    func audioRecorderDidFinishRecording(recorder: AVAudioRecorder, successfully flag: Bool) {
+    func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
         print("🎶 Recording finished \(recorder.url)")
     }
     
-    func directoryURL() -> NSURL? {
-        let fileManager = NSFileManager.defaultManager()
-        let urls = fileManager.URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)
-        let documentDirectory = urls[0] as NSURL
+    func directoryURL() -> URL? {
+        let fileManager = FileManager.default
+        let urls = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
+        let documentDirectory = urls[0] as URL
         
-        let formatter = NSDateFormatter()
+        let formatter = DateFormatter()
         formatter.dateFormat = "ddMMyyyy-HHmmss"
-        let dateString = formatter.stringFromDate(NSDate())
+        let dateString = formatter.string(from: Date())
         
-        let soundURL = documentDirectory.URLByAppendingPathComponent("sound-\(dateString).wav")
+        let soundURL = documentDirectory.appendingPathComponent("sound-\(dateString).wav")
         return soundURL
     }
     
@@ -321,8 +317,8 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
     func updateMeter() {
         if let recorder = self.audioRecorder {
             recorder.updateMeters()
-            let averageVolume = recorder.averagePowerForChannel(0)
-            let peakVolume = recorder.peakPowerForChannel(0)
+            let averageVolume = recorder.averagePower(forChannel: 0)
+            let peakVolume = recorder.peakPower(forChannel: 0)
             
             let baseLevel = Float(80.0)
             
@@ -341,7 +337,7 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
         
     }
     
-    func stringWithTime(time: Int) -> String {
+    func stringWithTime(_ time: Int) -> String {
         let seconds = time % 60
         let minutes = time / 60
         return String(format: "%0.2d:%0.2d", minutes, seconds)

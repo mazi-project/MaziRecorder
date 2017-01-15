@@ -9,6 +9,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>NVActivityIndicatorView.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Pantry.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -20,6 +25,11 @@
 			<false/>
 		</dict>
 		<key>ReactiveCocoa.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>ReactiveSwift.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -37,32 +47,42 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>79C040AFDDCE1BCBF6D8B5EB0B85887F</key>
+		<key>18054A1CD57973AC5B0B1409B5819E88</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>81B3FD003FABA173925C93D2721CD932</key>
+		<key>3EDFE4052B5DE7D509935AC0774CB135</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>860093265DB9F010D51ED82FDD181776</key>
+		<key>7DBCCF9C17FD46724CD8CABB90608219</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>AC373238FDDAC10D89EE59523FAEFD85</key>
+		<key>82A400302B02E76962B79E6550A520FB</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>EC4AEC4AB76FDACD7C4BC2B8F11F8A59</key>
+		<key>88E9EC28B8B46C3631E6B242B50F4442</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>F393BB12A4014ED161991FD66B042E64</key>
+		<key>A6DFA9D4BCBC2DDF0EBD757E64E9207A</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>C624168818273D395858938A37E44F78</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>F25D6D36F779DE832D413F12B284BEDA</key>
 		<dict>
 			<key>primary</key>
 			<true/>

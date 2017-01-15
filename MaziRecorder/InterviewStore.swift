@@ -7,9 +7,12 @@
 //
 
 import Foundation
+import ReactiveSwift
 import ReactiveCocoa
 import Pantry
 import enum Result.NoError
+
+internal let archiveFileName = "InterviewStore"
 
 class InterviewStore {
     
@@ -17,8 +20,7 @@ class InterviewStore {
     
     let interviews = MutableProperty<[Interview]>([])
     
-    private let queue = dispatch_get_global_queue(QOS_CLASS_UTILITY, 0)
-    private let archiveFileName = "InterviewStore"
+    fileprivate let queue = DispatchQueue.global(qos: DispatchQoS.QoSClass.utility)
     
     init() {
         // Load model from storage.
@@ -32,44 +34,44 @@ class InterviewStore {
         // Store model whenever it changes.
         interviews.producer
             .skipRepeats({ $0 == $1 })
-            .debounce(1, onScheduler: QueueScheduler.mainQueueScheduler)
-            .startWithNext({ (newInterviews : [Interview]) in
-                Pantry.pack(newInterviews, key: self.archiveFileName)
+            .debounce(1, on: QueueScheduler.main)
+            .startWithValues { (newInterviews : [Interview]) in
+                Pantry.pack(newInterviews, key: archiveFileName)
                 print("💾 Stored model.")
-            })
+            }
     }
     
     // MARK: Getters
     
     // A signal of interviews matching a given identifier.
-    func interviewSignal(identifier: String) -> SignalProducer<Interview?, NoError> {
+    func interviewSignal(_ identifier: String) -> SignalProducer<Interview?, NoError> {
         return interviews.producer
             .map { next -> Interview? in
                 return self.getInterview(identifier, interviews: next)
             }
-            .replayLazily(1)
+            .replayLazily(upTo: 1)
     }
     
     // A signal of attachment matching a given question.
-    func attachmentSignal(question: String) -> SignalProducer<Attachment?, NoError> {
+    func attachmentSignal(_ question: String) -> SignalProducer<Attachment?, NoError> {
         return interviews.producer
             .map { next -> Attachment? in
                 let attachments : [Attachment] = next.flatMap { $0.attachments }
-                if let index = attachments.indexOf({ $0.questionText == question }) {
+                if let index = attachments.index(where: { $0.questionText == question }) {
                     return attachments[index]
                 }
-                return .None
+                return .none
             }
-            .replayLazily(1)
+            .replayLazily(upTo: 1)
     }
     
     // Get an interview from an array of interviews that matches a given identifier.
-    private func getInterview(identifier: String, interviews: [Interview]) -> Interview? {
-        if let index = interviews.indexOf({ $0.identifier == identifier }) {
+    fileprivate func getInterview(_ identifier: String, interviews: [Interview]) -> Interview? {
+        if let index = interviews.index(where: { $0.identifier == identifier }) {
             let interview = interviews[index]
             return interview
         }
-        return .None
+        return .none
     }
     
     // MARK: Update
@@ -79,7 +81,7 @@ class InterviewStore {
         var interviewsArray = interviews.value
         interviewsArray.append(interview)
         
-        dispatch_async(queue) {
+        (queue).async {
             self.interviews.value = interviewsArray
         }
         
@@ -89,24 +91,24 @@ class InterviewStore {
     }
     
     func fetchLatestIncompleteOrCreateNewInterview() -> Interview {
-        let reverseInterviews = interviews.value.reverse() // Latest first.
-        if let index = reverseInterviews.indexOf({ $0.identifierOnServer == nil }) {
+        let reverseInterviews = interviews.value.reversed() // Latest first.
+        if let index = reverseInterviews.index(where: { $0.identifierOnServer == nil }) {
             return reverseInterviews[index]
         }
         
         return createInterview()
     }
     
-    func updateAttachment(interview: Interview, attachment: Attachment) {
+    func updateAttachment(_ interview: Interview, attachment: Attachment) {
         var newAttachments = interview.attachments
-        if let existingIndex = interview.attachments.indexOf({ $0.questionText == attachment.questionText }) {
-            newAttachments.removeAtIndex(existingIndex)
-            newAttachments.insert(attachment, atIndex: existingIndex)
+        if let existingIndex = interview.attachments.index(where: { $0.questionText == attachment.questionText }) {
+            newAttachments.remove(at: existingIndex)
+            newAttachments.insert(attachment, at: existingIndex)
         } else {
             newAttachments = newAttachments + [attachment]
         }
         
-        let update = InterviewUpdate(attachments: .Changed(newAttachments))
+        let update = InterviewUpdate(attachments: .changed(newAttachments))
         self.updateInterview(fromInterview: interview, interviewUpdate: update)
     }
     
@@ -116,14 +118,14 @@ class InterviewStore {
     
     func updateInterview(fromIdentifier identifier: String, interviewUpdate: InterviewUpdate) {
         var interviewsArray = interviews.value
-        if let index = interviewsArray.indexOf({ $0.identifier == identifier }) {
+        if let index = interviewsArray.index(where: { $0.identifier == identifier }) {
             let oldInterview = interviewsArray[index]
             let newInterview = Interview(interview: oldInterview, interviewUpdate: interviewUpdate)
-            interviewsArray.removeAtIndex(index)
+            interviewsArray.remove(at: index)
             interviewsArray.append(newInterview)
             
-            dispatch_async(queue) {
-                self.interviews.value = interviewsArray.sort({ $0.creationDate.compare($1.creationDate) == NSComparisonResult.OrderedAscending })
+            (queue).async {
+                self.interviews.value = interviewsArray.sorted(by: { $0.creationDate.compare($1.creationDate) == ComparisonResult.orderedAscending })
             }
             
             print("Updated interview: \(newInterview)")

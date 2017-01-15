@@ -26,8 +26,8 @@ class MaziUIInputLabel : MaziUILabel {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        self.font = UIFont.boldSystemFontOfSize(16.0)
-        self.textAlignment = NSTextAlignment.Right
+        self.font = UIFont.boldSystemFont(ofSize: 16.0)
+        self.textAlignment = NSTextAlignment.right
     }
     
     required init?(coder aDecoder: NSCoder) {

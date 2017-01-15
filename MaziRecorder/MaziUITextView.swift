@@ -20,7 +20,7 @@ class MaziUITextView : UITextView {
         //self.layer.borderWidth = MaziStyle.borderWidth
         self.layer.cornerRadius = MaziStyle.cornerRadius
         
-        self.font = UIFont.systemFontOfSize(CGFloat(MaziStyle.fontSize))
+        self.font = UIFont.systemFont(ofSize: CGFloat(MaziStyle.fontSize))
         
     }
     

@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "F393BB12A4014ED161991FD66B042E64"
+               BlueprintIdentifier = "C624168818273D395858938A37E44F78"
                BuildableName = "Pods_MaziRecorder.framework"
                BlueprintName = "Pods-MaziRecorder"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -45,7 +45,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "F393BB12A4014ED161991FD66B042E64"
+            BlueprintIdentifier = "C624168818273D395858938A37E44F78"
             BuildableName = "Pods_MaziRecorder.framework"
             BlueprintName = "Pods-MaziRecorder"
             ReferencedContainer = "container:Pods.xcodeproj">

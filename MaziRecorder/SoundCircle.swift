@@ -15,19 +15,19 @@ class SoundCircle: UIView {
     
     override init(frame : CGRect) {
         super.init(frame: frame)
-        self.backgroundColor = UIColor.whiteColor().colorWithAlphaComponent(0)
+        self.backgroundColor = UIColor.white.withAlphaComponent(0)
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setValues(volume : Float, peak : Float) {
+    func setValues(_ volume : Float, peak : Float) {
         self.volume = volume
         self.peak = peak
     }
     
-    override func drawRect(rect: CGRect) {
+    override func draw(_ rect: CGRect) {
         
         let offset = CGFloat(2);
         
@@ -50,21 +50,21 @@ class SoundCircle: UIView {
         let rectangle = CGRect(x: xPeak, y: yPeak, width: widthPeak, height: heightPeak)
         
         //CGContextSetFillColorWithColor(context, UIColor.redColor().CGColor)
-        CGContextSetStrokeColorWithColor(context, UIColor.darkGrayColor().CGColor)
-        CGContextSetLineWidth(context, 1)
-        CGContextStrokeEllipseInRect(context, rectangle)
+        context?.setStrokeColor(UIColor.darkGray.cgColor)
+        context?.setLineWidth(1)
+        context?.strokeEllipse(in: rectangle)
         //CGContextDrawPath(context, .FillStroke)
         
         // draw volume
         let rectangle2 = CGRect(x: xVol, y: yVol, width: widthVol, height: heightVol)
-        let fillcolor = UIColor.redColor().colorWithAlphaComponent(CGFloat(self.volume))
+        let fillcolor = UIColor.red.withAlphaComponent(CGFloat(self.volume))
         
-        CGContextSetFillColorWithColor(context, fillcolor.CGColor)
-        CGContextSetStrokeColorWithColor(context, UIColor.blackColor().CGColor)
-        CGContextSetLineWidth(context, 2)
-        CGContextAddEllipseInRect(context, rectangle2)
+        context?.setFillColor(fillcolor.cgColor)
+        context?.setStrokeColor(UIColor.black.cgColor)
+        context?.setLineWidth(2)
+        context?.addEllipse(in: rectangle2)
         //CGContextStrokeEllipseInRect(context, rectangle2)
-        CGContextDrawPath(context, .FillStroke)
+        context?.drawPath(using: .fillStroke)
         
     }
 }

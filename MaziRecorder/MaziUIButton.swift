@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import ReactiveSwift
 import ReactiveCocoa
 
 class MaziUIButton : UIButton {
@@ -15,15 +16,14 @@ class MaziUIButton : UIButton {
         super.init(frame: frame)
         
         self.backgroundColor = MaziStyle.buttonBgColor
-        self.setTitleColor(MaziStyle.buttonTextColor, forState: .Normal)
+        self.setTitleColor(MaziStyle.buttonTextColor, for: UIControlState())
         self.layer.cornerRadius = MaziStyle.cornerRadius
         
-        self.rac_valuesForKeyPath("enabled", observer: self)
-            .toSignalProducer()
-            .observeOn(UIScheduler())
-            .startWithNext { [weak self] next in
+        self.reactive.values(forKeyPath: "enabled")
+            .observe(on: UIScheduler())
+            .startWithValues { [weak self] next in
                 guard let `self` = self,
-                enabled = next as? Bool else { return }
+                let enabled = next as? Bool else { return }
                 self.alpha = enabled ? 1 : 0.2
         }
     }
@@ -32,10 +32,10 @@ class MaziUIButton : UIButton {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func setTitle(title: String?, forState state: UIControlState) {
-        super.setTitle(title, forState: state)
+    override func setTitle(_ title: String?, for state: UIControlState) {
+        super.setTitle(title, for: state)
         
-        self.titleLabel!.font = UIFont.systemFontOfSize(16.0, weight: UIFontWeightBold)
+        self.titleLabel!.font = UIFont.systemFont(ofSize: 16.0, weight: UIFontWeightBold)
     }
 }
 
@@ -44,8 +44,8 @@ class MaziUIRecordingButton : MaziUIButton {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        self.setBackgroundImage(MaziUIRecordingButton.imageWithColor(MaziStyle.buttonBgColor), forState: .Selected)
-        self.setTitleColor(MaziStyle.buttonTextColor, forState: .Selected)
+        self.setBackgroundImage(MaziUIRecordingButton.imageWithColor(MaziStyle.buttonBgColor), for: .selected)
+        self.setTitleColor(MaziStyle.buttonTextColor, for: .selected)
         
     }
     
@@ -53,17 +53,17 @@ class MaziUIRecordingButton : MaziUIButton {
         fatalError("init(coder:) has not been implemented")
     }
     
-    static func imageWithColor(color : UIColor) -> UIImage {
-        let rect = CGRectMake(0.0, 0.0, 1.0, 1.0);
+    static func imageWithColor(_ color : UIColor) -> UIImage {
+        let rect = CGRect(x: 0.0, y: 0.0, width: 1.0, height: 1.0);
         UIGraphicsBeginImageContext(rect.size);
         let context = UIGraphicsGetCurrentContext();
     
-        CGContextSetFillColorWithColor(context, color.CGColor);
-        CGContextFillRect(context, rect);
+        context?.setFillColor(color.cgColor);
+        context?.fill(rect);
     
         let image = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();
     
-        return image;
+        return image!;
     }
 }

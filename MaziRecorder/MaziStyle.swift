@@ -24,18 +24,18 @@ enum MaziStyle {
     
     static let cornerRadius = CGFloat(6)
     static let borderWidth = CGFloat(1)
-    static let borderColor = UIColor.darkGrayColor()
+    static let borderColor = UIColor.darkGray
     
     // Colors
     
-    static let backgroundColor = UIColor.whiteColor()
+    static let backgroundColor = UIColor.white
     static let inputBgColor = UIColor(netHex: 0xEAEAED)
-    static let textColor = UIColor.blackColor()
-    static let textColorAlternative = UIColor.darkGrayColor()
+    static let textColor = UIColor.black
+    static let textColorAlternative = UIColor.darkGray
     static let buttonBgColor = UIColor(netHex: 0xFFFF00)
     static let buttonBgSelectedColor = UIColor(netHex: 0xFFFF00)
-    static let buttonTextColor = UIColor.blackColor()
-    static let buttonTextSelectedColor = UIColor.blackColor()
+    static let buttonTextColor = UIColor.black
+    static let buttonTextSelectedColor = UIColor.black
     static let buttonBorderColor = UIColor(netHex: 0xA3A3A3)
     
     // Fonts

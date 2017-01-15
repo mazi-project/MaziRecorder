@@ -1,4 +1,4 @@
-# Uncomment this line to define a global platform for your project
+  # Uncomment this line to define a global platform for your project
 platform :ios, '8.4'
 
 target 'MaziRecorder' do
@@ -6,9 +6,10 @@ target 'MaziRecorder' do
   use_frameworks!
 
   # Pods for MaziRecorder
-  pod 'SnapKit', '~> 0.15'
-  pod 'ReactiveCocoa', '~> 4.1'
-  pod 'Alamofire', '~> 3.4'
-  pod 'Pantry', '~> 0.2'
-  pod 'NVActivityIndicatorView'
+  pod 'SnapKit', '~> 3.0.2'
+  pod 'ReactiveSwift', '~> 1.0.0-alpha.3'
+  pod 'ReactiveCocoa', '~> 5.0.0-alpha.3'
+  pod 'Alamofire', '~> 4.2'
+  pod 'Pantry', '~> 0.3'
+  pod 'NVActivityIndicatorView', '~> 3.0'
 end

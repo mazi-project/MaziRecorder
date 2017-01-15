@@ -8,23 +8,24 @@
 
 import UIKit
 import SnapKit
+import ReactiveSwift
 import ReactiveCocoa
 import enum Result.NoError
 
 class ViewController: UIViewController {
     
     // Create a new interview
-    private let interview = MutableProperty<Interview>(InterviewStore.sharedInstance.fetchLatestIncompleteOrCreateNewInterview())
+    fileprivate let interview = MutableProperty<Interview>(InterviewStore.sharedInstance.fetchLatestIncompleteOrCreateNewInterview())
     
-    // Signal of signals of interviews. This producer allows us to change which
-    // interview to observe (used when resetting after a successful submission).
-    private let (interviewObservationsProducer, interviewObservationsObserver) = SignalProducer<SignalProducer<Interview, NoError>, NoError>.buffer(1)
+    // Property of signals of interviews. This property allows us to change which interview to 
+    // observe (used when resetting after a successful submission).
+    fileprivate let interviewObservations = MutableProperty<SignalProducer<Interview, NoError>>(SignalProducer<Interview, NoError>.empty)
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
         // Sync the view's interview with the model.
-        interview <~ interviewObservationsProducer.flatten(.Latest)
+        interview <~ interviewObservations.producer.flatten(.latest)
         self.setNewInterviewObservation(interview.value)
     }
     
@@ -44,7 +45,7 @@ class ViewController: UIViewController {
         let introTextLabel = MaziUILabel()
         introTextLabel.text = "Prepare a new Interview."
         introTextLabel.numberOfLines = 0
-        introTextLabel.textAlignment = .Center
+        introTextLabel.textAlignment = .center
         containerView.addSubview(introTextLabel)
         
         let nameLabel = MaziUIInputLabel()
@@ -63,59 +64,59 @@ class ViewController: UIViewController {
         roleField.attributedPlaceholder = NSAttributedString(string: "Expertise/Role of the person")
         containerView.addSubview(roleField)
         
-        let startButton = MaziUIButton(type: .System)
-        startButton.setTitle("Start", forState: .Normal)
+        let startButton = MaziUIButton(type: .system)
+        startButton.setTitle("Start", for: UIControlState())
         containerView.addSubview(startButton)
         
         // Navigation bar Reset button.
-        let resetButton = UIBarButtonItem(title: "Reset", style: .Plain, target: self, action: #selector(ViewController.onResetButtonClick))
+        let resetButton = UIBarButtonItem(title: "Reset", style: .plain, target: self, action: #selector(ViewController.onResetButtonClick))
         self.navigationItem.leftBarButtonItem = resetButton
         
         // Create view constraints.
         let labelWidth = 60
         
-        scrollView.snp_makeConstraints { (make) in
+        scrollView.snp.makeConstraints { (make) in
             make.edges.equalTo(self.view)
         }
 
-        let navigationBarHeight = UIApplication.sharedApplication().statusBarFrame.height +
+        let navigationBarHeight = UIApplication.shared.statusBarFrame.height +
             (navigationController?.navigationBar.bounds.height ?? 0)
-        containerView.snp_makeConstraints { (make) in
+        containerView.snp.makeConstraints { (make) in
             make.width.equalTo(self.view).multipliedBy(0.5)
             make.centerX.equalTo(self.view)
             make.top.greaterThanOrEqualTo(scrollView)
-            make.centerY.equalTo(scrollView).offset(-navigationBarHeight).priorityLow()
+            make.centerY.equalTo(scrollView).offset(-navigationBarHeight).priority(UILayoutPriorityDefaultLow)
             make.bottom.lessThanOrEqualTo(scrollView)
         }
         
-        introTextLabel.snp_makeConstraints { (make) in
+        introTextLabel.snp.makeConstraints { (make) in
             make.top.left.right.equalTo(containerView).inset(MaziStyle.outerInset)
         }
         
-        nameLabel.snp_makeConstraints { (make) in
-            make.top.equalTo(introTextLabel.snp_bottom).offset(MaziStyle.paragraphSpacing)
+        nameLabel.snp.makeConstraints { (make) in
+            make.top.equalTo(introTextLabel.snp.bottom).offset(MaziStyle.paragraphSpacing)
             make.left.equalTo(containerView).inset(MaziStyle.outerInset)
             make.width.equalTo(labelWidth)
         }
-        nameField.snp_makeConstraints { (make) in
-            make.centerY.equalTo(nameLabel.snp_centerY)
-            make.left.equalTo(nameLabel.snp_right).offset(MaziStyle.spacing)
+        nameField.snp.makeConstraints { (make) in
+            make.centerY.equalTo(nameLabel.snp.centerY)
+            make.left.equalTo(nameLabel.snp.right).offset(MaziStyle.spacing)
             make.right.equalTo(containerView).inset(MaziStyle.outerInset)
         }
         
-        roleLabel.snp_makeConstraints { (make) in
-            make.top.equalTo(nameField.snp_bottom).offset(MaziStyle.largeSpacing)
+        roleLabel.snp.makeConstraints { (make) in
+            make.top.equalTo(nameField.snp.bottom).offset(MaziStyle.largeSpacing)
             make.left.equalTo(containerView).inset(MaziStyle.outerInset)
             make.width.equalTo(labelWidth)
         }
-        roleField.snp_makeConstraints { (make) in
-            make.centerY.equalTo(roleLabel.snp_centerY)
-            make.left.equalTo(roleLabel.snp_right).offset(MaziStyle.spacing)
+        roleField.snp.makeConstraints { (make) in
+            make.centerY.equalTo(roleLabel.snp.centerY)
+            make.left.equalTo(roleLabel.snp.right).offset(MaziStyle.spacing)
             make.right.equalTo(containerView).inset(MaziStyle.outerInset)
         }
         
-        startButton.snp_makeConstraints { (make) in
-            make.top.equalTo(roleField.snp_bottom).offset(MaziStyle.largeSpacing)
+        startButton.snp.makeConstraints { (make) in
+            make.top.equalTo(roleField.snp.bottom).offset(MaziStyle.largeSpacing)
             make.width.equalTo(MaziStyle.buttonSize.width)
             make.height.equalTo(MaziStyle.buttonSize.height)
             make.centerX.equalTo(containerView)
@@ -126,44 +127,42 @@ class ViewController: UIViewController {
         
         // Update the view whenever the model changes.
         interview.producer
-            .observeOn(UIScheduler())
-            .startWithNext { (newInterview : Interview) in
+            .observe(on: UIScheduler())
+            .startWithValues { (newInterview : Interview) in
                 nameField.text = newInterview.name
                 roleField.text = newInterview.role
                 
                 // Disable start button when either name or role is empty.
-                startButton.enabled = newInterview.name.characters.count > 0
+                startButton.isEnabled = newInterview.name.characters.count > 0
                     && newInterview.role.characters.count > 0
         }
-        
-        RACSignal.merge([
-            NSNotificationCenter.defaultCenter().rac_addObserverForName(UIKeyboardWillShowNotification, object: nil),
-            NSNotificationCenter.defaultCenter().rac_addObserverForName(UIKeyboardWillHideNotification, object: nil)
+
+        Signal.merge([
+            NotificationCenter.default.reactive.notifications(forName: NSNotification.Name.UIKeyboardWillShow),
+            NotificationCenter.default.reactive.notifications(forName: NSNotification.Name.UIKeyboardWillHide)
             ])
-            .takeUntil(self.rac_willDeallocSignal())
-            .toSignalProducer()
-            .observeOn(UIScheduler())
-            .startWithNext { [weak self] next in
+            .take(until: self.reactive.lifetime.ended)
+            .observe(on: UIScheduler())
+            .observeValues { [weak self] notification in
                 guard let `self` = self else { return }
                 
-                if let notification = next as? NSNotification,
-                    userInfo = notification.userInfo,
-                    keyboardSize = (userInfo["UIKeyboardFrameEndUserInfoKey"] as? NSValue)?.CGRectValue() {
-                    if notification.name == UIKeyboardWillShowNotification {
+                if let userInfo = notification.userInfo,
+                    let keyboardSize = (userInfo["UIKeyboardFrameEndUserInfoKey"] as? NSValue)?.cgRectValue {
+                    if notification.name == NSNotification.Name.UIKeyboardWillShow {
                         // Keyboard will show.
-                        let height = self.view.convertRect(keyboardSize, fromView: nil).size.height ?? 0
-                        scrollView.snp_updateConstraints { (make) in
+                        let height = self.view.convert(keyboardSize, from: nil).size.height 
+                        scrollView.snp.updateConstraints { (make) in
                             make.bottom.equalTo(self.view).inset(height)
                         }
                     } else {
                         // Keyboard will hide.
-                        scrollView.snp_updateConstraints { (make) in
+                        scrollView.snp.updateConstraints { (make) in
                             make.bottom.equalTo(self.view).inset(0)
                         }
                     }
 
                     // Animate the constraint changes.
-                    UIView.animateWithDuration(0.5, animations: {
+                    UIView.animate(withDuration: 0.5, animations: {
                         scrollView.layoutIfNeeded()
                     })
                 }
@@ -171,56 +170,48 @@ class ViewController: UIViewController {
         
         // Update the model when the user inputs text.
         let maxLength = 60
-        nameField.rac_textSignal()
-            .toSignalProducer()
-            .skip(1)
-            .startWithNext { [weak self] next in
+        nameField.reactive.continuousTextValues
+            .skip(first: 1)
+            .observeValues { [weak self] next in
                 guard let `self` = self else { return }
                 
-                if var name = next as? NSString {
+                if var name = next {
                     // Make sure text field doesn't surpass a certain number of characters.
-                    if name.length > maxLength {
-                        name = name.substringToIndex(maxLength)
-                    }
+                    name = String(name.characters.prefix(maxLength))
                     
                     // Store the new name in the model.
-                    let update = InterviewUpdate(name: .Changed(name as String))
+                    let update = InterviewUpdate(name: .changed(name))
                     InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview.value, interviewUpdate: update)
                 }
         }
-        roleField.rac_textSignal()
-            .toSignalProducer()
-            .skip(1)
-            .startWithNext { [weak self] next in
+        roleField.reactive.continuousTextValues
+            .skip(first: 1)
+            .observeValues { [weak self] next in
                 guard let `self` = self else { return }
                 
-                if var role = next as? NSString {
+                if var role = next {
                     // Make sure text field doesn't surpass a certain number of characters.
-                    if role.length > maxLength {
-                        role = role.substringToIndex(maxLength)
-                    }
-                    
+                    role = String(role.characters.prefix(maxLength))
+
                     // Store the new role in the model.
-                    let update = InterviewUpdate(role: .Changed(role as String))
+                    let update = InterviewUpdate(role: .changed(role as String))
                     InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview.value, interviewUpdate: update)
                 }
         }
         
         // Manual resetting.
-        self.rac_signalForSelector(#selector(ViewController.onResetButtonClick))
-            .toSignalProducer()
-            .startWithNext { [weak self] _ in
+        self.reactive.trigger(for: #selector(ViewController.onResetButtonClick))
+            .observeValues { [weak self] _ in
                 guard let `self` = self else { return }
                 
                 // Reset the model's fields.
-                let update = InterviewUpdate(name: .Changed(""), role: .Changed(""), text: .Changed(""), attachments: .Changed([]), imageUrl: .Changed(.None), identifierOnServer: .Changed(.None))
+                let update = InterviewUpdate(name: .changed(""), role: .changed(""), text: .changed(""), attachments: .changed([]), imageUrl: .changed(.none), identifierOnServer: .changed(.none))
                 InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview.value, interviewUpdate: update)
         }
         
         // Navigate to the next screen when the user presses Start.
-        startButton.rac_signalForControlEvents(.TouchUpInside)
-            .toSignalProducer()
-            .startWithNext { [weak self] _ in
+        startButton.reactive.trigger(for: .touchUpInside)
+            .observeValues { [weak self] _ in
                 guard let `self` = self else { return }
                 
                 let questionsListVC = QuestionsListViewController(interview: self.interview.value)
@@ -233,9 +224,8 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    func setNewInterviewObservation(newInterview: Interview) {
-        let newInterviewProducer = InterviewStore.sharedInstance.interviewSignal(newInterview.identifier).ignoreNil().skipRepeats()
-        interviewObservationsObserver.sendNext(newInterviewProducer)
+    func setNewInterviewObservation(_ newInterview: Interview) {
+        interviewObservations.value = InterviewStore.sharedInstance.interviewSignal(newInterview.identifier).skipNil().skipRepeats()
     }
     
     func onResetButtonClick() {}

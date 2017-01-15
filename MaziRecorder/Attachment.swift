@@ -12,12 +12,12 @@ import Pantry
 struct Attachment {
     let questionText : String
     let tags : [String]
-    let recordingUrl : NSURL
+    let recordingUrl : URL
     let recordingDuration : Int
     
     // MARK: Init
     
-    init(questionText: String = "", tags: [String] = [], recordingUrl: NSURL = NSURL(), recordingDuration: Int = 0) {
+    init(questionText: String = "", tags: [String] = [], recordingUrl: URL = URL(fileURLWithPath: ""), recordingDuration: Int = 0) {
         self.questionText = questionText
         self.tags = tags
         self.recordingUrl = recordingUrl
@@ -28,19 +28,19 @@ struct Attachment {
 // MARK: Storable
 
 extension Attachment : Storable {
-    init(warehouse: JSONWarehouse) {
+    init(warehouse: Warehouseable) {
         self.questionText = warehouse.get("questionText") ?? ""
         self.tags = warehouse.get("tags") ?? []
-        self.recordingUrl = NSURL(string: warehouse.get("recordingUrl") ?? "") ?? NSURL()
+        self.recordingUrl = URL(string: warehouse.get("recordingUrl") ?? "") ?? URL(fileURLWithPath: "")
         self.recordingDuration = warehouse.get("recordingDuration") ?? 0
     }
     
-    func toDictionary() -> [String : AnyObject] {
+    func toDictionary() -> [String : Any] {
         return [
-            "questionText": self.questionText,
-            "tags": self.tags,
-            "recordingUrl": self.recordingUrl.absoluteString,
-            "recordingDuration": self.recordingDuration
+            "questionText": self.questionText as AnyObject,
+            "tags": self.tags as AnyObject,
+            "recordingUrl": self.recordingUrl.absoluteString as AnyObject,
+            "recordingDuration": self.recordingDuration as AnyObject
         ]
     }
 }
@@ -52,6 +52,6 @@ extension Attachment : Equatable {}
 func ==(lhs: Attachment, rhs: Attachment) -> Bool {
     return lhs.questionText == rhs.questionText
         && lhs.tags == rhs.tags
-        && lhs.recordingUrl.isEqual(rhs.recordingUrl)
+        && (lhs.recordingUrl == rhs.recordingUrl)
         && lhs.recordingDuration == rhs.recordingDuration
 }

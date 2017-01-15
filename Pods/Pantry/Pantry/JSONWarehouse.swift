@@ -8,145 +8,198 @@
 
 import Foundation
 
-/** 
-JSONWarehouse serializes and deserializes data 
+/**
+JSONWarehouse serializes and deserializes data
 
 A `JSONWarehouse` is passed in the init function of a struct that conforms to `Storable`
 */
-public class JSONWarehouse {
+open class JSONWarehouse: Warehouseable, WarehouseCacheable {
     var key: String
-    var context: AnyObject?
-    
-    init(key: String) {
+    var context: Any?
+
+    public init(key: String) {
         self.key = key
     }
-    
-    init(context: AnyObject) {
+
+    public init(context: Any) {
         self.key = ""
         self.context = context
     }
 
-    public func get<T: StorableDefaultType>(valueKey: String) -> T? {
-        if let dictionary = loadCache() {
-            if let result = dictionary[valueKey] {
-                if let result = result as? T {
-                    return result
-                }
+    /**
+     Retrieve a `StorableDefaultType` for a given key
+     - parameter valueKey: The item's key
+     - returns: T?
+
+     - SeeAlso: `StorableDefaultType`
+     */
+    open func get<T: StorableDefaultType>(_ valueKey: String) -> T? {
+
+        guard let dictionary = loadCache() as? [String: Any],
+            let result = dictionary[valueKey] as? T else {
+                return nil
+        }
+        return result
+    }
+
+    /**
+     Retrieve a collection of `StorableDefaultType`s for a given key
+     - parameter valueKey: The item's key
+     - returns: [T]?
+
+     - SeeAlso: `StorableDefaultType`
+     */
+    open func get<T: StorableDefaultType>(_ valueKey: String) -> [T]? {
+
+        guard let dictionary = loadCache() as? [String: Any],
+            let result = dictionary[valueKey] as? [Any] else {
+                return nil
+        }
+
+        var unpackedItems = [T]()
+        for case let item as T in result {
+            unpackedItems.append(item)
+        }
+
+        return unpackedItems
+    }
+
+    /**
+     Retrieve a generic object conforming to `Storable` for a given key
+     - parameter valueKey: The item's key
+     - returns: T?
+
+     - SeeAlso: `Storable`
+     */
+    open func get<T: Storable>(_ valueKey: String) -> T? {
+
+        guard let dictionary = loadCache() as? [String: Any],
+            let result = dictionary[valueKey] else {
+                return nil
+        }
+
+        let warehouse = JSONWarehouse(context: result)
+        return T(warehouse: warehouse)
+    }
+
+    /**
+     Retrieve a collection of generic objects conforming to `Storable` for a given key
+     - parameter valueKey: The item's key
+     - returns: [T]?
+
+     - SeeAlso: `Storable`
+     */
+    open func get<T: Storable>(_ valueKey: String) -> [T]? {
+
+        guard let dictionary = loadCache() as? [String: Any],
+            let result = dictionary[valueKey] as? [Any] else {
+                return nil
+        }
+
+        var unpackedItems = [T]()
+        for case let item as [String: Any] in result {
+            let warehouse = JSONWarehouse(context: item)
+            if let item = T(warehouse: warehouse) {
+                unpackedItems.append(item)
             }
         }
-        
-        return nil
+
+        return unpackedItems
     }
-    
-    public func get<T: StorableDefaultType>(valueKey: String) -> [T]? {
-        if let dictionary = loadCache() as? Dictionary<String, AnyObject> {
-            if let result = dictionary[valueKey] as? Array<AnyObject> {
-                var unpackedItems = [T]()
-                
-                for item in result {
-                    if let item = item as? T {
-                        unpackedItems.append(item)
-                    }
-                }
-                return unpackedItems
-            }
-        }
-        
-        return nil
-    }
-    
-    public func get<T: Storable>(valueKey: String) -> T? {
-        if let dictionary = loadCache() as? Dictionary<String, AnyObject> {
-            if let result = dictionary[valueKey] {
-                let warehouse = JSONWarehouse(context: result)
-                return T(warehouse: warehouse)
-            }
-        }
-        
-        return nil
-    }
-    
-    public func get<T: Storable>(valueKey: String) -> [T]? {
-        if let dictionary = loadCache() as? Dictionary<String, AnyObject> {
-            if let result = dictionary[valueKey] as? Array<AnyObject> {
-                var unpackedItems = [T]()
-                
-                for item in result {
-                    if let item = item as? Dictionary<String, AnyObject> {
-                        let warehouse = JSONWarehouse(context: item)
-                        let item = T(warehouse: warehouse)
-                        unpackedItems.append(item)
-                    }
-                }
-                return unpackedItems
-            }
-        }
-        
-        return nil
-    }
-    
-    func write(object: AnyObject, expires: StorageExpiry) {
+
+    func write(_ object: Any, expires: StorageExpiry) {
         let cacheLocation = cacheFileURL()
-        var storableDictionary = [String: AnyObject]()
+        var storableDictionary: [String: Any] = [:]
         
         storableDictionary["expires"] = expires.toDate().timeIntervalSince1970
         storableDictionary["storage"] = object
-        
-        let _ = (storableDictionary as NSDictionary).writeToURL(cacheLocation, atomically: true)
+
+        do {
+            let data = try JSONSerialization.data(withJSONObject: storableDictionary, options: .prettyPrinted)
+            try data.write(to: cacheLocation, options: .atomic)
+        } catch {
+            debugPrint("\(error)")
+        }
     }
     
     func removeCache() {
-        try! NSFileManager.defaultManager().removeItemAtURL(cacheFileURL())
+        do {
+            try FileManager.default.removeItem(at: cacheFileURL())
+        } catch {
+            print("error removing cache", error)
+        }
     }
     
-    func loadCache() -> AnyObject? {
-        if context == nil {
-            let cacheLocation = cacheFileURL()
-            
-            if let metaDictionary = NSDictionary(contentsOfURL: cacheLocation) {
-                if let cache = metaDictionary["storage"] {
-                    return cache
-                }
-            }
-        } else {
+    static func removeAllCache() {
+        do {
+            try FileManager.default.removeItem(at: JSONWarehouse.cacheDirectory)
+        } catch {
+            print("error removing all cache",error)
+        }
+    }
+    
+    func loadCache() -> Any? {
+        guard context == nil else {
             return context
         }
-        
+
+        let cacheLocation = cacheFileURL()
+
+        if let data = try? Data(contentsOf: cacheLocation),
+            let metaDictionary = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+            let cache = metaDictionary?["storage"] {
+            return cache
+        }
+
+        if let data = try? Data(contentsOf: cacheLocation),
+        let metaDictionary = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+            let cache = metaDictionary?["storage"] {
+            return cache
+        }
+
         return nil
     }
     
     func cacheExists() -> Bool {
-        if NSFileManager.defaultManager().fileExistsAtPath(cacheFileURL().path!) {
-            let cacheLocation = cacheFileURL()
-            
-            if let metaDictionary = NSDictionary(contentsOfURL: cacheLocation) {
-                if let expires = metaDictionary["expires"] as? NSTimeInterval {
-                    let nowInterval = NSDate().timeIntervalSince1970
-                    
-                    if expires > nowInterval {
-                        return true
-                    } else {
-                        removeCache()
-                        return false
-                    }
-                } else {
-                    // no expires time means old cache, never expires
-                    return true
-                }
-            }
+        guard FileManager.default.fileExists(atPath: cacheFileURL().path),
+            let data = try? Data(contentsOf: cacheFileURL()),
+            let metaDictionary = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+                return false
         }
+
+        guard let expires = metaDictionary?["expires"] as? TimeInterval else {
+            // no expire time means old cache, never expires
+            return true
+        }
+
+        let nowInterval = Date().timeIntervalSince1970
         
-        return false
+        if expires > nowInterval {
+            return true
+        } else {
+            removeCache()
+            return false
+        }
     }
     
-    func cacheFileURL() -> NSURL {
-        let url = NSFileManager.defaultManager().URLsForDirectory(.CachesDirectory, inDomains: .UserDomainMask).first!
+    static var cacheDirectory: URL {
+        let url = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
         
-        let writeDirectory = url.URLByAppendingPathComponent("com.thatthinginswift.pantry")
-        let cacheLocation = writeDirectory.URLByAppendingPathComponent(self.key)
-        
-        try! NSFileManager.defaultManager().createDirectoryAtURL(writeDirectory, withIntermediateDirectories: true, attributes: nil)
-        
+        let writeDirectory = url.appendingPathComponent("com.thatthinginswift.pantry")
+        return writeDirectory
+    }
+    
+    func cacheFileURL() -> URL {
+        let cacheDirectory = JSONWarehouse.cacheDirectory
+
+        let cacheLocation = cacheDirectory.appendingPathComponent(self.key)
+
+        do {
+            try FileManager.default.createDirectory(at: cacheDirectory, withIntermediateDirectories: true, attributes: nil)
+        } catch {
+            print("couldn't create directories to \(cacheLocation)")
+        }
+
         return cacheLocation
     }
 }

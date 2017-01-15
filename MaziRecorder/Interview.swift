@@ -11,17 +11,17 @@ import Pantry
 
 struct Interview {
     let identifier : String
-    let creationDate : NSDate
+    let creationDate : Date
     let name : String
     let role : String
     let text : String
     let attachments : [Attachment]
-    let imageUrl : NSURL?
+    let imageUrl : URL?
     let identifierOnServer : String?
     
     // MARK: Init
     
-    init(identifier: String, creationDate: NSDate, name: String, role: String, text: String, attachments: [Attachment], imageUrl: NSURL?, identifierOnServer: String?) {
+    init(identifier: String, creationDate: Date, name: String, role: String, text: String, attachments: [Attachment], imageUrl: URL?, identifierOnServer: String?) {
         self.identifier = identifier
         self.creationDate = creationDate
         self.name = name
@@ -33,7 +33,7 @@ struct Interview {
     }
     
     init(name: String = "", role: String = "", text: String = "", attachments: [Attachment] = []) {
-        self.init(identifier: NSUUID().UUIDString, creationDate: NSDate(), name: name, role: role, text: text, attachments: attachments, imageUrl: .None, identifierOnServer: .None)
+        self.init(identifier: UUID().uuidString, creationDate: Date(), name: name, role: role, text: text, attachments: attachments, imageUrl: .none, identifierOnServer: .none)
     }
     
     init(interview: Interview, interviewUpdate: InterviewUpdate) {
@@ -51,29 +51,29 @@ struct Interview {
 // MARK: Storable
 
 extension Interview : Storable {
-    init(warehouse: JSONWarehouse) {
-        self.identifier = warehouse.get("identifier") ?? NSUUID().UUIDString
+    init(warehouse: Warehouseable) {
+        self.identifier = warehouse.get("identifier") ?? NSUUID().uuidString
         let creationTimeString : String = warehouse.get("creationDate") ?? ""
-        self.creationDate = NSDate(timeIntervalSinceReferenceDate: Double(creationTimeString) ?? NSDate.timeIntervalSinceReferenceDate())
+        self.creationDate = Date(timeIntervalSinceReferenceDate: Double(creationTimeString) ?? Date.timeIntervalSinceReferenceDate)
         self.name = warehouse.get("name") ?? ""
         self.role = warehouse.get("role") ?? ""
         self.text = warehouse.get("text") ?? ""
         self.attachments = warehouse.get("attachments") ?? []
-        self.imageUrl = NSURL(string: warehouse.get("imageUrl") ?? "") ?? NSURL()
+        self.imageUrl = URL(string: warehouse.get("imageUrl") ?? "")
         let identifierOnServer : String = warehouse.get("identifierOnServer") ?? ""
-        self.identifierOnServer = identifierOnServer.characters.count > 0 ? identifierOnServer : .None
+        self.identifierOnServer = identifierOnServer.characters.count > 0 ? identifierOnServer : .none
     }
-    
-    func toDictionary() -> [String : AnyObject] {
+
+    func toDictionary() -> [String : Any] {
         return [
-            "identifier": self.identifier,
-            "creationDate": String(self.creationDate.timeIntervalSinceReferenceDate),
-            "name": self.name,
-            "role": self.role,
-            "text": self.text,
-            "attachments": self.attachments.map({ $0.toDictionary() as AnyObject }),
-            "imageUrl": self.imageUrl?.absoluteString ?? "",
-            "identifierOnServer": self.identifierOnServer ?? ""
+            "identifier": self.identifier as AnyObject,
+            "creationDate": String(self.creationDate.timeIntervalSinceReferenceDate) as AnyObject,
+            "name": self.name as AnyObject,
+            "role": self.role as AnyObject,
+            "text": self.text as AnyObject,
+            "attachments": self.attachments.map { $0.toDictionary() } as AnyObject,
+            "imageUrl": (self.imageUrl?.absoluteString ?? "") as AnyObject,
+            "identifierOnServer": (self.identifierOnServer ?? "") as AnyObject
         ]
     }
 }
@@ -84,7 +84,7 @@ extension Interview : Equatable {}
 
 func ==(lhs: Interview, rhs: Interview) -> Bool {
     return lhs.identifier == rhs.identifier
-        && lhs.creationDate.isEqual(rhs.creationDate)
+        && (lhs.creationDate == rhs.creationDate)
         && lhs.name == rhs.name
         && lhs.role == rhs.role
         && lhs.text == rhs.text
@@ -94,12 +94,12 @@ func ==(lhs: Interview, rhs: Interview) -> Bool {
 }
 
 enum UpdateValue<T> {
-    case Unchanged
-    case Changed(T)
+    case unchanged
+    case changed(T)
     
-    func newValue(oldValue: T) -> T {
+    func newValue(_ oldValue: T) -> T {
         switch self {
-        case .Changed(let x):
+        case .changed(let x):
             return x
         default:
             return oldValue
@@ -112,10 +112,10 @@ struct InterviewUpdate {
     var role : UpdateValue<String>
     var text : UpdateValue<String>
     var attachments : UpdateValue<[Attachment]>
-    var imageUrl : UpdateValue<NSURL?>
+    var imageUrl : UpdateValue<URL?>
     var identifierOnServer : UpdateValue<String?>
     
-    init(name: UpdateValue<String> = .Unchanged, role: UpdateValue<String> = .Unchanged, text: UpdateValue<String> = .Unchanged, attachments: UpdateValue<[Attachment]> = .Unchanged, imageUrl: UpdateValue<NSURL?> = .Unchanged, identifierOnServer: UpdateValue<String?> = .Unchanged) {
+    init(name: UpdateValue<String> = .unchanged, role: UpdateValue<String> = .unchanged, text: UpdateValue<String> = .unchanged, attachments: UpdateValue<[Attachment]> = .unchanged, imageUrl: UpdateValue<URL?> = .unchanged, identifierOnServer: UpdateValue<String?> = .unchanged) {
         self.name = name
         self.role = role
         self.text = text

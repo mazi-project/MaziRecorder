@@ -8,6 +8,7 @@
 
 import UIKit
 import SnapKit
+import ReactiveSwift
 import ReactiveCocoa
 import NVActivityIndicatorView
 
@@ -24,7 +25,7 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
         super.init(nibName : nil, bundle : nil)
         
         // Sync the view's interview with the model.
-        self.interview <~ InterviewStore.sharedInstance.interviewSignal(interview.identifier).ignoreNil()
+        self.interview <~ InterviewStore.sharedInstance.interviewSignal(interview.identifier).skipNil()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -51,52 +52,52 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
         let synopsisField = MaziUITextView()
         containerView.addSubview(synopsisField)
         
-        let pictureButton = MaziUIButton(type: .System)
-        pictureButton.setTitle("Take Picture", forState: .Normal)
+        let pictureButton = MaziUIButton(type: .system)
+        pictureButton.setTitle("Take Picture", for: UIControlState())
         containerView.addSubview(pictureButton)
         
         currentImage = UIImageView()
         containerView.addSubview(currentImage)
         
         // Navigation bar Upload button.
-        let uploadButton = UIBarButtonItem(barButtonSystemItem: .Done, target: self, action: #selector(SynopsisViewController.onUploadButtonClick))
+        let uploadButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(SynopsisViewController.onUploadButtonClick))
         self.navigationItem.rightBarButtonItem = uploadButton
         
         // Create view constraints.
-        scrollView.snp_makeConstraints { (make) in
+        scrollView.snp.makeConstraints { (make) in
             make.edges.equalTo(self.view)
         }
 
-        let navigationBarHeight = UIApplication.sharedApplication().statusBarFrame.height +
+        let navigationBarHeight = UIApplication.shared.statusBarFrame.height +
             (navigationController?.navigationBar.bounds.height ?? 0)
-        containerView.snp_makeConstraints { (make) in
+        containerView.snp.makeConstraints { (make) in
             make.width.equalTo(self.view).multipliedBy(0.5)
             make.centerX.equalTo(self.view)
             make.top.greaterThanOrEqualTo(scrollView)
-            make.centerY.equalTo(scrollView).offset(-navigationBarHeight).priorityLow()
+            make.centerY.equalTo(scrollView).offset(-navigationBarHeight).priority(UILayoutPriorityDefaultLow)
             make.bottom.lessThanOrEqualTo(scrollView)
         }
         
-        synopsisLabel.snp_makeConstraints { (make) in
-            make.top.equalTo(containerView.snp_top).offset(MaziStyle.largeSpacing)
+        synopsisLabel.snp.makeConstraints { (make) in
+            make.top.equalTo(containerView.snp.top).offset(MaziStyle.largeSpacing)
             make.left.right.equalTo(containerView).inset(MaziStyle.outerInset)
         }
         
-        synopsisField.snp_makeConstraints { (make) in
-            make.top.equalTo(synopsisLabel.snp_bottom).offset(MaziStyle.spacing)
+        synopsisField.snp.makeConstraints { (make) in
+            make.top.equalTo(synopsisLabel.snp.bottom).offset(MaziStyle.spacing)
             make.left.right.equalTo(containerView).inset(MaziStyle.outerInset)
             make.height.equalTo(120)
         }
         
-        pictureButton.snp_makeConstraints { (make) in
-            make.top.equalTo(synopsisField.snp_bottom).offset(MaziStyle.largeSpacing)
+        pictureButton.snp.makeConstraints { (make) in
+            make.top.equalTo(synopsisField.snp.bottom).offset(MaziStyle.largeSpacing)
             make.width.equalTo(MaziStyle.buttonSize.width)
             make.height.equalTo(MaziStyle.buttonSize.height)
             make.centerX.equalTo(containerView)
         }
         
-        currentImage.snp_makeConstraints { (make) in
-            make.top.equalTo(pictureButton.snp_bottom).offset(MaziStyle.largeSpacing)
+        currentImage.snp.makeConstraints { (make) in
+            make.top.equalTo(pictureButton.snp.bottom).offset(MaziStyle.largeSpacing)
             make.width.equalTo(100)
             make.height.equalTo(100)
             make.centerX.equalTo(containerView)
@@ -107,110 +108,101 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
         
         // Update the view whenever the model changes.
         interview.producer
-            .observeOn(UIScheduler())
-            .startWithNext { (newInterview : Interview) in
+            .observe(on: UIScheduler())
+            .startWithValues { (newInterview : Interview) in
                 synopsisField.text = newInterview.text
                 
                 // Disable start button when either name or role is empty.
-                uploadButton.enabled = newInterview.text.characters.count > 0 && newInterview.imageUrl != nil
+                uploadButton.isEnabled = newInterview.text.characters.count > 0 && newInterview.imageUrl != nil
         }
         
-        interview.producer.observeOn(UIScheduler())
+        interview.producer.observe(on: UIScheduler())
             .map { $0.imageUrl }
             .filter { $0 != nil }
             .skipRepeats { $0 == $1 }
-            .startWithNext { [weak self] imageUrl in
+            .startWithValues { [weak self] imageUrl in
                 guard let `self` = self else { return }
                 
                 if let url = imageUrl,
-                    imageData = NSData(contentsOfURL: url) {
+                    let imageData = try? Data(contentsOf: url) {
                     self.currentImage.image = UIImage(data: imageData)
                 }
         }
-        
-        RACSignal.merge([
-            NSNotificationCenter.defaultCenter().rac_addObserverForName(UIKeyboardWillShowNotification, object: nil),
-            NSNotificationCenter.defaultCenter().rac_addObserverForName(UIKeyboardWillHideNotification, object: nil)
+
+        Signal.merge([
+            NotificationCenter.default.reactive.notifications(forName: NSNotification.Name.UIKeyboardWillShow),
+            NotificationCenter.default.reactive.notifications(forName: NSNotification.Name.UIKeyboardWillHide)
             ])
-            .takeUntil(self.rac_willDeallocSignal())
-            .toSignalProducer()
-            .observeOn(UIScheduler())
-            .startWithNext { [weak self] next in
+            .take(until: self.reactive.lifetime.ended)
+            .observe(on: UIScheduler())
+            .observeValues { [weak self] notification in
                 guard let `self` = self else { return }
                 
-                if let notification = next as? NSNotification,
-                    userInfo = notification.userInfo,
-                    keyboardSize = (userInfo["UIKeyboardFrameEndUserInfoKey"] as? NSValue)?.CGRectValue() {
-                    if notification.name == UIKeyboardWillShowNotification {
+                if let userInfo = notification.userInfo,
+                    let keyboardSize = (userInfo["UIKeyboardFrameEndUserInfoKey"] as? NSValue)?.cgRectValue {
+                    if notification.name == NSNotification.Name.UIKeyboardWillShow {
                         // Keyboard will show.
-                        let height = self.view.convertRect(keyboardSize, fromView: nil).size.height ?? 0
-                        scrollView.snp_updateConstraints { (make) in
+                        let height = self.view.convert(keyboardSize, from: nil).size.height 
+                        scrollView.snp.updateConstraints { (make) in
                             make.bottom.equalTo(self.view).inset(height)
                         }
                     } else {
                         // Keyboard will hide.
-                        scrollView.snp_updateConstraints { (make) in
+                        scrollView.snp.updateConstraints { (make) in
                             make.bottom.equalTo(self.view).inset(0)
                         }
                     }
                     
                     // Animate the constraint changes.
-                    UIView.animateWithDuration(0.5, animations: {
+                    UIView.animate(withDuration: 0.5, animations: {
                         scrollView.layoutIfNeeded()
                     })
                 }
         }
         
         let maxLength = 1000
-        synopsisField.rac_textSignal()
-            .toSignalProducer()
-            .startWithNext { [weak self] next in
+        synopsisField.reactive.continuousTextValues
+            .observeValues { [weak self] text in
                 guard let `self` = self else { return }
+
+                // Make sure text field doesn't surpass a certain number of characters.
+                synopsisField.text = String(text.characters.prefix(maxLength))
                 
-                if let text = next as? NSString {
-                    // Make sure text field doesn't surpass a certain number of characters.
-                    if text.length > maxLength {
-                        synopsisField.text = text.substringToIndex(maxLength)
-                    }
-                    
-                    // Store the new name in the model.
-                    let update = InterviewUpdate(text: .Changed(synopsisField.text))
-                    InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview.value, interviewUpdate: update)
-                }
+                // Store the new name in the model.
+                let update = InterviewUpdate(text: .changed(synopsisField.text))
+                InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview.value, interviewUpdate: update)
         }
         
         // Take picture.
-        pictureButton.rac_signalForControlEvents(.TouchUpInside)
-            .toSignalProducer()
-            .startWithNext { [weak self] _ in
+        pictureButton.reactive.trigger(for: .touchUpInside)
+            .observeValues { [weak self] _ in
                 guard let `self` = self else { return }
                 
                 self.takePicture()
         }
         
         // Handle upload.
-        self.rac_signalForSelector(#selector(SynopsisViewController.onUploadButtonClick))
-            .toSignalProducer()
-            .observeOn(UIScheduler())
-            .startWithNext { [weak self] _ in
+        self.reactive.trigger(for: #selector(SynopsisViewController.onUploadButtonClick))
+            .observe(on: UIScheduler())
+            .observeValues { [weak self] _ in
                 guard let `self` = self else { return }
                 
                 let networkManager = NetworkManager()
                 networkManager.sendInterviewToServer(self.interview.value)
-                    .observeOn(UIScheduler())
+                    .observe(on: UIScheduler())
                     .on(started: {
                         // Show spinner.
-                        self.startActivityAnimating(CGSize(width: 100, height: 100))
+                        self.startAnimating(CGSize(width: 100, height: 100))
                     })
                     .on(failed: { error in
                         // Hide spinner.
-                        self.stopActivityAnimating()
+                        self.stopAnimating()
                         let alertView = UIAlertView(title: "Error", message: "Could not connect to server.", delegate: nil, cancelButtonTitle: "Ok")
                         alertView.show()
                     })
                     .on(completed: {
                         // Hide spinner.
-                        self.stopActivityAnimating()
+                        self.stopAnimating()
                         
                         // Show a popup saying the upload was successful.
                         let alertView = UIAlertView(title: "Success", message: "The interview was uploaded to the server.", delegate: nil, cancelButtonTitle: "Ok")
@@ -219,14 +211,19 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
                         // Create a new interview for the starting view, and navigate back to it.
                         if let rootViewController = self.navigationController?.viewControllers.first as? ViewController {
                             rootViewController.setNewInterviewObservation(InterviewStore.sharedInstance.createInterview())
-                            self.navigationController?.popToRootViewControllerAnimated(true)
+                            _ = self.navigationController?.popToRootViewController(animated: true)
                         }
                     })
-                    .startWithNext({ interviewId in
-                        // Store the new interview id in the model.
-                        let update = InterviewUpdate(identifierOnServer: .Changed(interviewId))
-                        InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview.value, interviewUpdate: update)
-                    })
+                    .startWithResult { result in
+                        switch result {
+                        case .success(let interviewId):
+                            // Store the new interview id in the model.
+                            let update = InterviewUpdate(identifierOnServer: .changed(interviewId))
+                            InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview.value, interviewUpdate: update)
+                        case .failure(let error):
+                            print("Upload failed with error \(error.localizedDescription)")
+                        }
+                    }
         }
     }
 
@@ -236,13 +233,13 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
     }
     
     func takePicture() {
-        if (UIImagePickerController.isSourceTypeAvailable(.Camera)) {
-            if UIImagePickerController.availableCaptureModesForCameraDevice(.Front) != nil {
+        if (UIImagePickerController.isSourceTypeAvailable(.camera)) {
+            if UIImagePickerController.availableCaptureModes(for: .front) != nil {
                 imagePicker.delegate = self
                 imagePicker.allowsEditing = false
-                imagePicker.sourceType = .Camera
-                imagePicker.cameraCaptureMode = .Photo
-                presentViewController(imagePicker, animated: true, completion: {})
+                imagePicker.sourceType = .camera
+                imagePicker.cameraCaptureMode = .photo
+                present(imagePicker, animated: true, completion: {})
             } else {
                 print("Rear camera doesn't exist")
             }
@@ -251,9 +248,9 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
         }
     }
     
-    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         print("Got an image")
-        imagePicker.dismissViewControllerAnimated(true, completion: {
+        imagePicker.dismiss(animated: true, completion: {
             if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
                 self.currentImage.image = image;
                 
@@ -262,33 +259,33 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
                 
                 //save image
                 let imageData = UIImageJPEGRepresentation(image, 0.6)
-                if imageData!.writeToFile(imagePath, atomically: true) {
+                if (try? imageData!.write(to: URL(fileURLWithPath: imagePath), options: [.atomic])) != nil {
                     //add to interview
-                    let update = InterviewUpdate(imageUrl: .Changed(NSURL(fileURLWithPath: imagePath)))
+                    let update = InterviewUpdate(imageUrl: .changed(URL(fileURLWithPath: imagePath)))
                     InterviewStore.sharedInstance.updateInterview(fromInterview: self.interview.value, interviewUpdate: update)
                 }
             }
         })
     }
     
-    func imagePickerControllerDidCancel(picker: UIImagePickerController) {
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         print("User canceled image")
-        dismissViewControllerAnimated(true, completion: {
+        dismiss(animated: true, completion: {
             // Anything you want to happen when the user selects cancel
         })
     }
     
-    private func directoryURL() -> String {
-        let fileManager = NSFileManager.defaultManager()
-        let urls = fileManager.URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)
-        let documentDirectory = urls[0] as NSURL
+    fileprivate func directoryURL() -> String {
+        let fileManager = FileManager.default
+        let urls = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
+        let documentDirectory = urls[0] as URL
         
-        let formatter = NSDateFormatter()
+        let formatter = DateFormatter()
         formatter.dateFormat = "ddMMyyyy-HHmmss"
-        let dateString = formatter.stringFromDate(NSDate())
+        let dateString = formatter.string(from: Date())
         
-        let imageURL = documentDirectory.URLByAppendingPathComponent("image-\(dateString).jpg")
-        return imageURL.path ?? ""
+        let imageURL = documentDirectory.appendingPathComponent("image-\(dateString).jpg")
+        return imageURL.path
     }
     
     func onUploadButtonClick() {}

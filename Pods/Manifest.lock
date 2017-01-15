@@ -1,27 +1,31 @@
 PODS:
-  - Alamofire (3.4.1)
-  - NVActivityIndicatorView (2.9)
-  - Pantry (0.2.1)
-  - ReactiveCocoa (4.2.1):
-    - Result (~> 2.0)
-  - Result (2.1.2)
-  - SnapKit (0.21.1)
+  - Alamofire (4.2.0)
+  - NVActivityIndicatorView (3.0)
+  - Pantry (0.3)
+  - ReactiveCocoa (5.0.0-alpha.3):
+    - ReactiveSwift (~> 1.0.0-alpha.3)
+  - ReactiveSwift (1.0.0-alpha.3):
+    - Result (~> 3.0)
+  - Result (3.0.0)
+  - SnapKit (3.0.2)
 
 DEPENDENCIES:
-  - Alamofire (~> 3.4)
-  - NVActivityIndicatorView
-  - Pantry (~> 0.2)
-  - ReactiveCocoa (~> 4.1)
-  - SnapKit (~> 0.15)
+  - Alamofire (~> 4.2)
+  - NVActivityIndicatorView (~> 3.0)
+  - Pantry (~> 0.3)
+  - ReactiveCocoa (~> 5.0.0-alpha.3)
+  - ReactiveSwift (~> 1.0.0-alpha.3)
+  - SnapKit (~> 3.0.2)
 
 SPEC CHECKSUMS:
-  Alamofire: 01a82e2f6c0f860ade35534c8dd88be61bdef40c
-  NVActivityIndicatorView: 0084f6be71bdf4735b5424ebfb530b1e3db3276c
-  Pantry: 433931c8f545dd3426ca7d09a4edd5afa89c6e01
-  ReactiveCocoa: 5a42745f11ea236f405bb9ce5e97c5e3b23562dd
-  Result: 6e722d4a66b1408680dbfcdf51c0b1c4b706316a
-  SnapKit: bbad04cb016c7cead63965f16b00c09318d271ee
+  Alamofire: aa2e09d871c9160ac53c90e83c68064a94e3dfbe
+  NVActivityIndicatorView: 81953b5e65093ba79edf4fe7268e002039ca5268
+  Pantry: 98481849be65d2b2cb9658976533e84ebd266192
+  ReactiveCocoa: d8a03d3deae0dd76410a30589946328d76ab9d2b
+  ReactiveSwift: d67b677f9574ba614d94022a88fcf456e77fa515
+  Result: 1b3e431f37cbcd3ad89c6aa9ab0ae55515fae3b6
+  SnapKit: 2e456761aa92d4d4067a7a5594c18769d451a8ad
 
-PODFILE CHECKSUM: 1221db1008d5144bafc4952dd9b3eabbf4fb2a79
+PODFILE CHECKSUM: 1783d070983986f4bb80f98c24c469b4ac0b9c52
 
-COCOAPODS: 1.0.1
+COCOAPODS: 1.1.1
