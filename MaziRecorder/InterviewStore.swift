@@ -12,7 +12,7 @@ import ReactiveCocoa
 import Pantry
 import enum Result.NoError
 
-internal let archiveFileName = "InterviewStore"
+private let archiveFileName = "InterviewStore"
 
 class InterviewStore {
     
