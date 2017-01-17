@@ -37,6 +37,7 @@ enum MaziStyle {
     static let buttonTextColor = UIColor.black
     static let buttonTextSelectedColor = UIColor.black
     static let buttonBorderColor = UIColor(netHex: 0xA3A3A3)
+    static let smallButtonBgColor = UIColor(netHex: 0xDDDDDD)
     
     // Fonts
     

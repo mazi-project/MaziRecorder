@@ -11,6 +11,8 @@
 		496B21791D313251009EAD71 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 496B21781D313251009EAD71 /* NetworkManager.swift */; };
 		496B217C1D31414A009EAD71 /* SoundCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 496B217B1D31414A009EAD71 /* SoundCircle.swift */; };
 		496B217F1D316A06009EAD71 /* StringHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 496B217E1D316A06009EAD71 /* StringHelpers.swift */; };
+		499B43501E2D201C00CF71CC /* QuestionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 499B434F1E2D201C00CF71CC /* QuestionStore.swift */; };
+		499B43521E2D2C2100CF71CC /* QuestionTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 499B43511E2D2C2100CF71CC /* QuestionTableCell.swift */; };
 		49C9F9181D3042DD00CCA9B6 /* RecorderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49C9F9171D3042DD00CCA9B6 /* RecorderViewController.swift */; };
 		49D568961D3247CC00E99BAB /* MaziUITextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D568951D3247CC00E99BAB /* MaziUITextField.swift */; };
 		49D568981D324F5B00E99BAB /* MaziStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D568971D324F5B00E99BAB /* MaziStyle.swift */; };
@@ -35,6 +37,8 @@
 		496B21781D313251009EAD71 /* NetworkManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		496B217B1D31414A009EAD71 /* SoundCircle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoundCircle.swift; sourceTree = "<group>"; };
 		496B217E1D316A06009EAD71 /* StringHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringHelpers.swift; sourceTree = "<group>"; };
+		499B434F1E2D201C00CF71CC /* QuestionStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuestionStore.swift; sourceTree = "<group>"; };
+		499B43511E2D2C2100CF71CC /* QuestionTableCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuestionTableCell.swift; sourceTree = "<group>"; };
 		49C9F9171D3042DD00CCA9B6 /* RecorderViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecorderViewController.swift; sourceTree = "<group>"; };
 		49D568951D3247CC00E99BAB /* MaziUITextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MaziUITextField.swift; sourceTree = "<group>"; };
 		49D568971D324F5B00E99BAB /* MaziStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MaziStyle.swift; sourceTree = "<group>"; };
@@ -87,6 +91,7 @@
 				49D568991D32511400E99BAB /* MaziUILabel.swift */,
 				49D5689B1D326A0300E99BAB /* MaziUITextView.swift */,
 				49D5689D1D3272DC00E99BAB /* MaziUIButton.swift */,
+				499B43511E2D2C2100CF71CC /* QuestionTableCell.swift */,
 			);
 			name = "Custom Views";
 			sourceTree = "<group>";
@@ -161,6 +166,7 @@
 				FCCDE1C91D30475200E156A5 /* Attachment.swift */,
 				FCCDE1C71D30459300E156A5 /* Interview.swift */,
 				FCCDE1CB1D30484A00E156A5 /* InterviewStore.swift */,
+				499B434F1E2D201C00CF71CC /* QuestionStore.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -200,7 +206,6 @@
 				TargetAttributes = {
 					FCCDE1AE1D30285600E156A5 = {
 						CreatedOnToolsVersion = 7.3.1;
-						DevelopmentTeam = V7S5ESS9S8;
 						LastSwiftMigration = 0820;
 					};
 				};
@@ -292,10 +297,12 @@
 				49D5689C1D326A0300E99BAB /* MaziUITextView.swift in Sources */,
 				496B21791D313251009EAD71 /* NetworkManager.swift in Sources */,
 				49C9F9181D3042DD00CCA9B6 /* RecorderViewController.swift in Sources */,
+				499B43501E2D201C00CF71CC /* QuestionStore.swift in Sources */,
 				496B217F1D316A06009EAD71 /* StringHelpers.swift in Sources */,
 				49D568981D324F5B00E99BAB /* MaziStyle.swift in Sources */,
 				FCCDE1C51D3034B700E156A5 /* QuestionsListViewController.swift in Sources */,
 				FCCDE1B51D30285600E156A5 /* ViewController.swift in Sources */,
+				499B43521E2D2C2100CF71CC /* QuestionTableCell.swift in Sources */,
 				FCCDE1B31D30285600E156A5 /* AppDelegate.swift in Sources */,
 				49D5689E1D3272DC00E99BAB /* MaziUIButton.swift in Sources */,
 				FCCDE1CC1D30484A00E156A5 /* InterviewStore.swift in Sources */,
@@ -429,6 +436,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = MaziRecorder/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -448,6 +456,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = MaziRecorder/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

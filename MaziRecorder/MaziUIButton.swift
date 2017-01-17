@@ -34,8 +34,25 @@ class MaziUIButton : UIButton {
     
     override func setTitle(_ title: String?, for state: UIControlState) {
         super.setTitle(title, for: state)
-        
         self.titleLabel!.font = UIFont.systemFont(ofSize: 16.0, weight: UIFontWeightBold)
+    }
+}
+
+class MaziUIButtonSmall : MaziUIButton {
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        self.backgroundColor = MaziStyle.smallButtonBgColor
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func setTitle(_ title: String?, for state: UIControlState) {
+        super.setTitle(title, for: state)
+        self.titleLabel!.font = UIFont.systemFont(ofSize: 12.0, weight: UIFontWeightBold)
     }
 }
 
