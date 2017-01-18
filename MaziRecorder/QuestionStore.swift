@@ -10,6 +10,7 @@ import Foundation
 import ReactiveSwift
 import ReactiveCocoa
 import Pantry
+import enum Result.NoError
 
 private let archiveFileName = "QuestionStore"
 
@@ -22,7 +23,7 @@ class QuestionStore {
     init() {
         // Load model from storage.
         if let unpackedQuestions: [String] = Pantry.unpack(archiveFileName) {
-            print("💾 Loaded model: ", unpackedQuestions)
+            print("💾 Loaded questions: ", unpackedQuestions)
             questions.value = unpackedQuestions
         } else {
             print("💾 There was no model to load.")
@@ -30,11 +31,25 @@ class QuestionStore {
 
         // Store model whenever it changes.
         questions.producer
-            .skipRepeats({ $0 == $1 })
             .debounce(1, on: QueueScheduler.main)
             .startWithValues { (newQuestions : [String]) in
                 Pantry.pack(newQuestions, key: archiveFileName)
-                print("💾 Stored model.")
+                print("💾 Stored questions.")
+        }
+    }
+
+    // A signal of interviews matching a given identifier.
+    func questionSignal() -> SignalProducer<[String], NoError> {
+        return questions.producer
+    }
+
+    func addQuestion(_ question: String) {
+        self.questions.value.append(question)
+    }
+
+    func removeQuestion(_ question: String) {
+        if let i = questions.value.index(of: question) {
+            questions.value.remove(at: i);
         }
     }
 

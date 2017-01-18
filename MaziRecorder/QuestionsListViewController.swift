@@ -17,6 +17,7 @@ class QuestionsListViewController: UIViewController, UITableViewDelegate, UITabl
     let questions = MutableProperty<[String]>([])
 
     let cellIdentifier = "cellIdentifier"
+    let maxQuestionLength = 128
     
     let tableView = UITableView()
     
@@ -29,16 +30,16 @@ class QuestionsListViewController: UIViewController, UITableViewDelegate, UITabl
         self.interview <~ InterviewStore.sharedInstance.interviewSignal(interview.identifier).skipNil()
 
         // Sync the view's question strings.
-        //self.questions <~ QuestionStore.sharedInstance.questionsSignal(interview.identifier).skipNil()
+        self.questions <~ QuestionStore.sharedInstance.questionSignal()
 
-        self.questions.value = [
-            "What are the topics you are interested in or working with?",
-            "What is the strongest tool/method/practice you work with?",
-            "What public/shared/open space in your city do you love?",
-            "Describe a context/conversation/situation that you have been part of, that you were satisfied with.",
-            "What was you biggest insight in the time we have spent together?",
-            "What problem would you like to solve next?"
-        ]
+//        self.questions.value = [
+//            "What are the topics you are interested in or working with?",
+//            "What is the strongest tool/method/practice you work with?",
+//            "What public/shared/open space in your city do you love?",
+//            "Describe a context/conversation/situation that you have been part of, that you were satisfied with.",
+//            "What was you biggest insight in the time we have spent together?",
+//            "What problem would you like to solve next?"
+//        ]
 
     }
     
@@ -53,9 +54,9 @@ class QuestionsListViewController: UIViewController, UITableViewDelegate, UITabl
         self.view.backgroundColor = MaziStyle.backgroundColor
         
         // Create views.
-        tableView.frame = tableView.frame.insetBy(dx: CGFloat(MaziStyle.outerInset), dy: 0)
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.separatorStyle = UITableViewCellSeparatorStyle.none
         tableView.register(QuestionTableCell.self, forCellReuseIdentifier: cellIdentifier)
         self.view.addSubview(tableView)
         
@@ -169,10 +170,7 @@ class QuestionsListViewController: UIViewController, UITableViewDelegate, UITabl
 
     func onDeleteButtonClick(question : String)
     {
-
-        if let i = questions.value.index(of: question) {
-            questions.value.remove(at: i);
-        }
+        QuestionStore.sharedInstance.removeQuestion(question)
     }
 
     func onDoneButtonClick() {}
@@ -184,13 +182,24 @@ class QuestionsListViewController: UIViewController, UITableViewDelegate, UITabl
             textField.text = ""
 
             //TODO : check min and max length
-            //textField.reactive.continuousTextValues
+            textField.reactive.continuousTextValues
+                .observeValues { next in
+                    if var name = next {
+                        // Make sure text field doesn't surpass a certain number of characters.
+                        name = String(name.characters.prefix(self.maxQuestionLength))
+                        textField.text = name;
+                    }
+            }
+
         }
 
         // Grab the value from the text field, and print it when the user clicks OK.
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] (_) in
             guard let textField = alert?.textFields![0] else { return }
-            self.questions.value.append(textField.text!)
+            let text : String = textField.text!
+            if (text.characters.count > 3) {
+                 QuestionStore.sharedInstance.addQuestion(text)
+            }
         }))
 
         self.present(alert, animated: true, completion: nil)
