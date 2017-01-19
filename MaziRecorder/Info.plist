@@ -39,6 +39,10 @@
 	<true/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array/>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>App needs to record interviews with the internal microphone</string>
+	<key>NSCameraUsageDescription</key>
+	<string>App wants to take a picture of the interview partner</string>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
