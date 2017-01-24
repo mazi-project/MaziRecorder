@@ -27,10 +27,13 @@ class NetworkManager {
         return requestProducer("\(urlString)/interviews", parameters: interviewDict)
             .flatMap(.concat) { next -> SignalProducer<String, NSError> in
                 // Get the id; if that's not possible, send an error.
-                guard let interviewId = next["_id"] as? String else {
+
+                guard
+                    let interviewData = next["interview"] as? [String: Any],
+                    let interviewId = interviewData["_id"] as? String else {
                     return SignalProducer(error: NSError(domain: self.errorDomain, code: 0, userInfo: nil))
                 }
-                
+
                 let producer = SignalProducer<SignalProducer<ResponseDict, NSError>, NSError>.init { (observer, _) in
                     // Create producer for uploading the photo to the server.
                     if let imageURL = interview.imageUrl {

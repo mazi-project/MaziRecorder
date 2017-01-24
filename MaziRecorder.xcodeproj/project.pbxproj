@@ -7,6 +7,29 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		494E12C31E37C00C00A266FE /* MaziUITextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D5689B1D326A0300E99BAB /* MaziUITextView.swift */; };
+		494E12C41E37C00C00A266FE /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 496B21781D313251009EAD71 /* NetworkManager.swift */; };
+		494E12C51E37C00C00A266FE /* RecorderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49C9F9171D3042DD00CCA9B6 /* RecorderViewController.swift */; };
+		494E12C61E37C00C00A266FE /* QuestionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 499B434F1E2D201C00CF71CC /* QuestionStore.swift */; };
+		494E12C71E37C00C00A266FE /* StringHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 496B217E1D316A06009EAD71 /* StringHelpers.swift */; };
+		494E12C81E37C00C00A266FE /* MaziStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D568971D324F5B00E99BAB /* MaziStyle.swift */; };
+		494E12C91E37C00C00A266FE /* QuestionsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCDE1C41D3034B700E156A5 /* QuestionsListViewController.swift */; };
+		494E12CA1E37C00C00A266FE /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCDE1B41D30285600E156A5 /* ViewController.swift */; };
+		494E12CB1E37C00C00A266FE /* QuestionTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 499B43511E2D2C2100CF71CC /* QuestionTableCell.swift */; };
+		494E12CC1E37C00C00A266FE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCDE1B21D30285600E156A5 /* AppDelegate.swift */; };
+		494E12CD1E37C00C00A266FE /* MaziUIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D5689D1D3272DC00E99BAB /* MaziUIButton.swift */; };
+		494E12CE1E37C00C00A266FE /* InterviewStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCDE1CB1D30484A00E156A5 /* InterviewStore.swift */; };
+		494E12CF1E37C00C00A266FE /* Interview.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCDE1C71D30459300E156A5 /* Interview.swift */; };
+		494E12D01E37C00C00A266FE /* SoundCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 496B217B1D31414A009EAD71 /* SoundCircle.swift */; };
+		494E12D11E37C00C00A266FE /* MaziUITextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D568951D3247CC00E99BAB /* MaziUITextField.swift */; };
+		494E12D21E37C00C00A266FE /* SynopsisViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 496B21751D31195E009EAD71 /* SynopsisViewController.swift */; };
+		494E12D31E37C00C00A266FE /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D5689F1D32750100E99BAB /* Extensions.swift */; };
+		494E12D41E37C00C00A266FE /* Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCDE1C91D30475200E156A5 /* Attachment.swift */; };
+		494E12D51E37C00C00A266FE /* MaziUILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D568991D32511400E99BAB /* MaziUILabel.swift */; };
+		494E12D71E37C00C00A266FE /* Pods_MaziRecorder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8149A2B55EFD3E58ED95E4D3 /* Pods_MaziRecorder.framework */; };
+		494E12D91E37C00C00A266FE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FCCDE1BB1D30285600E156A5 /* LaunchScreen.storyboard */; };
+		494E12DA1E37C00C00A266FE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FCCDE1B91D30285600E156A5 /* Assets.xcassets */; };
+		494E12DB1E37C00C00A266FE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FCCDE1B61D30285600E156A5 /* Main.storyboard */; };
 		496B21761D31195E009EAD71 /* SynopsisViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 496B21751D31195E009EAD71 /* SynopsisViewController.swift */; };
 		496B21791D313251009EAD71 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 496B21781D313251009EAD71 /* NetworkManager.swift */; };
 		496B217C1D31414A009EAD71 /* SoundCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 496B217B1D31414A009EAD71 /* SoundCircle.swift */; };
@@ -33,6 +56,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		494E12E11E37C00C00A266FE /* MaziRecorder Release.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MaziRecorder Release.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		494E12E21E37C00C00A266FE /* MaziRecorder copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "MaziRecorder copy-Info.plist"; path = "/Users/lutz/Projects/MaziRecorder/MaziRecorder copy-Info.plist"; sourceTree = "<absolute>"; };
 		496B21751D31195E009EAD71 /* SynopsisViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SynopsisViewController.swift; sourceTree = "<group>"; };
 		496B21781D313251009EAD71 /* NetworkManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		496B217B1D31414A009EAD71 /* SoundCircle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoundCircle.swift; sourceTree = "<group>"; };
@@ -63,6 +88,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		494E12D61E37C00C00A266FE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				494E12D71E37C00C00A266FE /* Pods_MaziRecorder.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		FCCDE1AC1D30285600E156A5 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -129,6 +162,7 @@
 				FCCDE1B01D30285600E156A5 /* Products */,
 				9B3D55EC77A992D2DED2E3C4 /* Pods */,
 				DC9CCB0F3C6984A471232B37 /* Frameworks */,
+				494E12E21E37C00C00A266FE /* MaziRecorder copy-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -136,6 +170,7 @@
 			isa = PBXGroup;
 			children = (
 				FCCDE1AF1D30285600E156A5 /* MaziRecorder.app */,
+				494E12E11E37C00C00A266FE /* MaziRecorder Release.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -174,6 +209,26 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		494E12C01E37C00C00A266FE /* MaziRecorder Release */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 494E12DE1E37C00C00A266FE /* Build configuration list for PBXNativeTarget "MaziRecorder Release" */;
+			buildPhases = (
+				494E12C11E37C00C00A266FE /* [CP] Check Pods Manifest.lock */,
+				494E12C21E37C00C00A266FE /* Sources */,
+				494E12D61E37C00C00A266FE /* Frameworks */,
+				494E12D81E37C00C00A266FE /* Resources */,
+				494E12DC1E37C00C00A266FE /* [CP] Embed Pods Frameworks */,
+				494E12DD1E37C00C00A266FE /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "MaziRecorder Release";
+			productName = MaziRecorder;
+			productReference = 494E12E11E37C00C00A266FE /* MaziRecorder Release.app */;
+			productType = "com.apple.product-type.application";
+		};
 		FCCDE1AE1D30285600E156A5 /* MaziRecorder */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = FCCDE1C11D30285600E156A5 /* Build configuration list for PBXNativeTarget "MaziRecorder" */;
@@ -204,6 +259,9 @@
 				LastUpgradeCheck = 0820;
 				ORGANIZATIONNAME = "Erich Grunewald";
 				TargetAttributes = {
+					494E12C01E37C00C00A266FE = {
+						DevelopmentTeam = 73LC348FGQ;
+					};
 					FCCDE1AE1D30285600E156A5 = {
 						CreatedOnToolsVersion = 7.3.1;
 						DevelopmentTeam = 73LC348FGQ;
@@ -225,11 +283,22 @@
 			projectRoot = "";
 			targets = (
 				FCCDE1AE1D30285600E156A5 /* MaziRecorder */,
+				494E12C01E37C00C00A266FE /* MaziRecorder Release */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		494E12D81E37C00C00A266FE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				494E12D91E37C00C00A266FE /* LaunchScreen.storyboard in Resources */,
+				494E12DA1E37C00C00A266FE /* Assets.xcassets in Resources */,
+				494E12DB1E37C00C00A266FE /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		FCCDE1AD1D30285600E156A5 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -273,6 +342,51 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MaziRecorder/Pods-MaziRecorder-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		494E12C11E37C00C00A266FE /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		494E12DC1E37C00C00A266FE /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MaziRecorder/Pods-MaziRecorder-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		494E12DD1E37C00C00A266FE /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MaziRecorder/Pods-MaziRecorder-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		4F8243D7EF26CA27ABE3098D /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -291,6 +405,32 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		494E12C21E37C00C00A266FE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				494E12C31E37C00C00A266FE /* MaziUITextView.swift in Sources */,
+				494E12C41E37C00C00A266FE /* NetworkManager.swift in Sources */,
+				494E12C51E37C00C00A266FE /* RecorderViewController.swift in Sources */,
+				494E12C61E37C00C00A266FE /* QuestionStore.swift in Sources */,
+				494E12C71E37C00C00A266FE /* StringHelpers.swift in Sources */,
+				494E12C81E37C00C00A266FE /* MaziStyle.swift in Sources */,
+				494E12C91E37C00C00A266FE /* QuestionsListViewController.swift in Sources */,
+				494E12CA1E37C00C00A266FE /* ViewController.swift in Sources */,
+				494E12CB1E37C00C00A266FE /* QuestionTableCell.swift in Sources */,
+				494E12CC1E37C00C00A266FE /* AppDelegate.swift in Sources */,
+				494E12CD1E37C00C00A266FE /* MaziUIButton.swift in Sources */,
+				494E12CE1E37C00C00A266FE /* InterviewStore.swift in Sources */,
+				494E12CF1E37C00C00A266FE /* Interview.swift in Sources */,
+				494E12D01E37C00C00A266FE /* SoundCircle.swift in Sources */,
+				494E12D11E37C00C00A266FE /* MaziUITextField.swift in Sources */,
+				494E12D21E37C00C00A266FE /* SynopsisViewController.swift in Sources */,
+				494E12D31E37C00C00A266FE /* Extensions.swift in Sources */,
+				494E12D41E37C00C00A266FE /* Attachment.swift in Sources */,
+				494E12D51E37C00C00A266FE /* MaziUILabel.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		FCCDE1AB1D30285600E156A5 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -339,6 +479,46 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		494E12DF1E37C00C00A266FE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8B143F8B87290129FB0514AE /* Pods-MaziRecorder.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 73LC348FGQ;
+				INFOPLIST_FILE = "MaziRecorder copy-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.kelbraer.MaziRecorder;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		494E12E01E37C00C00A266FE /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7D9854E607C33CA6B09B37EE /* Pods-MaziRecorder.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 73LC348FGQ;
+				INFOPLIST_FILE = "MaziRecorder copy-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.kelbraer.MaziRecorder;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		FCCDE1BF1D30285600E156A5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -472,6 +652,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		494E12DE1E37C00C00A266FE /* Build configuration list for PBXNativeTarget "MaziRecorder Release" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				494E12DF1E37C00C00A266FE /* Debug */,
+				494E12E01E37C00C00A266FE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		FCCDE1AA1D30285600E156A5 /* Build configuration list for PBXProject "MaziRecorder" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
