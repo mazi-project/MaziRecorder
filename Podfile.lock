@@ -1,5 +1,8 @@
 PODS:
   - Alamofire (4.2.0)
+  - Crashlytics (3.8.3):
+    - Fabric (~> 1.6.3)
+  - Fabric (1.6.11)
   - NVActivityIndicatorView (3.0)
   - Pantry (0.3)
   - ReactiveCocoa (5.0.0-alpha.3):
@@ -11,6 +14,8 @@ PODS:
 
 DEPENDENCIES:
   - Alamofire (~> 4.2)
+  - Crashlytics
+  - Fabric
   - NVActivityIndicatorView (~> 3.0)
   - Pantry (~> 0.3)
   - ReactiveCocoa (~> 5.0.0-alpha.3)
@@ -19,6 +24,8 @@ DEPENDENCIES:
 
 SPEC CHECKSUMS:
   Alamofire: aa2e09d871c9160ac53c90e83c68064a94e3dfbe
+  Crashlytics: 2b6dbe138a42395577cfa73dfa1aa7248cadf39e
+  Fabric: 5911403591946b8228ab1c51d98f1d7137e863c6
   NVActivityIndicatorView: 81953b5e65093ba79edf4fe7268e002039ca5268
   Pantry: 98481849be65d2b2cb9658976533e84ebd266192
   ReactiveCocoa: d8a03d3deae0dd76410a30589946328d76ab9d2b
@@ -26,6 +33,6 @@ SPEC CHECKSUMS:
   Result: 1b3e431f37cbcd3ad89c6aa9ab0ae55515fae3b6
   SnapKit: 2e456761aa92d4d4067a7a5594c18769d451a8ad
 
-PODFILE CHECKSUM: 1783d070983986f4bb80f98c24c469b4ac0b9c52
+PODFILE CHECKSUM: 277a6efe4b8367a071060cd0ad7757d9574c4ac1
 
 COCOAPODS: 1.1.1

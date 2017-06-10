@@ -12,4 +12,6 @@ target 'MaziRecorder' do
   pod 'Alamofire', '~> 4.2'
   pod 'Pantry', '~> 0.3'
   pod 'NVActivityIndicatorView', '~> 3.0'
+  pod 'Fabric'
+  pod 'Crashlytics'
 end

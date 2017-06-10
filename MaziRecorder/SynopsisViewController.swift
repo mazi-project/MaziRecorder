@@ -71,7 +71,7 @@ class SynopsisViewController: UIViewController, UIImagePickerControllerDelegate,
         let navigationBarHeight = UIApplication.shared.statusBarFrame.height +
             (navigationController?.navigationBar.bounds.height ?? 0)
         containerView.snp.makeConstraints { (make) in
-            make.width.equalTo(self.view).multipliedBy(0.5)
+            make.width.equalTo(self.view).multipliedBy(0.8)
             make.centerX.equalTo(self.view)
             make.top.greaterThanOrEqualTo(scrollView)
             make.centerY.equalTo(scrollView).offset(-navigationBarHeight).priority(UILayoutPriorityDefaultLow)

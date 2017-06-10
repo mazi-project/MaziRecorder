@@ -13,7 +13,7 @@ import ReactiveCocoa
 import enum Result.NoError
 
 class NetworkManager {
-    fileprivate let urlString = "http://192.168.72.2/api"
+    fileprivate let urlString = "http://local.mazizone.eu:9091/api"
     fileprivate let errorDomain = "MaziNetworkingError"
     fileprivate let timeoutInterval : TimeInterval = 15
     fileprivate let uploadTimeoutInterval : TimeInterval = 60

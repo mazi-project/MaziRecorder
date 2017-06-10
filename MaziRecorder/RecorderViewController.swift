@@ -226,6 +226,7 @@ class RecorderViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRe
                         self.hasRecorderd = true
                         self.stopRecording()
                         startButton.setTitle("Start", for: .normal)
+                        startButton.isEnabled = false;
                     } else {
                         self.startRecording()
                         startButton.setTitle("Stop", for: .normal)
