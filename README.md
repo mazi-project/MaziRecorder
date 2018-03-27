@@ -1,5 +1,7 @@
 # MaziRecorder
 
+The code is under development and is not ready for distribution.
+
 ## TODO
 
 * [x] Load persisted state
